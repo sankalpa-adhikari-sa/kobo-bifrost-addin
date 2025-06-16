@@ -1,8 +1,15 @@
 {
-  "plugins": [
-    "office-addins"
-  ],
-  "extends": [
-    "plugin:office-addins/react"
-  ]
+  "plugins": ["office-addins"],
+  "extends": ["plugin:office-addins/react"],
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
+  "globals": {
+    "Office": "readonly",
+    "OfficeRuntime": "readonly",
+    "localStorage": "readonly",
+    "console": "readonly",
+    "Excel": "readonly"
+  }
 }

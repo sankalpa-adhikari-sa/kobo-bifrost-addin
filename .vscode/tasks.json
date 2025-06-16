@@ -1,20 +1,8 @@
 {
+  // See https://go.microsoft.com/fwlink/?LinkId=733558
+  // for the documentation about the tasks.json format
   "version": "2.0.0",
   "tasks": [
-    {
-      "label": "Build (Development)",
-      "type": "npm",
-      "script": "build:dev",
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      },
-      "presentation": {
-        "clear": true,
-        "panel": "shared",
-        "showReuseMessage": false
-      }
-    },
     {
       "label": "Build (Production)",
       "type": "npm",
@@ -28,80 +16,48 @@
     },
     {
       "label": "Debug: Excel Desktop",
-      "type": "shell",
-      "command": "npm",
-      "args": [
-        "run",
-        "start",
-        "--",
-        "desktop",
-        "--app",
-        "excel"
-      ],
+      "type": "npm",
+      "script": "start:desktop -- --app excel",
       "presentation": {
         "clear": true,
-        "panel": "dedicated"
+        "panel": "dedicated",
       },
       "problemMatcher": []
     },
     {
       "label": "Debug: Outlook Desktop",
-      "type": "shell",
-      "command": "npm",
-      "args": [
-        "run",
-        "start",
-        "--",
-        "desktop",
-        "--app",
-        "outlook"
-      ],
+      "type": "npm",
+      "script": "start:desktop -- --app outlook",
       "presentation": {
         "clear": true,
-        "panel": "dedicated"
+        "panel": "dedicated",
       },
       "problemMatcher": []
     },
     {
       "label": "Debug: PowerPoint Desktop",
-      "type": "shell",
-      "command": "npm",
-      "args": [
-        "run",
-        "start",
-        "--",
-        "desktop",
-        "--app",
-        "powerpoint"
-      ],
+      "type": "npm",
+      "script": "start:desktop -- --app powerpoint",
       "presentation": {
         "clear": true,
-        "panel": "dedicated"
+        "panel": "dedicated",
       },
       "problemMatcher": []
     },
     {
       "label": "Debug: Word Desktop",
-      "type": "shell",
-      "command": "npm",
-      "args": [
-        "run",
-        "start",
-        "--",
-        "desktop",
-        "--app",
-        "word"
-      ],
+      "type": "npm",
+      "script": "start:desktop -- --app word",
       "presentation": {
         "clear": true,
-        "panel": "dedicated"
+        "panel": "dedicated",
       },
       "problemMatcher": []
     },
     {
       "label": "Dev Server",
       "type": "npm",
-      "script": "dev-server",
+      "script": "dev",
       "presentation": {
         "clear": true,
         "panel": "dedicated"
@@ -155,6 +111,6 @@
         "panel": "dedicated"
       },
       "problemMatcher": []
-    }
+    },
   ]
 }

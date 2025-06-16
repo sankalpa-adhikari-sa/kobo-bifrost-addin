@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Input, Button, Card, CardHeader, CardFooter, Text } from "@fluentui/react-components";
 import { useStoredToken } from "../hooks/useStoredToken";
 
@@ -27,12 +27,7 @@ export const TokenManager = () => {
         <Button appearance="primary" onClick={handleSave} disabled={!input}>
           Save Token
         </Button>
-        <Button
-          appearance="secondary"
-          onClick={clearToken}
-          disabled={!token}
-          style={{ marginLeft: 8 }}
-        >
+        <Button appearance="secondary" onClick={clearToken} disabled={!token} style={{ marginLeft: 8 }}>
           Clear Token
         </Button>
       </CardFooter>

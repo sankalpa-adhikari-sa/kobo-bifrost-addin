@@ -1,52 +1,24 @@
 import * as React from "react";
 import Header from "./Header";
-import HeroList, { HeroListItem } from "./HeroList";
-import TextInsertion from "./TextInsertion";
-import { makeStyles } from "@fluentui/react-components";
-import { Ribbon24Regular, LockOpen24Regular, DesignIdeas24Regular } from "@fluentui/react-icons";
-import { insertText } from "../taskpane";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import Progress from "./Progress";
+import logo from "../../../assets/logo-filled.png";
 import { TokenManager } from "./TokenManager";
 
-interface AppProps {
+export interface AppProps {
   title: string;
+  isOfficeInitialized: boolean;
 }
 
-const useStyles = makeStyles({
-  root: {
-    minHeight: "100vh",
-  },
-});
-
-const App: React.FC<AppProps> = (props: AppProps) => {
-  const styles = useStyles();
-  // The list items are static and won't change at runtime,
-  // so this should be an ordinary const, not a part of state.
-  const listItems: HeroListItem[] = [
-    {
-      icon: <Ribbon24Regular />,
-      primaryText: "Achieve more with Office integration",
-    },
-    {
-      icon: <LockOpen24Regular />,
-      primaryText: "Unlock features and functionality",
-    },
-    {
-      icon: <DesignIdeas24Regular />,
-      primaryText: "Create and visualize like a pro",
-    },
-  ];
-  const queryClient = new QueryClient();
+const App: React.FC<AppProps> = ({ title, isOfficeInitialized }) => {
+  if (!isOfficeInitialized) {
+    return <Progress title={title} logo={logo} message="Please sideload your addin to see app body." />;
+  }
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <div className={styles.root}>
-        <Header logo="assets/logo-filled.png" title={props.title} message="Welcome" />
-        <HeroList message="Discover what this add-in can do for you today!" items={listItems} />
-        <TextInsertion insertText={insertText} />
-        <TokenManager />
-      </div>
-    </QueryClientProvider>
+    <div className="ms-welcome">
+      <Header logo={logo} title={title} message="Welcome" />
+      <TokenManager />
+    </div>
   );
 };
 
