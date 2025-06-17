@@ -24,6 +24,7 @@ import {
   Settings20Regular,
 } from "@fluentui/react-icons";
 import React from "react";
+import { useNavigate, useLocation } from "react-router";
 
 const JobPostings = bundleIcon(NotePin20Filled, NotePin20Regular);
 const Dashboard = bundleIcon(Board20Filled, Board20Regular);
@@ -31,17 +32,41 @@ const Settings = bundleIcon(Settings20Filled, Settings20Regular);
 
 interface AddinNavDrawerProps {
   isOpen: boolean;
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
   toggleOpen: () => void;
 }
 
-const AddinNavDrawer: React.FC<AddinNavDrawerProps> = ({ isOpen, toggleOpen }) => {
+const AddinNavDrawer: React.FC<AddinNavDrawerProps> = ({ isOpen, setIsOpen, toggleOpen }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const getSelectedValue = () => {
+    switch (location.pathname) {
+      case "/":
+        return "1";
+      case "/create":
+        return "3";
+      case "/assets":
+        return "4";
+      case "/token-manager":
+        return "5";
+      default:
+        return "1";
+    }
+  };
+
+  const handleNavigation = (path: string) => {
+    navigate(path);
+  };
+
   return (
     <NavDrawer
-      defaultSelectedValue="2"
+      selectedValue={getSelectedValue()}
       defaultSelectedCategoryValue=""
       open={isOpen}
       type="overlay"
       multiple
+      onOpenChange={(_, data) => setIsOpen(data.open)}
     >
       <NavDrawerHeader>
         <Tooltip content="Close Navigation" relationship="label">
@@ -50,22 +75,26 @@ const AddinNavDrawer: React.FC<AddinNavDrawerProps> = ({ isOpen, toggleOpen }) =
       </NavDrawerHeader>
       <NavDrawerBody>
         <AppItem icon={<PersonCircle32Regular />} as="a">
-          Contoso HR
+          Kobotoolbox Add-in
         </AppItem>
-        <NavItem icon={<Dashboard />} value="1">
-          Dashboard
+        <NavItem icon={<Dashboard />} value="1" onClick={() => handleNavigation("/")}>
+          About
         </NavItem>
         <NavDivider />
-        <NavSectionHeader>Employee Management</NavSectionHeader>
+        <NavSectionHeader>Configuration</NavSectionHeader>
         <NavCategory value="2">
-          <NavCategoryItem icon={<JobPostings />}>Job Postings</NavCategoryItem>
+          <NavCategoryItem icon={<JobPostings />}>Data Management</NavCategoryItem>
           <NavSubItemGroup>
-            <NavSubItem value="3">Openings</NavSubItem>
-            <NavSubItem value="4">Submissions</NavSubItem>
+            <NavSubItem value="3" onClick={() => handleNavigation("/create")}>
+              Create
+            </NavSubItem>
+            <NavSubItem value="4" onClick={() => handleNavigation("/assets")}>
+              Assets
+            </NavSubItem>
           </NavSubItemGroup>
         </NavCategory>
-        <NavItem icon={<Settings />} value="5">
-          Settings
+        <NavItem icon={<Settings />} value="5" onClick={() => handleNavigation("/token-manager")}>
+          Token Manager
         </NavItem>
       </NavDrawerBody>
     </NavDrawer>

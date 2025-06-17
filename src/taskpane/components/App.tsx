@@ -1,10 +1,15 @@
 import * as React from "react";
 import Progress from "./Progress";
 import logo from "../../../assets/logo-filled.png";
-import { TokenManager } from "./TokenManager";
+import { TokenManager } from "../routes/TokenManager";
 import Preferences from "./Preferences";
 import AddinNavDrawer from "./AddinNavDrawer";
 import { Hamburger, Tooltip, useRestoreFocusTarget } from "@fluentui/react-components";
+import { Route, Routes } from "react-router";
+import Assets from "../routes/Assets";
+import Settings from "../routes/Settings";
+import Create from "../routes/Create";
+import About from "../routes/About";
 
 export interface AppProps {
   title: string;
@@ -28,9 +33,15 @@ const App: React.FC<AppProps> = ({ title, isOfficeInitialized }) => {
       <Tooltip content="Toggle navigation pane" relationship="label">
         <Hamburger onClick={toggleDrawer} {...restoreFocusTargetAttributes} />
       </Tooltip>
-      <AddinNavDrawer isOpen={drawerOpen} toggleOpen={toggleDrawer} />
-      <Preferences />
-      <TokenManager />
+      <AddinNavDrawer isOpen={drawerOpen} setIsOpen={setDrawerOpen} toggleOpen={toggleDrawer} />
+      <Routes>
+        <Route index element={<About />} />
+        <Route path="preferences" element={<Preferences />} />
+        <Route path="token-manager" element={<TokenManager />} />
+        <Route path="assets" element={<Assets />} />
+        <Route path="create" element={<Create />} />
+        <Route path="settings" element={<Settings />} />
+      </Routes>
     </div>
   );
 };

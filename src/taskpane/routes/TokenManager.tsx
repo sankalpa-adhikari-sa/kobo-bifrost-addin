@@ -121,7 +121,6 @@ export const TokenManager = () => {
   return (
     <div className={styles.container}>
       <Card className={styles.card}>
-        {/* Header */}
         <CardHeader>
           <div style={{ display: "flex", alignItems: "center", gap: tokens.spacingHorizontalS }}>
             <Key20Regular className={styles.icon} />
@@ -130,7 +129,6 @@ export const TokenManager = () => {
           <Caption1>Configure your API token and KoBoToolbox server URL</Caption1>
         </CardHeader>
 
-        {/* Token Section */}
         <div className={styles.section}>
           <Field label="API Token" required>
             <Input
@@ -180,7 +178,6 @@ export const TokenManager = () => {
 
         <Divider />
 
-        {/* KPI URL Section */}
         <div className={styles.section}>
           <Field label="KoBoToolbox Server" required>
             <div className={styles.urlContainer}>

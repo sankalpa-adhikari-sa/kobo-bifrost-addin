@@ -4,6 +4,7 @@ import { FluentProvider } from "@fluentui/react-components";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider, useTheme } from "./components/ThemeProvider";
 import App from "./components/App";
+import { MemoryRouter } from "react-router";
 
 const APP_TITLE = "Kobotoolbox Add-in";
 const queryClient = new QueryClient();
@@ -15,7 +16,9 @@ const ThemedApp: React.FC = () => {
 
   return (
     <FluentProvider theme={theme}>
-      <App title={APP_TITLE} isOfficeInitialized={isOfficeInitialized} />
+      <MemoryRouter>
+        <App title={APP_TITLE} isOfficeInitialized={isOfficeInitialized} />
+      </MemoryRouter>
     </FluentProvider>
   );
 };

@@ -2,7 +2,6 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import officeAddin from "vite-plugin-office-addin";
 import checker from "vite-plugin-checker";
-import { tanstackRouter } from "@tanstack/router-plugin/vite";
 
 const devCerts = require("office-addin-dev-certs");
 
@@ -14,10 +13,6 @@ async function getHttpsOptions() {
 // https://vitejs.dev/config/
 export default defineConfig(async ({ mode }) => ({
   plugins: [
-    tanstackRouter({
-      target: "react",
-      autoCodeSplitting: true,
-    }),
     react(),
     officeAddin({
       devUrl: "https://localhost:3000",
