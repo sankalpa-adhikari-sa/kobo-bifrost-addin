@@ -32,6 +32,7 @@ function removeFromLocalStorage(key: string) {
 
 export function useStoredToken() {
   const [token, setToken] = useState<string | null>(null);
+  const [kpiUrl, setKpiUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -39,20 +40,28 @@ export function useStoredToken() {
       try {
         setIsLoading(true);
 
-        let saved = getFromLocalStorage("authToken");
+        let savedToken = getFromLocalStorage("authToken");
+        let savedKpiUrl = getFromLocalStorage("kpiUrl");
 
-        if (!saved) {
+        if (!savedToken || !savedKpiUrl) {
           try {
-            saved = await OfficeRuntime.storage.getItem("authToken");
+            if (!savedToken) {
+              savedToken = await OfficeRuntime.storage.getItem("authToken");
+            }
+            if (!savedKpiUrl) {
+              savedKpiUrl = await OfficeRuntime.storage.getItem("kpiUrl");
+            }
           } catch (error) {
             console.warn("OfficeRuntime.storage not available:", error);
           }
         }
 
-        setToken(saved);
+        setToken(savedToken);
+        setKpiUrl(savedKpiUrl);
       } catch (error) {
-        console.error("Error loading token:", error);
+        console.error("Error loading token or kpiUrl:", error);
         setToken(null);
+        setKpiUrl(null);
       } finally {
         setIsLoading(false);
       }
@@ -93,5 +102,47 @@ export function useStoredToken() {
     }
   };
 
-  return { token, saveToken, clearToken, isLoading };
+  const saveKpiUrl = async (newKpiUrl: string) => {
+    try {
+      setInLocalStorage("kpiUrl", newKpiUrl);
+
+      try {
+        await OfficeRuntime.storage.setItem("kpiUrl", newKpiUrl);
+      } catch (error) {
+        console.warn("OfficeRuntime.storage save failed for kpiUrl:", error);
+      }
+
+      setKpiUrl(newKpiUrl);
+    } catch (error) {
+      console.error("Error saving kpiUrl:", error);
+      throw new Error("Failed to save kpiUrl");
+    }
+  };
+
+  const clearKpiUrl = async () => {
+    try {
+      removeFromLocalStorage("kpiUrl");
+
+      try {
+        await OfficeRuntime.storage.removeItem("kpiUrl");
+      } catch (error) {
+        console.warn("OfficeRuntime.storage clear failed for kpiUrl:", error);
+      }
+
+      setKpiUrl(null);
+    } catch (error) {
+      console.error("Error clearing kpiUrl:", error);
+      throw new Error("Failed to clear kpiUrl");
+    }
+  };
+
+  return {
+    token,
+    kpiUrl,
+    saveToken,
+    clearToken,
+    saveKpiUrl,
+    clearKpiUrl,
+    isLoading,
+  };
 }

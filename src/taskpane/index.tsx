@@ -1,27 +1,48 @@
 import React from "react";
-import App from "./components/App";
-import { FluentProvider, webLightTheme } from "@fluentui/react-components";
 import { createRoot } from "react-dom/client";
+import { FluentProvider } from "@fluentui/react-components";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ThemeProvider, useTheme } from "./components/ThemeProvider";
+import App from "./components/App";
+
+const APP_TITLE = "Kobotoolbox Add-in";
+const queryClient = new QueryClient();
 
 let isOfficeInitialized = false;
 
-const title = "Kobotoolbox Add-in";
-const queryClient = new QueryClient();
-const render = (Component: typeof App) => {
-  createRoot(document.getElementById("container") as HTMLElement).render(
+const ThemedApp: React.FC = () => {
+  const { theme } = useTheme();
+
+  return (
+    <FluentProvider theme={theme}>
+      <App title={APP_TITLE} isOfficeInitialized={isOfficeInitialized} />
+    </FluentProvider>
+  );
+};
+
+const AppWithProviders: React.FC = () => (
+  <QueryClientProvider client={queryClient}>
+    <ThemeProvider>
+      <ThemedApp />
+    </ThemeProvider>
+  </QueryClientProvider>
+);
+
+const renderApp = () => {
+  const container = document.getElementById("container");
+  if (!container) {
+    console.error("Failed to find the root container.");
+    return;
+  }
+
+  createRoot(container).render(
     <React.StrictMode>
-      <QueryClientProvider client={queryClient}>
-        <FluentProvider theme={webLightTheme}>
-          <Component title={title} isOfficeInitialized={isOfficeInitialized} />
-        </FluentProvider>
-      </QueryClientProvider>
+      <AppWithProviders />
     </React.StrictMode>
   );
 };
 
-/* Render application after Office initializes */
 Office.onReady(() => {
   isOfficeInitialized = true;
-  render(App);
+  renderApp();
 });

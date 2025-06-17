@@ -2,15 +2,15 @@
 <OfficeApp xmlns="http://schemas.microsoft.com/office/appforoffice/1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0" xmlns:ov="http://schemas.microsoft.com/office/taskpaneappversionoverrides" xsi:type="TaskPaneApp">
   <Id>e2ba5494-084d-4364-b503-fad0e6a1b8ae</Id>
   <Version>1.0.0.0</Version>
-  <ProviderName>Contoso</ProviderName>
+  <ProviderName>Sankalpa Adhikari</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
-  <DisplayName DefaultValue="Office Addin Task Pane React Vite"/>
-  <Description DefaultValue="A template to get started."/>
+  <DisplayName DefaultValue="Kobo-bifrost Add-in"/>
+  <Description DefaultValue="This is a Microsoft office add-in for KoboToolbox, this tool helps users streamline workflows and improve data management capabilities."/>
   <IconUrl DefaultValue="https://localhost:3000/assets/icon-32.png"/>
   <HighResolutionIconUrl DefaultValue="https://localhost:3000/assets/icon-64.png"/>
-  <SupportUrl DefaultValue="https://www.contoso.com/help"/>
+  <SupportUrl DefaultValue="https://github.com/sankalpa-adhikari-sa/kobo-bifrost-addin.git"/>
   <AppDomains>
-    <AppDomain>https://www.contoso.com</AppDomain>
+    <AppDomain>https://github.com/sankalpa-adhikari-sa/kobo-bifrost-addin.git</AppDomain>
   </AppDomains>
   <Hosts>
     <Host Name="Workbook"/>
