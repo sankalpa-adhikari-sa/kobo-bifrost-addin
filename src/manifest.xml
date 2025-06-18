@@ -10,7 +10,7 @@
   <HighResolutionIconUrl DefaultValue="https://localhost:3000/assets/icon-64.png"/>
   <SupportUrl DefaultValue="https://github.com/sankalpa-adhikari-sa/kobo-bifrost-addin.git"/>
   <AppDomains>
-    <AppDomain>https://github.com/sankalpa-adhikari-sa/kobo-bifrost-addin.git</AppDomain>
+    <AppDomain>https://localhost:3000</AppDomain>
   </AppDomains>
   <Hosts>
     <Host Name="Workbook"/>

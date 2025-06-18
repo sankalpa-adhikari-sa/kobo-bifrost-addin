@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider, useTheme } from "./components/ThemeProvider";
 import App from "./components/App";
 import { MemoryRouter } from "react-router";
-
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 const APP_TITLE = "Kobotoolbox Add-in";
 const queryClient = new QueryClient();
 
@@ -27,6 +27,7 @@ const AppWithProviders: React.FC = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider>
       <ThemedApp />
+      <ReactQueryDevtools initialIsOpen={false} />
     </ThemeProvider>
   </QueryClientProvider>
 );
