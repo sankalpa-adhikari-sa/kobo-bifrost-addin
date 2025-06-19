@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useStoredToken } from "./useStoredToken";
 import axios from "axios";
 import { EmptySurveyAssetFormData } from "../../validators/schema";
@@ -33,6 +33,70 @@ const createEmptyAsset = async (
     }
   );
   return response.data;
+};
+
+const bulkAssetAction = async (
+  baseUrl: string,
+  token: string,
+  payload: {
+    payload: {
+      asset_uids: string[];
+      action: string;
+    };
+  }
+) => {
+  const response = await axios.post(
+    `http://localhost:5000/api/v2/assets/bulk/?server=${encodeURIComponent(baseUrl)}`,
+    payload,
+    {
+      headers: {
+        Authorization: `Token ${token}`,
+      },
+    }
+  );
+  return response.data;
+};
+
+const deleteAsset = async (baseUrl: string, token: string, assetUid: string) => {
+  const response = await axios.delete(
+    `http://localhost:5000/api/v2/assets/${assetUid}?format=json&server=${encodeURIComponent(baseUrl)}`,
+
+    {
+      headers: {
+        Authorization: `Token ${token}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  return response.data;
+};
+
+export const useDeleteAsset = () => {
+  const { token, kpiUrl } = useStoredToken();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (assetUid: string) => deleteAsset(kpiUrl!, token!, assetUid),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["assets"] });
+    },
+  });
+};
+
+export const useBulkAssetAction = () => {
+  const { token, kpiUrl } = useStoredToken();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (payload: {
+      payload: {
+        asset_uids: string[];
+        action: string;
+      };
+    }) => bulkAssetAction(kpiUrl!, token!, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["assets"] });
+    },
+  });
 };
 
 const createEmptySurveyAsset = async (

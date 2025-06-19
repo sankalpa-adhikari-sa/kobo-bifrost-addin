@@ -1,11 +1,13 @@
 import * as React from "react";
 import {
   FolderRegular,
-  DocumentRegular,
-  CheckmarkCircleRegular,
-  ClockRegular,
-  EditRegular,
   DeleteRegular,
+  bundleIcon,
+  InfoRegular,
+  PersonRegular,
+  CalendarRegular,
+  EyeFilled,
+  EyeRegular,
 } from "@fluentui/react-icons";
 import {
   TableBody,
@@ -26,9 +28,34 @@ import {
   useArrowNavigationGroup,
   Toolbar,
   ToolbarButton,
+  TableCellActions,
+  Button,
+  useId,
+  useToastController,
+  Toast,
+  ToastTitle,
+  ToastBody,
+  Toaster,
 } from "@fluentui/react-components";
-import { useAssets } from "../hooks/useAssets";
-
+import { useAssets, useBulkAssetAction, useDeleteAsset } from "../hooks/useAssets";
+import {
+  TeachingPopover,
+  TeachingPopoverBody,
+  TeachingPopoverHeader,
+  TeachingPopoverTitle,
+  TeachingPopoverSurface,
+  TeachingPopoverTrigger,
+} from "@fluentui/react-components";
+import { useNavigate } from "react-router";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogSurface,
+  DialogTitle,
+  DialogContent,
+  DialogBody,
+  DialogActions,
+} from "@fluentui/react-components";
 type AssetItem = {
   name: string;
   owner_username: string;
@@ -72,14 +99,16 @@ const formatDate = (dateString: string | null) => {
   }
 };
 
-const getStatusIcon = (status: string) => {
-  switch (status.toLowerCase()) {
-    case "deployed":
-      return <CheckmarkCircleRegular />;
-    case "draft":
-      return <EditRegular />;
-    default:
-      return <ClockRegular />;
+const formatDateShort = (dateString: string | null) => {
+  if (!dateString) return "Not deployed";
+  try {
+    return new Date(dateString).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "2-digit",
+    });
+  } catch {
+    return dateString;
   }
 };
 
@@ -88,7 +117,7 @@ const getStatusBadge = (status: string) => {
   const color = status.toLowerCase() === "deployed" ? "success" : "warning";
 
   return (
-    <Badge appearance={appearance} color={color}>
+    <Badge appearance={appearance} color={color} size="small">
       {status}
     </Badge>
   );
@@ -100,10 +129,6 @@ const columns: TableColumnDefinition<AssetItem>[] = [
     compare: (a, b) => a.name.localeCompare(b.name),
   }),
   createTableColumn<AssetItem>({
-    columnId: "owner_username",
-    compare: (a, b) => a.owner_username.localeCompare(b.owner_username),
-  }),
-  createTableColumn<AssetItem>({
     columnId: "deployment_status",
     compare: (a, b) => a.deployment_status.localeCompare(b.deployment_status),
   }),
@@ -112,33 +137,19 @@ const columns: TableColumnDefinition<AssetItem>[] = [
     compare: (a, b) => new Date(a.date_modified).getTime() - new Date(b.date_modified).getTime(),
   }),
   createTableColumn<AssetItem>({
-    columnId: "date_deployed",
-    compare: (a, b) => {
-      const aDate = a.date_deployed ? new Date(a.date_deployed).getTime() : 0;
-      const bDate = b.date_deployed ? new Date(b.date_deployed).getTime() : 0;
-      return aDate - bDate;
-    },
-  }),
-  createTableColumn<AssetItem>({
     columnId: "deployment__submission_count",
     compare: (a, b) => a.deployment__submission_count - b.deployment__submission_count,
-  }),
-  createTableColumn<AssetItem>({
-    columnId: "asset_type",
-    compare: (a, b) => a.asset_type.localeCompare(b.asset_type),
-  }),
-  createTableColumn<AssetItem>({
-    columnId: "sector",
-    compare: (a, b) => a.sector.localeCompare(b.sector),
-  }),
-  createTableColumn<AssetItem>({
-    columnId: "country",
-    compare: (a, b) => a.country.localeCompare(b.country),
   }),
 ];
 
 const Assets = () => {
   const { data, isLoading, error } = useAssets();
+
+  const { mutate: deleteAssetMutation } = useDeleteAsset();
+  const { mutate: bulkDeleteAssetMutation } = useBulkAssetAction();
+  const toasterId = useId("toaster");
+  const { dispatchToast } = useToastController(toasterId);
+  const navigate = useNavigate();
 
   const items = React.useMemo(() => {
     if (!data?.results || data.results.length === 0) return [];
@@ -191,8 +202,75 @@ const Assets = () => {
       return;
     }
 
+    if (selectedUids.length === 1) {
+      console.log("Deleting ", selectedUids[0]);
+      deleteAssetMutation(selectedUids[0], {
+        onSuccess: () => {
+          dispatchToast(
+            <Toast>
+              <ToastTitle>Project deleted successfully!</ToastTitle>
+              <ToastBody subtitle="success">Your project has been deleted.</ToastBody>
+            </Toast>,
+            { intent: "success" }
+          );
+        },
+        onError: () => {
+          dispatchToast(
+            <Toast>
+              <ToastTitle>Error</ToastTitle>
+              <ToastBody subtitle="error">Unable to delete project.</ToastBody>
+            </Toast>,
+            { intent: "error" }
+          );
+        },
+      });
+      return;
+    }
+
+    if (selectedUids.length > 1) {
+      console.log("Deleting ", selectedUids);
+      bulkDeleteAssetMutation(
+        {
+          payload: {
+            asset_uids: selectedUids,
+            action: "delete",
+          },
+        },
+        {
+          onSuccess: () => {
+            dispatchToast(
+              <Toast>
+                <ToastTitle>Projects deleted successfully!</ToastTitle>
+                <ToastBody subtitle="success">Your projects have been deleted.</ToastBody>
+              </Toast>,
+              { intent: "success" }
+            );
+          },
+          onError: () => {
+            dispatchToast(
+              <Toast>
+                <ToastTitle>Error</ToastTitle>
+                <ToastBody subtitle="error">Unable to delete projects.</ToastBody>
+              </Toast>,
+              { intent: "error" }
+            );
+          },
+        }
+      );
+      return;
+    }
+
     console.log("Deleting items with UIDs:", selectedUids);
-  }, [getSelectedUids]);
+  }, [getSelectedUids, deleteAssetMutation, bulkDeleteAssetMutation, dispatchToast]);
+
+  const handleViewAsset = React.useCallback(
+    (assetUid: string, e: React.MouseEvent) => {
+      e.stopPropagation();
+      e.preventDefault();
+      navigate(`${assetUid}`);
+    },
+    [navigate]
+  );
 
   const rows = sort(
     getRows((row) => {
@@ -201,7 +279,7 @@ const Assets = () => {
         ...row,
         onClick: (e: React.MouseEvent) => toggleRow(e, row.rowId),
         onKeyDown: (e: React.KeyboardEvent) => {
-          if (e.key === " ") {
+          if (e.key === " " && !e.defaultPrevented) {
             e.preventDefault();
             toggleRow(e, row.rowId);
           }
@@ -248,38 +326,72 @@ const Assets = () => {
   }
 
   const selectedCount = selectedRows.size;
+  const EyeIcon = bundleIcon(EyeFilled, EyeRegular);
+
+  const onClickCellActions = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const onKeyDownCellActions = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === " ") {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  };
 
   return (
-    <div style={{ width: "100%", maxWidth: "1400px" }}>
-      {selectedCount > 0 && (
-        <Toolbar style={{ marginBottom: "8px", padding: "8px 0" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-            <span style={{ fontSize: "14px", color: "#666" }}>
-              {selectedCount} item{selectedCount > 1 ? "s" : ""} selected
-            </span>
-            <ToolbarButton icon={<DeleteRegular />} onClick={handleDelete} appearance="primary">
-              Delete Selected
-            </ToolbarButton>
-          </div>
-        </Toolbar>
-      )}
+    <div style={{ width: "100%" }}>
+      <Toaster toasterId={toasterId} />
+      <Toolbar style={{ marginBottom: "8px", padding: "4px 0" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "end", gap: "8px" }}>
+          {selectedCount > 0 && (
+            <span style={{ fontSize: "12px", color: "#666" }}>{selectedCount} selected</span>
+          )}
+          <Dialog modalType="alert">
+            <DialogTrigger disableButtonEnhancement>
+              <ToolbarButton
+                disabled={selectedCount < 1}
+                icon={<DeleteRegular />}
+                appearance="primary"
+              />
+            </DialogTrigger>
+            <DialogSurface>
+              <DialogBody>
+                <DialogTitle>Alert dialog title</DialogTitle>
+                <DialogContent>
+                  This dialog cannot be dismissed by clicking on the backdrop nor by pressing
+                  Escape. Close button should be pressed to dismiss this Alert
+                </DialogContent>
+                <DialogActions>
+                  <ToolbarButton
+                    disabled={selectedCount < 1}
+                    icon={<DeleteRegular />}
+                    onClick={handleDelete}
+                    appearance="primary"
+                  >
+                    Delete
+                  </ToolbarButton>
+                  <DialogTrigger disableButtonEnhancement>
+                    <Button appearance="secondary">Close</Button>
+                  </DialogTrigger>
+                </DialogActions>
+              </DialogBody>
+            </DialogSurface>
+          </Dialog>
+        </div>
+      </Toolbar>
 
       <div
         style={{
           width: "100%",
-          height: "250px",
+          height: "300px",
           overflow: "auto",
           border: "1px solid #ccc",
           borderRadius: "4px",
         }}
       >
-        <Table
-          {...keyboardNavAttr}
-          role="grid"
-          sortable
-          aria-label="KoboToolbox Assets Table"
-          style={{ minWidth: "1600px" }}
-        >
+        <Table {...keyboardNavAttr} role="grid" sortable aria-label="KoboToolbox Assets Table">
           <TableHeader>
             <TableRow>
               <TableSelectionCell
@@ -289,17 +401,24 @@ const Assets = () => {
                 onClick={toggleAllRows}
                 checkboxIndicator={{ "aria-label": "Select all rows" }}
               />
-              <TableHeaderCell {...headerSortProps("name")}>Name</TableHeaderCell>
-              <TableHeaderCell {...headerSortProps("owner_username")}>Owner</TableHeaderCell>
-              <TableHeaderCell {...headerSortProps("deployment_status")}>Status</TableHeaderCell>
-              <TableHeaderCell {...headerSortProps("date_modified")}>Date Modified</TableHeaderCell>
-              <TableHeaderCell {...headerSortProps("date_deployed")}>Date Deployed</TableHeaderCell>
-              <TableHeaderCell {...headerSortProps("deployment__submission_count")}>
+              <TableHeaderCell
+                {...headerSortProps("name")}
+                style={{ width: "45%", minWidth: "200px" }}
+              >
+                Project Name
+              </TableHeaderCell>
+              <TableHeaderCell {...headerSortProps("deployment_status")} style={{ width: "20%" }}>
+                Status
+              </TableHeaderCell>
+              <TableHeaderCell {...headerSortProps("date_modified")} style={{ width: "20%" }}>
+                Modified
+              </TableHeaderCell>
+              <TableHeaderCell
+                {...headerSortProps("deployment__submission_count")}
+                style={{ width: "15%" }}
+              >
                 Submissions
               </TableHeaderCell>
-              <TableHeaderCell {...headerSortProps("asset_type")}>Type</TableHeaderCell>
-              <TableHeaderCell {...headerSortProps("sector")}>Sector</TableHeaderCell>
-              <TableHeaderCell {...headerSortProps("country")}>Country</TableHeaderCell>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -317,36 +436,98 @@ const Assets = () => {
                   checked={selected}
                   checkboxIndicator={{ "aria-label": "Select row" }}
                 />
-                <TableCell tabIndex={0} role="gridcell">
-                  <TableCellLayout media={<DocumentRegular />}>{item.name}</TableCellLayout>
+
+                <TableCell
+                  tabIndex={0}
+                  role="gridcell"
+                  style={{
+                    width: "45%",
+                    minWidth: "200px",
+                    maxWidth: "300px",
+                  }}
+                >
+                  <TableCellLayout
+                    description={`${item.owner_username}`}
+                    truncate
+                    style={{
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    <div
+                      style={{
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                        fontWeight: "500",
+                      }}
+                      title={item.name}
+                    >
+                      {item.name}
+                    </div>
+                  </TableCellLayout>
+                  <TableCellActions onClick={onClickCellActions} onKeyDown={onKeyDownCellActions}>
+                    <Button
+                      icon={<EyeIcon />}
+                      appearance="subtle"
+                      aria-label="View"
+                      size="small"
+                      onClick={(e) => handleViewAsset(item.uid, e)}
+                    />
+                    <TeachingPopover>
+                      <TeachingPopoverTrigger>
+                        <Button
+                          icon={<InfoRegular />}
+                          appearance="subtle"
+                          aria-label="More details"
+                          size="small"
+                        />
+                      </TeachingPopoverTrigger>
+                      <TeachingPopoverSurface>
+                        <TeachingPopoverHeader>Asset Details</TeachingPopoverHeader>
+                        <TeachingPopoverBody>
+                          <TeachingPopoverTitle>{item.name}</TeachingPopoverTitle>
+                          <div style={{ fontSize: "12px", lineHeight: "1.4", marginTop: "8px" }}>
+                            <div style={{ marginBottom: "4px" }}>
+                              <PersonRegular style={{ marginRight: "4px" }} />
+                              <strong>Owner:</strong> {item.owner_username}
+                            </div>
+                            <div style={{ marginBottom: "4px" }}>
+                              <FolderRegular style={{ marginRight: "4px" }} />
+                              <strong>Type:</strong> {item.asset_type}
+                            </div>
+                            <div style={{ marginBottom: "4px" }}>
+                              <strong>Sector:</strong> {item.sector}
+                            </div>
+                            <div style={{ marginBottom: "4px" }}>
+                              <strong>Country:</strong> {item.country}
+                            </div>
+                            <div style={{ marginBottom: "4px" }}>
+                              <CalendarRegular style={{ marginRight: "4px" }} />
+                              <strong>Deployed:</strong> {formatDate(item.date_deployed)}
+                            </div>
+                          </div>
+                        </TeachingPopoverBody>
+                      </TeachingPopoverSurface>
+                    </TeachingPopover>
+                  </TableCellActions>
                 </TableCell>
-                <TableCell tabIndex={0} role="gridcell">
-                  {item.owner_username}
-                </TableCell>
-                <TableCell tabIndex={0} role="gridcell">
-                  <TableCellLayout media={getStatusIcon(item.deployment_status)}>
+
+                <TableCell tabIndex={0} role="gridcell" style={{ width: "20%" }}>
+                  <TableCellLayout description={<div>{item.asset_type}</div>}>
                     {getStatusBadge(item.deployment_status)}
                   </TableCellLayout>
                 </TableCell>
-                <TableCell tabIndex={0} role="gridcell">
-                  {formatDate(item.date_modified)}
+
+                <TableCell tabIndex={0} role="gridcell" style={{ width: "20%" }}>
+                  <div style={{ fontSize: "12px" }}>{formatDateShort(item.date_modified)}</div>
                 </TableCell>
-                <TableCell tabIndex={0} role="gridcell">
-                  {formatDate(item.date_deployed)}
-                </TableCell>
-                <TableCell tabIndex={0} role="gridcell">
-                  <Badge appearance="outline" color="informative">
+
+                <TableCell tabIndex={0} role="gridcell" style={{ width: "15%" }}>
+                  <Badge appearance="outline" color="informative" size="small">
                     {item.deployment__submission_count}
                   </Badge>
-                </TableCell>
-                <TableCell tabIndex={0} role="gridcell">
-                  <TableCellLayout media={<FolderRegular />}>{item.asset_type}</TableCellLayout>
-                </TableCell>
-                <TableCell tabIndex={0} role="gridcell">
-                  {item.sector}
-                </TableCell>
-                <TableCell tabIndex={0} role="gridcell">
-                  {item.country}
                 </TableCell>
               </TableRow>
             ))}

@@ -166,7 +166,11 @@ const CreateProjectFileUpload = () => {
                   />
                 </Field>
 
-                <Field label="File" validationMessage={errors.file?.message}>
+                <Field
+                  label="File"
+                  validationState={errors.file ? "error" : undefined}
+                  validationMessage={errors.file?.message}
+                >
                   <Controller
                     name="file"
                     control={control}
@@ -190,7 +194,6 @@ const CreateProjectFileUpload = () => {
                           }}
                           aria-label="File upload"
                           disabled={isCreateProjectPending}
-                          required
                         />
                         <Input
                           placeholder={field.value?.name || "Choose a file..."}
