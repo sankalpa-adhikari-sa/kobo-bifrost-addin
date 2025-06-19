@@ -309,6 +309,7 @@ const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export const useCreateProjectFromFile = () => {
   const { token, kpiUrl } = useStoredToken();
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (payload: {
@@ -516,6 +517,11 @@ export const useCreateProjectFromFile = () => {
           error as Error
         );
       }
+    },
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ["assets", kpiUrl, token, variables.assetUid || data.asset.uid],
+      });
     },
   });
 };

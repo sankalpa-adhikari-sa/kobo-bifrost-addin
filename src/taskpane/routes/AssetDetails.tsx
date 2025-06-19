@@ -21,6 +21,10 @@ import {
   MessageBar,
   MessageBarBody,
   Button,
+  useToastController,
+  Toast,
+  ToastTitle,
+  ToastBody,
 } from "@fluentui/react-components";
 import {
   ArrowUploadRegular,
@@ -39,14 +43,29 @@ import {
   PenRegular,
 } from "@fluentui/react-icons";
 import { useAssetsById } from "../hooks/useAssets";
-import { UploadProjectFileUploadDialog } from "../components/updateProjectFileUpload";
+import { UploadProjectFileUploadDialog } from "../components/UploadDialog";
 import { useStoredToken } from "../hooks/useStoredToken";
 import { checkFormDeploymentStatus } from "../../utils/deploymentstatus";
+import { useDownloadXlsForm, useDownloadXmlForm } from "../hooks/useDownload";
+import { useGetAssetSnapshots } from "../hooks/usePreview";
+import { useDeployForm, useRedeployForm } from "../hooks/useDeploy";
 
 type DialogType = "uploadXls" | "editMetadata" | "viewPreview";
 
 const AssetDetails = () => {
   const { uid } = useParams<{ uid: string }>();
+
+  const [activeDialog, setActiveDialog] = useState<DialogType | null>(null);
+  const { data: asset, isLoading, error } = useAssetsById(uid ?? "");
+  const { kpiUrl } = useStoredToken();
+  const xlsDownloadMutation = useDownloadXlsForm();
+  const xmlDownloadMutation = useDownloadXmlForm();
+  const previewMutation = useGetAssetSnapshots();
+  const deployMutation = useDeployForm();
+  const redeployMutation = useRedeployForm();
+  const toasterId = useId("toaster");
+  const { dispatchToast } = useToastController(toasterId);
+
   const PenIcon = bundleIcon(PenFilled, PenRegular);
   const EyeIcon = bundleIcon(EyeFilled, EyeRegular);
   const HorizontalOptionIcon = bundleIcon(MoreHorizontalFilled, MoreHorizontalRegular);
@@ -57,16 +76,11 @@ const AssetDetails = () => {
   );
   const CloneIcon = bundleIcon(DocumentCopyFilled, DocumentCopyRegular);
   const UploadIcon = bundleIcon(ArrowUploadRegular, ArrowUploadRegular);
-  const toasterId = useId("toaster");
-  const [activeDialog, setActiveDialog] = useState<DialogType | null>(null);
-  const { data: asset, isLoading, error } = useAssetsById(uid ?? "");
-  const { kpiUrl } = useStoredToken();
 
   if (!uid) {
     return (
       <div className="p-4">
         <Title3>Error</Title3>
-
         <Text>Asset UID is missing from the URL.</Text>
       </div>
     );
@@ -95,12 +109,7 @@ const AssetDetails = () => {
     needsFirstTimeDeployment,
     hasUndeployedChanges,
   } = checkFormDeploymentStatus(asset);
-  console.log(
-    `isArchived: ${isArchived} \n`,
-    `isDeployedWithNoUndeployedChanges:${isDeployedWithNoUndeployedChanges} \n`,
-    `needsFirstTimeDeployment:${needsFirstTimeDeployment} \n`,
-    `hasUndeployedChanges:${hasUndeployedChanges} \n`
-  );
+
   let currentVersion: number;
 
   if (needsFirstTimeDeployment || hasUndeployedChanges) {
@@ -110,8 +119,176 @@ const AssetDetails = () => {
   } else {
     currentVersion = 0;
   }
+
+  const handleDeployment = () => {
+    deployMutation.mutate(
+      {
+        assetUid: uid,
+        payload: {
+          active: true,
+        },
+      },
+      {
+        onSuccess: () => {
+          dispatchToast(
+            <Toast>
+              <ToastTitle>Deployment Successful</ToastTitle>
+              <ToastBody subtitle="Success">Successfully deployed an Asset</ToastBody>
+            </Toast>,
+            { intent: "success" }
+          );
+        },
+        onError: () => {
+          dispatchToast(
+            <Toast>
+              <ToastTitle>Deployment Failed</ToastTitle>
+              <ToastBody subtitle="Error">Failed to deployed an Asset</ToastBody>
+            </Toast>,
+            { intent: "error" }
+          );
+        },
+      }
+    );
+  };
+
+  const handleRedeployment = () => {
+    redeployMutation.mutate(
+      {
+        assetUid: uid,
+        payload: {
+          active: true,
+          version_id: asset.version_id,
+        },
+      },
+      {
+        onSuccess: () => {
+          dispatchToast(
+            <Toast>
+              <ToastTitle>ReDeployment Successful</ToastTitle>
+              <ToastBody subtitle="Success">Successfully redeployed an Asset</ToastBody>
+            </Toast>,
+            { intent: "success" }
+          );
+        },
+        onError: () => {
+          dispatchToast(
+            <Toast>
+              <ToastTitle>ReDeployment Failed</ToastTitle>
+              <ToastBody subtitle="Error">Failed to redeployed an Asset</ToastBody>
+            </Toast>,
+            { intent: "error" }
+          );
+        },
+      }
+    );
+  };
+
+  const handlePreview = () => {
+    if (!uid) return;
+
+    previewMutation.mutate(
+      { asset: `${kpiUrl}/api/v2/assets/${uid}/` },
+      {
+        onSuccess: (data) => {
+          const url = data?.enketopreviewlink;
+          if (url) {
+            window.open(url, "_blank");
+          } else {
+            dispatchToast(
+              <Toast>
+                <ToastTitle>Preview Failed</ToastTitle>
+                <ToastBody subtitle="No preview URL">
+                  Could not find a valid preview link.
+                </ToastBody>
+              </Toast>,
+              { intent: "error" }
+            );
+          }
+        },
+        onError: (error) => {
+          console.error("Preview error:", error);
+          dispatchToast(
+            <Toast>
+              <ToastTitle>Preview Failed</ToastTitle>
+              <ToastBody subtitle="error">Unable to fetch the preview link.</ToastBody>
+            </Toast>,
+            { intent: "error" }
+          );
+        },
+      }
+    );
+  };
+
+  const handleXmlDownload = () => {
+    xmlDownloadMutation.mutate(uid, {
+      onSuccess: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.style.display = "none";
+        a.href = url;
+        a.download = `${asset.name}.xml`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+
+        dispatchToast(
+          <Toast>
+            <ToastTitle>XML form downloaded successfully!</ToastTitle>
+            <ToastBody>The file has been saved to your downloads folder.</ToastBody>
+          </Toast>,
+          { intent: "success" }
+        );
+      },
+      onError: (err) => {
+        console.error("XML Download error:", err);
+        dispatchToast(
+          <Toast>
+            <ToastTitle>Download Failed</ToastTitle>
+            <ToastBody subtitle="error">Could not download the XML form.</ToastBody>
+          </Toast>,
+          { intent: "error" }
+        );
+      },
+    });
+  };
+
+  const handleXlsDownload = () => {
+    xlsDownloadMutation.mutate(uid, {
+      onSuccess: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.style.display = "none";
+        a.href = url;
+        a.download = `${asset.name}.xls`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+
+        dispatchToast(
+          <Toast>
+            <ToastTitle>XLS form downloaded successfully!</ToastTitle>
+            <ToastBody>The file has been saved to your downloads folder.</ToastBody>
+          </Toast>,
+          { intent: "success" }
+        );
+      },
+      onError: (err) => {
+        console.error("XLS Download error:", err);
+        dispatchToast(
+          <Toast>
+            <ToastTitle>Download Failed</ToastTitle>
+            <ToastBody subtitle="error">Could not download the XLS form.</ToastBody>
+          </Toast>,
+          { intent: "error" }
+        );
+      },
+    });
+  };
+
   return (
-    <div className="p-2 h-screen bg-gray-50 flex flex-col gap-2">
+    <div className="p-2 h-screen  flex flex-col gap-2">
       <Toaster toasterId={toasterId} />
       <Card>
         <CardHeader
@@ -129,7 +306,8 @@ const AssetDetails = () => {
               >
                 <ToolbarButton
                   icon={<EyeIcon />}
-                  onClick={() => alert("Preview not implemented.")}
+                  onClick={handlePreview}
+                  disabled={previewMutation.isPending}
                 />
               </Tooltip>
               <Menu>
@@ -155,8 +333,12 @@ const AssetDetails = () => {
                 </MenuTrigger>
                 <MenuPopover>
                   <MenuList>
-                    <MenuItem icon={<XlsFileIcon />}>Download XLSForm</MenuItem>
-                    <MenuItem icon={<XmlFileIcon />}>Download XML form</MenuItem>
+                    <MenuItem onClick={handleXlsDownload} icon={<XlsFileIcon />}>
+                      Download XLSForm
+                    </MenuItem>
+                    <MenuItem onClick={handleXmlDownload} icon={<XmlFileIcon />}>
+                      Download XML form
+                    </MenuItem>
                     <MenuItem icon={<CloneIcon />}>Clone Project</MenuItem>
                   </MenuList>
                 </MenuPopover>
@@ -201,8 +383,10 @@ const AssetDetails = () => {
                 appearance="primary"
                 size="medium"
                 className="px-5 py-2 rounded-md font-medium"
+                onClick={handleDeployment}
+                disabled={deployMutation.isPending}
               >
-                Deploy
+                {deployMutation.isPending ? "Deploying....." : "Deploy"}
               </Button>
             )}
 
@@ -211,8 +395,10 @@ const AssetDetails = () => {
                 appearance="primary"
                 size="medium"
                 className="px-5 py-2 rounded-md font-medium"
+                onClick={handleRedeployment}
+                disabled={redeployMutation.isPending}
               >
-                Redeploy
+                {redeployMutation.isPending ? "Redeploying....." : "Redploy"}
               </Button>
             )}
 
@@ -234,7 +420,7 @@ const AssetDetails = () => {
                 disabled
                 className="px-5 py-2 rounded-md font-medium"
               >
-                Archived
+                UnArchive
               </Button>
             )}
           </div>
