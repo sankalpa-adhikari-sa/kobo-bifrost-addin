@@ -15,6 +15,20 @@ const fetchAssets = async (baseUrl: string, token: string) => {
   );
   return response.data;
 };
+
+const fetchAssetsById = async (baseUrl: string, token: string, assetUid: string) => {
+  const response = await axios.get(
+    `http://localhost:5000/api/v2/assets/${assetUid}/?format=json&server=${encodeURIComponent(baseUrl)}`,
+    {
+      headers: {
+        Authorization: `Token ${token}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  return response.data;
+};
+
 const createEmptyAsset = async (
   baseUrl: string,
   token: string,
@@ -199,6 +213,17 @@ export const useAssets = () => {
     enabled: !!kpiUrl && !!token && !isAuthLoading,
   });
 };
+
+export const useAssetsById = (assetUid: string) => {
+  const { token, kpiUrl, isLoading: isAuthLoading } = useStoredToken();
+
+  return useQuery({
+    queryKey: ["assets", kpiUrl, token, assetUid],
+    queryFn: () => fetchAssetsById(kpiUrl!, token!, assetUid),
+    enabled: !!kpiUrl && !!token && !isAuthLoading && !!assetUid,
+  });
+};
+
 export const useCheckImportStatus = (importId: string) => {
   const { token, kpiUrl, isLoading: isAuthLoading } = useStoredToken();
 
@@ -289,19 +314,38 @@ export const useCreateProjectFromFile = () => {
     mutationFn: async (payload: {
       file: File;
       name?: string;
-      asset_type: string;
+      asset_type?: string;
       onProgress?: (progress: ProjectCreationProgress) => void;
+      assetUid?: string;
+      destination?: string;
     }) => {
+      const isAssetProvided = !!(payload.assetUid && payload.destination);
+      console.log(isAssetProvided);
+
       const steps: ProjectCreationStep[] = [
-        { step: "asset_creation", message: "Creating project asset...", completed: false },
+        {
+          step: "asset_creation",
+          message: isAssetProvided
+            ? "Using existing project asset..."
+            : "Creating project asset...",
+          completed: isAssetProvided,
+        },
         { step: "file_import", message: "Importing file...", completed: false },
-        { step: "status_check", message: "Processing and validating...", completed: false },
+        {
+          step: "status_check",
+          message: "Processing and validating...",
+          completed: false,
+        },
       ];
 
       const updateProgress = (currentStep: ProjectCreationStep["step"], stepCompleted = false) => {
         const stepIndex = steps.findIndex((s) => s.step === currentStep);
-        if (stepIndex !== -1 && stepCompleted) {
-          steps[stepIndex].completed = true;
+        if (stepIndex !== -1) {
+          steps[stepIndex].completed = stepCompleted;
+        }
+
+        for (let i = 0; i < stepIndex; i++) {
+          steps[i].completed = true;
         }
 
         const completedSteps = steps.filter((s) => s.completed).length;
@@ -334,28 +378,44 @@ export const useCreateProjectFromFile = () => {
           );
         }
 
+        let asset: { url: string; uid: string };
+
         updateProgress("asset_creation");
-        let asset;
-        try {
-          asset = await createEmptyAsset(kpiUrl, token, {
-            asset_type: payload.asset_type,
-          });
 
-          if (!asset?.url || !asset?.uid) {
-            throw new Error("Invalid asset response: missing URL or UID");
-          }
-
+        if (isAssetProvided) {
+          asset = {
+            url: payload.destination!,
+            uid: payload.assetUid!,
+          };
           updateProgress("asset_creation", true);
-        } catch (error) {
-          throw createProjectCreationError(
-            "asset_creation",
-            `Failed to create project asset: ${(error as Error).message}`,
-            error as Error,
-            {
+        } else {
+          if (!payload.asset_type) {
+            throw createProjectCreationError(
+              "asset_creation",
+              "An 'asset_type' is required to create a new project."
+            );
+          }
+          try {
+            const newAsset = await createEmptyAsset(kpiUrl, token, {
               asset_type: payload.asset_type,
-              kpiUrl: kpiUrl?.substring(0, 50) + "...",
+            });
+
+            if (!newAsset?.url || !newAsset?.uid) {
+              throw new Error("Invalid asset response: missing URL or UID");
             }
-          );
+            asset = newAsset;
+            updateProgress("asset_creation", true);
+          } catch (error) {
+            throw createProjectCreationError(
+              "asset_creation",
+              `Failed to create project asset: ${(error as Error).message}`,
+              error as Error,
+              {
+                asset_type: payload.asset_type,
+                kpiUrl: kpiUrl?.substring(0, 50) + "...",
+              }
+            );
+          }
         }
 
         updateProgress("file_import");
@@ -402,19 +462,19 @@ export const useCreateProjectFromFile = () => {
                 const statusResult = await checkImportStatus(kpiUrl, token, importId);
                 status = statusResult.status;
 
-                if (status === "complete") {
-                  break;
-                } else if (status === "error") {
+                if (status === "complete") break;
+                if (status === "error")
                   throw new Error(`Import processing failed with error status`);
-                } else if (attempt === maxRetries && status === "processing") {
+                if (attempt === maxRetries && status === "processing") {
+                  console.log(statusResult);
                   throw new Error(
-                    `Import timed out after ${maxRetries} attempts (${(maxRetries * retryDelay) / 1000}s)`
+                    `Import timed out after ${maxRetries} attempts (${
+                      (maxRetries * retryDelay) / 1000
+                    }s)`
                   );
                 }
               } catch (statusError) {
-                if (attempt === maxRetries) {
-                  throw statusError;
-                }
+                if (attempt === maxRetries) throw statusError;
               }
             }
           }
@@ -424,13 +484,6 @@ export const useCreateProjectFromFile = () => {
           }
 
           updateProgress("status_check", true);
-
-          if (!payload.onProgress) {
-            return {
-              asset,
-              importResult,
-            };
-          }
 
           return {
             asset,
