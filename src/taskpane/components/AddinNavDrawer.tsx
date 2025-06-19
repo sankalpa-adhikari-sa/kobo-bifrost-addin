@@ -48,8 +48,10 @@ const AddinNavDrawer: React.FC<AddinNavDrawerProps> = ({ isOpen, setIsOpen, togg
         return "3";
       case "/assets":
         return "4";
-      case "/token-manager":
+      case "/settings":
         return "5";
+      case "/token-manager":
+        return "6";
       default:
         return "1";
     }
@@ -91,9 +93,12 @@ const AddinNavDrawer: React.FC<AddinNavDrawerProps> = ({ isOpen, setIsOpen, togg
             <NavSubItem value="4" onClick={() => handleNavigation("/assets")}>
               Assets
             </NavSubItem>
+            <NavSubItem value="5" onClick={() => handleNavigation("/settings")}>
+              Settings
+            </NavSubItem>
           </NavSubItemGroup>
         </NavCategory>
-        <NavItem icon={<Settings />} value="5" onClick={() => handleNavigation("/token-manager")}>
+        <NavItem icon={<Settings />} value="6" onClick={() => handleNavigation("/token-manager")}>
           Token Manager
         </NavItem>
       </NavDrawerBody>

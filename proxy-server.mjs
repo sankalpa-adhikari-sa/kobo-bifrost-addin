@@ -1,11 +1,10 @@
 import express from "express";
 import cors from "cors";
 import fetch from "node-fetch";
+import getRawBody from "raw-body";
 
 const app = express();
 const PORT = 5000;
-
-app.use(express.json());
 
 app.use(
   cors({
@@ -42,19 +41,31 @@ app.all(/^\/api\/v2\/.*/, async (req, res) => {
 
     console.log(`Proxying ${req.method} request to: ${targetUrl}`);
 
-    const fetchOptions = {
-      method: req.method,
-      headers: {
-        Authorization: authHeader,
-      },
-    };
+    const headers = { ...req.headers };
+    delete headers.host;
+    delete headers["content-length"];
 
-    if (["POST", "PUT", "PATCH"].includes(req.method)) {
-      fetchOptions.headers["Content-Type"] = "application/json";
-      if (req.body) {
-        fetchOptions.body = JSON.stringify(req.body);
+    let body;
+    if (req.method === "GET" || req.method === "HEAD") {
+      body = undefined;
+    } else {
+      try {
+        body = await getRawBody(req, {
+          length: req.headers["content-length"],
+          limit: "50mb",
+          encoding: null,
+        });
+      } catch (error) {
+        console.error("Error reading request body:", error);
+        return res.status(400).json({ error: "Failed to read request body" });
       }
     }
+
+    const fetchOptions = {
+      method: req.method,
+      headers,
+      body,
+    };
 
     const response = await fetch(targetUrl, fetchOptions);
 
