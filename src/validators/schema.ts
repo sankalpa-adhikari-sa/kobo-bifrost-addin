@@ -11,6 +11,12 @@ export const projectFileUploadschema = z.object({
   file: z.instanceof(File, { message: "A valid file is required" }),
   name: z.string().optional(),
 });
+export const mediaUploadschema = z.object({
+  file: z.instanceof(File, { message: "A valid file is required" }),
+  fileName: z.string(),
+  description: z.string(),
+  fileType: z.string(),
+});
 export const projectUrlUploadschema = z.object({
   url: z.string().url().min(1, "XLSX form url is required"),
   name: z.string().optional(),
@@ -46,6 +52,7 @@ export const emptyAssetFormSchema = z.object({
 });
 export type AssetImportFormData = z.infer<typeof assetImportschema>;
 export type ProjectFileUploadFormData = z.infer<typeof projectFileUploadschema>;
+export type MediaUploadFormData = z.infer<typeof mediaUploadschema>;
 export type ProjectUrlUploadFormData = z.infer<typeof projectUrlUploadschema>;
 export type EmptySurveyAssetFormData = z.infer<typeof emptySurveyAssetFormSchema>;
 export type EmptyAssetFormData = z.infer<typeof emptyAssetFormSchema>;

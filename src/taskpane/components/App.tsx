@@ -10,7 +10,9 @@ import Assets from "../routes/Assets";
 import Settings from "../routes/Settings";
 import Create from "../routes/Create";
 import About from "../routes/About";
-import AssetDetails from "../routes/AssetDetails";
+import AssetDetailsSettings from "../routes/AssetDetailsSettings";
+import AssetDetailsSummary from "../routes/AssetDetailsSummary";
+import AssetDetailsLayout from "../routes/AssetDetailsLayout";
 
 export interface AppProps {
   title: string;
@@ -42,7 +44,10 @@ const App: React.FC<AppProps> = ({ title, isOfficeInitialized }) => {
         <Route path="assets" element={<Assets />} />
         <Route path="create" element={<Create />} />
         <Route path="settings" element={<Settings />} />
-        <Route path="assets/:uid" element={<AssetDetails />} />
+        <Route path="assets/:uid" element={<AssetDetailsLayout />}>
+          <Route index element={<AssetDetailsSummary />} />
+          <Route path="settings" element={<AssetDetailsSettings />} />
+        </Route>
       </Routes>
     </div>
   );

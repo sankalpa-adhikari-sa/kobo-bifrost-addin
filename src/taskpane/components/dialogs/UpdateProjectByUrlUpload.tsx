@@ -1,18 +1,18 @@
 import { useState, useEffect } from "react";
 import {
-  useCreateProjectFromFile,
   ProjectCreationProgress,
   ProjectCreationError,
-} from "../hooks/useAssets";
+  useCreateProjectFromUrl,
+} from "../../hooks/useAssets";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useToastController, Toast, ToastTitle, ToastBody } from "@fluentui/react-components";
-import { ProjectFileUploadFormData, projectFileUploadschema } from "../../validators/schema";
+import { ProjectUrlUploadFormData, projectUrlUploadschema } from "../../../validators/schema";
 
 import { ReusableDialog } from "./ReusableDialog";
-import { ProjectFileUploadForm } from "./ProjectFileUploadForm";
+import { ProjectUrlUploadForm } from "../forms/ProjectUrlUploadForm";
 
-interface UploadProjectFileUploadDialogProps {
+interface UpdateXlsFormsProps {
   open: boolean;
   onClose: () => void;
   toasterId: string;
@@ -21,14 +21,14 @@ interface UploadProjectFileUploadDialogProps {
   destination: string;
 }
 
-export const UploadProjectFileUploadDialog = ({
+export const UpdateXlsFormsByUrlUpload = ({
   surveyName,
   assetUid,
   destination,
   open,
   onClose,
   toasterId,
-}: UploadProjectFileUploadDialogProps) => {
+}: UpdateXlsFormsProps) => {
   const [progress, setProgress] = useState<ProjectCreationProgress | null>(null);
 
   const {
@@ -36,24 +36,24 @@ export const UploadProjectFileUploadDialog = ({
     reset,
     control,
     formState: { errors },
-  } = useForm<ProjectFileUploadFormData>({
-    resolver: zodResolver(projectFileUploadschema),
+  } = useForm<ProjectUrlUploadFormData>({
+    resolver: zodResolver(projectUrlUploadschema),
   });
 
   const { dispatchToast } = useToastController(toasterId);
-  const { mutate: createProjectMutation, isPending: isCreateProjectPending } =
-    useCreateProjectFromFile();
+  const { mutate: updateProjectMutation, isPending: isUpdateProjectPending } =
+    useCreateProjectFromUrl();
 
   const handleClose = () => {
-    if (isCreateProjectPending) return;
-    reset({ name: "", file: undefined });
+    if (isUpdateProjectPending) return;
+    reset({ name: "", url: undefined });
     setProgress(null);
     onClose();
   };
 
   useEffect(() => {
     if (!open) {
-      reset({ name: "", file: undefined });
+      reset({ name: "", url: undefined });
       setProgress(null);
     }
   }, [open, reset]);
@@ -63,21 +63,21 @@ export const UploadProjectFileUploadDialog = ({
       case "asset_creation":
         return "Failed to initialize project.";
       case "file_import":
-        return "Failed to upload file.";
+        return "Failed to import XLSform url.";
       case "status_check":
-        return "File uploaded but processing failed.";
+        return "XLSfrom import processing failed.";
       default:
         return "An unexpected error occurred.";
     }
   };
 
-  const onSubmit = (data: ProjectFileUploadFormData) => {
-    createProjectMutation(
+  const onSubmit = (data: ProjectUrlUploadFormData) => {
+    updateProjectMutation(
       {
         assetUid: assetUid,
         destination: destination,
-        file: data.file,
-        name: data.name || data.file.name,
+        form_url: data.url,
+        name: data.name,
         asset_type: "empty",
         onProgress: setProgress,
       },
@@ -115,14 +115,14 @@ export const UploadProjectFileUploadDialog = ({
       onClose={handleClose}
       title={`Update ${surveyName}`}
       onSubmit={handleSubmit(onSubmit)}
-      submitText="Create"
-      isLoading={isCreateProjectPending}
+      submitText="Update"
+      isLoading={isUpdateProjectPending}
     >
-      <ProjectFileUploadForm
+      <ProjectUrlUploadForm
         control={control}
         errors={errors}
         progress={progress}
-        isLoading={isCreateProjectPending}
+        isLoading={isUpdateProjectPending}
       />
     </ReusableDialog>
   );

@@ -528,24 +528,44 @@ export const useCreateProjectFromFile = () => {
 
 export const useCreateProjectFromUrl = () => {
   const { token, kpiUrl } = useStoredToken();
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (payload: {
-      url: string;
+      form_url: string;
       name?: string;
-      asset_type: string;
+      asset_type?: string;
       onProgress?: (progress: ProjectCreationProgress) => void;
+      assetUid?: string;
+      destination?: string;
     }) => {
+      const isAssetProvided = !!(payload.assetUid && payload.destination);
+      console.log(isAssetProvided);
+
       const steps: ProjectCreationStep[] = [
-        { step: "asset_creation", message: "Creating project asset...", completed: false },
-        { step: "file_import", message: "Importing from URL...", completed: false },
-        { step: "status_check", message: "Processing and validating...", completed: false },
+        {
+          step: "asset_creation",
+          message: isAssetProvided
+            ? "Using existing project asset..."
+            : "Creating project asset...",
+          completed: isAssetProvided,
+        },
+        { step: "file_import", message: "Importing URl...", completed: false },
+        {
+          step: "status_check",
+          message: "Processing and validating URL...",
+          completed: false,
+        },
       ];
 
       const updateProgress = (currentStep: ProjectCreationStep["step"], stepCompleted = false) => {
         const stepIndex = steps.findIndex((s) => s.step === currentStep);
-        if (stepIndex !== -1 && stepCompleted) {
-          steps[stepIndex].completed = true;
+        if (stepIndex !== -1) {
+          steps[stepIndex].completed = stepCompleted;
+        }
+
+        for (let i = 0; i < stepIndex; i++) {
+          steps[i].completed = true;
         }
 
         const completedSteps = steps.filter((s) => s.completed).length;
@@ -570,54 +590,59 @@ export const useCreateProjectFromUrl = () => {
           );
         }
 
-        if (!payload.url) {
+        if (!payload.form_url) {
           throw createProjectCreationError(
             "asset_creation",
-            "No URL provided for project creation.",
+            "No Xlsform URL provided for project creation.",
             undefined
           );
         }
 
-        try {
-          new URL(payload.url);
-        } catch {
-          throw createProjectCreationError(
-            "asset_creation",
-            "Invalid URL format provided.",
-            undefined,
-            { providedUrl: payload.url }
-          );
-        }
+        let asset: { url: string; uid: string };
 
         updateProgress("asset_creation");
-        let asset;
-        try {
-          asset = await createEmptyAsset(kpiUrl, token, {
-            asset_type: payload.asset_type,
-          });
 
-          if (!asset?.url || !asset?.uid) {
-            throw new Error("Invalid asset response: missing URL or UID");
-          }
-
+        if (isAssetProvided) {
+          asset = {
+            url: payload.destination!,
+            uid: payload.assetUid!,
+          };
           updateProgress("asset_creation", true);
-        } catch (error) {
-          throw createProjectCreationError(
-            "asset_creation",
-            `Failed to create project asset: ${(error as Error).message}`,
-            error as Error,
-            {
+        } else {
+          if (!payload.asset_type) {
+            throw createProjectCreationError(
+              "asset_creation",
+              "An 'asset_type' is required to create a new project."
+            );
+          }
+          try {
+            const newAsset = await createEmptyAsset(kpiUrl, token, {
               asset_type: payload.asset_type,
-              kpiUrl: kpiUrl?.substring(0, 50) + "...",
+            });
+
+            if (!newAsset?.url || !newAsset?.uid) {
+              throw new Error("Invalid asset response: missing URL or UID");
             }
-          );
+            asset = newAsset;
+            updateProgress("asset_creation", true);
+          } catch (error) {
+            throw createProjectCreationError(
+              "asset_creation",
+              `Failed to create project asset: ${(error as Error).message}`,
+              error as Error,
+              {
+                asset_type: payload.asset_type,
+                kpiUrl: kpiUrl?.substring(0, 50) + "...",
+              }
+            );
+          }
         }
 
         updateProgress("file_import");
         let importResult;
         try {
           importResult = await importSurveyAssetFromUrl(kpiUrl, token, {
-            url: payload.url,
+            url: payload.form_url,
             destination: asset.url,
             assetUid: asset.uid,
             name: payload.name,
@@ -631,10 +656,10 @@ export const useCreateProjectFromUrl = () => {
         } catch (error) {
           throw createProjectCreationError(
             "file_import",
-            `Failed to import from URL: ${(error as Error).message}`,
+            `Failed to import file through url: ${(error as Error).message}`,
             error as Error,
             {
-              sourceUrl: payload.url,
+              formUrl: payload.form_url,
               assetUid: asset.uid,
               destination: asset.url,
             }
@@ -656,19 +681,19 @@ export const useCreateProjectFromUrl = () => {
                 const statusResult = await checkImportStatus(kpiUrl, token, importId);
                 status = statusResult.status;
 
-                if (status === "complete") {
-                  break;
-                } else if (status === "error") {
+                if (status === "complete") break;
+                if (status === "error")
                   throw new Error(`Import processing failed with error status`);
-                } else if (attempt === maxRetries && status === "processing") {
+                if (attempt === maxRetries && status === "processing") {
+                  console.log(statusResult);
                   throw new Error(
-                    `Import timed out after ${maxRetries} attempts (${(maxRetries * retryDelay) / 1000}s)`
+                    `Import timed out after ${maxRetries} attempts (${
+                      (maxRetries * retryDelay) / 1000
+                    }s)`
                   );
                 }
               } catch (statusError) {
-                if (attempt === maxRetries) {
-                  throw statusError;
-                }
+                if (attempt === maxRetries) throw statusError;
               }
             }
           }
@@ -678,13 +703,6 @@ export const useCreateProjectFromUrl = () => {
           }
 
           updateProgress("status_check", true);
-
-          if (!payload.onProgress) {
-            return {
-              asset,
-              importResult,
-            };
-          }
 
           return {
             asset,
@@ -717,6 +735,11 @@ export const useCreateProjectFromUrl = () => {
           error as Error
         );
       }
+    },
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ["assets", kpiUrl, token, variables.assetUid || data.asset.uid],
+      });
     },
   });
 };

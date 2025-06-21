@@ -1,7 +1,7 @@
 import { Controller, Control, FieldErrors } from "react-hook-form";
 import { Input, Field, ProgressBar, Text, Card, CardHeader } from "@fluentui/react-components";
-import { ProjectFileUploadFormData } from "../../validators/schema";
-import { ProjectCreationProgress } from "../hooks/useAssets";
+import { ProjectFileUploadFormData } from "../../../validators/schema";
+import { ProjectCreationProgress } from "../../hooks/useAssets";
 import { AttachRegular } from "@fluentui/react-icons";
 
 interface ProjectFileUploadFormProps {
@@ -24,7 +24,11 @@ export const ProjectFileUploadForm = ({
           name="name"
           control={control}
           render={({ field }) => (
-            <Input {...field} placeholder="If empty, filename will be used" disabled={isLoading} />
+            <Input
+              {...field}
+              placeholder="Used only if form title is unspecified"
+              disabled={isLoading}
+            />
           )}
         />
       </Field>
