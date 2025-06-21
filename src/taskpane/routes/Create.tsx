@@ -1,9 +1,9 @@
 import { Button, Toaster, useId } from "@fluentui/react-components";
-import CreateEmptySurveyAsset from "../components/CreateEmptySurveyAsset";
 import { useState } from "react";
 import { CreateXlsFormsByFileUpload } from "../components/dialogs/CreateProjectByFileUpload";
 import { CreateXlsFormsByUrlUpload } from "../components/dialogs/CreateProjectByUrlUpload";
-type DialogType = "xlsUpload" | "xlsUrlUpload" | "viewPreview";
+import { CreateEmptySurveyAsset } from "../components/dialogs/CreateEmptySurveyAsset";
+type DialogType = "xlsUpload" | "xlsUrlUpload" | "viewPreview" | "emptyAsset";
 
 const Create = () => {
   const [activeDialog, setActiveDialog] = useState<DialogType | null>(null);
@@ -14,7 +14,7 @@ const Create = () => {
       <Button onClick={() => setActiveDialog("xlsUpload")}>
         Create Project XLSX Upload (moudlar){" "}
       </Button>
-      <CreateEmptySurveyAsset />
+      <Button onClick={() => setActiveDialog("emptyAsset")}>Create Empty Asset</Button>
 
       <Button onClick={() => setActiveDialog("xlsUrlUpload")}>Create Project XLSX link</Button>
       <Button>Upload Current Workbook</Button>
@@ -25,6 +25,11 @@ const Create = () => {
       />
       <CreateXlsFormsByUrlUpload
         open={activeDialog === "xlsUrlUpload"}
+        onClose={() => setActiveDialog(null)}
+        toasterId={toasterId}
+      />
+      <CreateEmptySurveyAsset
+        open={activeDialog === "emptyAsset"}
         onClose={() => setActiveDialog(null)}
         toasterId={toasterId}
       />

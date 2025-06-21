@@ -47,10 +47,33 @@ export const emptySurveyAssetFormSchema = z.object({
   asset_type: z.string(),
 });
 
+export const projectMetadataFormSchema = z.object({
+  name: z.string().min(1, "Asset name is required"),
+  settings: z.object({
+    description: z.string().min(1, "Description is required"),
+    sector: z.object(
+      {
+        value: z.string(),
+        label: z.string(),
+      },
+      { required_error: "Sector is required" }
+    ),
+    country: z
+      .array(
+        z.object({
+          value: z.string(),
+          label: z.string(),
+        })
+      )
+      .min(1, "At least one country is required"),
+  }),
+});
+
 export const emptyAssetFormSchema = z.object({
   asset_type: z.string(),
 });
 export type AssetImportFormData = z.infer<typeof assetImportschema>;
+export type ProjectMetadataFormData = z.infer<typeof projectMetadataFormSchema>;
 export type ProjectFileUploadFormData = z.infer<typeof projectFileUploadschema>;
 export type MediaUploadFormData = z.infer<typeof mediaUploadschema>;
 export type ProjectUrlUploadFormData = z.infer<typeof projectUrlUploadschema>;

@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useStoredToken } from "./useStoredToken";
 import axios from "axios";
-import { EmptySurveyAssetFormData } from "../../validators/schema";
+import { EmptySurveyAssetFormData, ProjectMetadataFormData } from "../../validators/schema";
 
 const fetchAssets = async (baseUrl: string, token: string) => {
   const response = await axios.get(
@@ -131,6 +131,25 @@ const createEmptySurveyAsset = async (
   return response.data;
 };
 
+const updateProjectMetadata = async (
+  baseUrl: string,
+  token: string,
+  assetUid: string,
+  payload: ProjectMetadataFormData
+) => {
+  const response = await axios.patch(
+    `http://localhost:5000/api/v2/assets/${assetUid}/?format=json&server=${encodeURIComponent(baseUrl)}`,
+    payload,
+    {
+      headers: {
+        Authorization: `Token ${token}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  return response.data;
+};
+
 const importSurveyAssetFromFile = async (
   baseUrl: string,
   token: string,
@@ -247,6 +266,19 @@ export const useCreateEmptySurveyAsset = () => {
   return useMutation({
     mutationFn: (payload: EmptySurveyAssetFormData) =>
       createEmptySurveyAsset(kpiUrl!, token!, payload),
+  });
+};
+
+export const useUpdateProjectMetadata = () => {
+  const { token, kpiUrl } = useStoredToken();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ assetUid, payload }: { assetUid: string; payload: ProjectMetadataFormData }) =>
+      updateProjectMetadata(kpiUrl!, token!, assetUid, payload),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["assets", , kpiUrl, token, variables.assetUid] });
+    },
   });
 };
 

@@ -10,6 +10,7 @@ import type { SelectTabData, SelectTabEvent, TabValue } from "@fluentui/react-co
 import { useState } from "react";
 import MediaSettings from "../components/MediaSettings";
 import { useParams } from "react-router";
+import { UpdateProjectMetadata } from "../components/UpdateProjectMetadata";
 
 const GeneralIcon = bundleIcon(SlideSettingsFilled, SlideSettingsRegular);
 const MediaIcon = bundleIcon(ImageFilled, ImageRegular);
@@ -37,7 +38,7 @@ const AssetDetailsSettings = () => {
         </Tab>
       </TabList>
       <div>
-        {selectedValue === "general" && <div>General</div>}
+        {selectedValue === "general" && <UpdateProjectMetadata assetUid={uid} />}
         {selectedValue === "media" && <MediaSettings assetUid={uid} />}
       </div>
     </div>
