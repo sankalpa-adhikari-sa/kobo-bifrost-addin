@@ -22,6 +22,7 @@ import { useStoredToken } from "../hooks/useStoredToken";
 import { checkFormDeploymentStatus } from "../../utils/deploymentstatus";
 import { useDeployForm, useRedeployForm } from "../hooks/useDeploy";
 import { UpdateXlsFormsByUrlUpload } from "../components/dialogs/UpdateProjectByUrlUpload";
+import { VersionHistoryTable } from "../components/tables/VersionHistoryTable";
 
 type DialogType = "xlsUpload" | "editMetadata" | "xlsUrlUpload";
 
@@ -141,6 +142,7 @@ const AssetDetailsSummary = () => {
       }
     );
   };
+  console.log(asset);
 
   return (
     <div className="p-2 h-screen  flex flex-col gap-2">
@@ -225,9 +227,7 @@ const AssetDetailsSummary = () => {
         </div>
       </Card>
       <span className="text-xs font-medium">History</span>
-      <Card>
-        <span>Version History Table</span>
-      </Card>
+      <VersionHistoryTable assetUid={asset.uid} deployedVersion={asset.deployed_versions} />
       <UpdateXlsFormsByFileUpload
         open={activeDialog === "xlsUpload"}
         onClose={() => setActiveDialog(null)}

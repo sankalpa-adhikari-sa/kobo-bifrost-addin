@@ -72,6 +72,11 @@ export const projectMetadataFormSchema = z.object({
 export const emptyAssetFormSchema = z.object({
   asset_type: z.string(),
 });
+
+export const cloneAssetFormSchema = z.object({
+  name: z.string().min(1, "Asset name is required"),
+});
+
 export type AssetImportFormData = z.infer<typeof assetImportschema>;
 export type ProjectMetadataFormData = z.infer<typeof projectMetadataFormSchema>;
 export type ProjectFileUploadFormData = z.infer<typeof projectFileUploadschema>;
@@ -79,3 +84,4 @@ export type MediaUploadFormData = z.infer<typeof mediaUploadschema>;
 export type ProjectUrlUploadFormData = z.infer<typeof projectUrlUploadschema>;
 export type EmptySurveyAssetFormData = z.infer<typeof emptySurveyAssetFormSchema>;
 export type EmptyAssetFormData = z.infer<typeof emptyAssetFormSchema>;
+export type CloneAssetFormData = z.infer<typeof cloneAssetFormSchema>;

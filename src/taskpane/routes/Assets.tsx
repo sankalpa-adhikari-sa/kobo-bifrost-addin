@@ -233,7 +233,7 @@ const Assets: React.FC = () => {
       useTableSelection({
         selectionMode: "multiselect",
         selectedItems: selectedItems,
-        onSelectionChange: (e, data) => setSelectedItems(data.selectedItems),
+        onSelectionChange: (_, data) => setSelectedItems(data.selectedItems),
       }),
       useTableSort({
         defaultSortState: { sortColumn: "date_modified", sortDirection: "descending" },
@@ -373,13 +373,14 @@ const Assets: React.FC = () => {
       <Toaster toasterId={toasterId} />
       <Toolbar
         style={{
-          marginBottom: "12px",
-          padding: "8px 0",
+          marginBottom: "8px",
+          paddingLeft: "8px",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
           width: "100%",
         }}
+        size="small"
       >
         <div style={{ fontSize: "14px", color: "#666", fontWeight: 500 }}>
           {items.length} asset{items.length !== 1 ? "s" : ""}
@@ -397,9 +398,7 @@ const Assets: React.FC = () => {
                 icon={<DeleteRegular />}
                 appearance="primary"
                 onClick={() => setIsDialogOpen(true)}
-              >
-                Delete ({selectedCount})
-              </ToolbarButton>
+              />
             </DialogTrigger>
             <DialogSurface>
               <DialogBody>
