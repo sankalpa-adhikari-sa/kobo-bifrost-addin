@@ -36,6 +36,15 @@ import {
   ToastTitle,
   ToastBody,
   Toaster,
+  Dialog,
+  DialogTrigger,
+  DialogSurface,
+  DialogTitle,
+  DialogContent,
+  DialogBody,
+  DialogActions,
+  BadgeProps,
+  SelectionItemId,
 } from "@fluentui/react-components";
 import { useAssets, useBulkAssetAction, useDeleteAsset } from "../hooks/useAssets";
 import {
@@ -47,16 +56,33 @@ import {
   TeachingPopoverTrigger,
 } from "@fluentui/react-components";
 import { useNavigate } from "react-router";
-import {
-  Dialog,
-  DialogTrigger,
-  DialogSurface,
-  DialogTitle,
-  DialogContent,
-  DialogBody,
-  DialogActions,
-} from "@fluentui/react-components";
-type AssetItem = {
+
+interface RawAssetSettings {
+  sector?: {
+    label: string;
+  };
+  country?: Array<{
+    label: string;
+  }>;
+}
+
+interface RawAssetItem {
+  name?: string;
+  owner__username?: string;
+  deployment_status?: string;
+  date_modified?: string;
+  date_deployed?: string | null;
+  deployment__submission_count?: number;
+  asset_type?: string;
+  settings?: RawAssetSettings;
+  uid?: string;
+}
+
+interface AssetsApiResponse {
+  results?: RawAssetItem[];
+}
+
+interface AssetItem {
   name: string;
   owner_username: string;
   deployment_status: string;
@@ -67,57 +93,88 @@ type AssetItem = {
   sector: string;
   country: string;
   uid: string;
+}
+
+interface UseAssetsReturn {
+  data?: AssetsApiResponse;
+  isLoading: boolean;
+  error: Error | null;
+}
+
+interface UseDeleteAssetReturn {
+  mutate: (
+    uid: string,
+    options?: {
+      onSuccess?: () => void;
+      onError?: (error: any) => void;
+    }
+  ) => void;
+  isPending: boolean;
+}
+
+interface BulkActionPayload {
+  asset_uids: string[];
+  action: "delete";
+}
+
+interface UseBulkAssetActionReturn {
+  mutate: (
+    data: { payload: BulkActionPayload },
+    options?: {
+      onSuccess?: () => void;
+      onError?: (error: any) => void;
+    }
+  ) => void;
+  isPending: boolean;
+}
+
+interface StatusBadgeConfig {
+  appearance: BadgeProps["appearance"];
+  color: BadgeProps["color"];
+}
+
+const getStatusBadgeConfig = (status: string): StatusBadgeConfig => {
+  const isDeployed = status.toLowerCase() === "deployed";
+  return {
+    appearance: isDeployed ? "filled" : "outline",
+    color: isDeployed ? "success" : "warning",
+  };
 };
 
-const transformData = (rawData: any[]): AssetItem[] => {
-  return rawData.map((item) => ({
-    name: item.name || "N/A",
-    owner_username: item.owner__username || "N/A",
-    deployment_status: item.deployment_status || "N/A",
-    date_modified: item.date_modified || "N/A",
-    date_deployed: item.date_deployed,
-    deployment__submission_count: item.deployment__submission_count || 0,
-    asset_type: item.asset_type || "N/A",
-    sector: item.settings?.sector?.label || "N/A",
-    country: item.settings?.country?.[0]?.label || "N/A",
-    uid: item.uid || "",
-  }));
+const transformData = (rawData: RawAssetItem[]): AssetItem[] => {
+  return rawData.map(
+    (item): AssetItem => ({
+      name: item.name || "N/A",
+      owner_username: item.owner__username || "N/A",
+      deployment_status: item.deployment_status || "N/A",
+      date_modified: item.date_modified || "N/A",
+      date_deployed: item.date_deployed || null,
+      deployment__submission_count: item.deployment__submission_count || 0,
+      asset_type: item.asset_type || "N/A",
+      sector: item.settings?.sector?.label || "N/A",
+      country: item.settings?.country?.[0]?.label || "N/A",
+      uid: item.uid || "",
+    })
+  );
 };
 
-const formatDate = (dateString: string | null) => {
-  if (!dateString) return "Not deployed";
-  try {
-    return new Date(dateString).toLocaleString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  } catch {
-    return dateString;
-  }
-};
-
-const formatDateShort = (dateString: string | null) => {
+const formatDateShort = (dateString: string | null): string => {
   if (!dateString) return "Not deployed";
   try {
     return new Date(dateString).toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
-      year: "2-digit",
+      year: "numeric",
     });
   } catch {
     return dateString;
   }
 };
 
-const getStatusBadge = (status: string) => {
-  const appearance = status.toLowerCase() === "deployed" ? "filled" : "outline";
-  const color = status.toLowerCase() === "deployed" ? "success" : "warning";
-
+const getStatusBadge = (status: string): React.ReactElement => {
+  const config = getStatusBadgeConfig(status);
   return (
-    <Badge appearance={appearance} color={color} size="small">
+    <Badge appearance={config.appearance} color={config.color} size="small">
       {status}
     </Badge>
   );
@@ -142,152 +199,140 @@ const columns: TableColumnDefinition<AssetItem>[] = [
   }),
 ];
 
-const Assets = () => {
-  const { data, isLoading, error } = useAssets();
+const Assets: React.FC = () => {
+  const { data, isLoading, error } = useAssets() as UseAssetsReturn;
+  const { mutate: deleteAssetMutation, isPending: isDeleting } =
+    useDeleteAsset() as UseDeleteAssetReturn;
+  const { mutate: bulkDeleteAssetMutation, isPending: isBulkDeleting } =
+    useBulkAssetAction() as UseBulkAssetActionReturn;
 
-  const { mutate: deleteAssetMutation } = useDeleteAsset();
-  const { mutate: bulkDeleteAssetMutation } = useBulkAssetAction();
   const toasterId = useId("toaster");
   const { dispatchToast } = useToastController(toasterId);
   const navigate = useNavigate();
+  const [isDialogOpen, setIsDialogOpen] = React.useState<boolean>(false);
+  const [selectedItems, setSelectedItems] = React.useState<Set<SelectionItemId>>(
+    new Set<SelectionItemId>()
+  );
 
-  const items = React.useMemo(() => {
+  const items = React.useMemo((): AssetItem[] => {
     if (!data?.results || data.results.length === 0) return [];
     return transformData(data.results);
   }, [data]);
 
   const {
     getRows,
-    selection: {
-      allRowsSelected,
-      someRowsSelected,
-      toggleAllRows,
-      toggleRow,
-      isRowSelected,
-      selectedRows,
-    },
+    selection: { allRowsSelected, someRowsSelected, toggleAllRows, toggleRow, isRowSelected },
     sort: { getSortDirection, toggleColumnSort, sort },
   } = useTableFeatures(
     {
       columns,
       items,
+      getRowId: (item: AssetItem) => item.uid,
     },
     [
       useTableSelection({
         selectionMode: "multiselect",
-        defaultSelectedItems: new Set(),
+        selectedItems: selectedItems,
+        onSelectionChange: (e, data) => setSelectedItems(data.selectedItems),
       }),
       useTableSort({
-        defaultSortState: { sortColumn: "name", sortDirection: "ascending" },
+        defaultSortState: { sortColumn: "date_modified", sortDirection: "descending" },
       }),
     ]
   );
 
-  const getSelectedUids = React.useCallback(() => {
-    const selectedUids: string[] = [];
-    selectedRows.forEach((rowId: any) => {
-      const itemIndex = parseInt(rowId, 10);
-      if (!isNaN(itemIndex) && itemIndex >= 0 && itemIndex < items.length) {
-        selectedUids.push(items[itemIndex].uid);
-      }
-    });
-    console.log("Selected UIDs:", selectedUids);
-    return selectedUids;
-  }, [selectedRows, items]);
+  const selectedUids: string[] = Array.from(selectedItems).map((id) => String(id));
+  const selectedCount: number = selectedUids.length;
+  const isDeleting_any: boolean = isDeleting || isBulkDeleting;
 
-  const handleDelete = React.useCallback(async () => {
-    const selectedUids = getSelectedUids();
-    if (selectedUids.length === 0) {
-      console.log("No items selected for deletion");
-      return;
-    }
+  const handleDialogClose = React.useCallback((): void => {
+    setIsDialogOpen(false);
+  }, []);
 
-    if (selectedUids.length === 1) {
-      console.log("Deleting ", selectedUids[0]);
-      deleteAssetMutation(selectedUids[0], {
-        onSuccess: () => {
-          dispatchToast(
-            <Toast>
-              <ToastTitle>Project deleted successfully!</ToastTitle>
-              <ToastBody subtitle="success">Your project has been deleted.</ToastBody>
-            </Toast>,
-            { intent: "success" }
-          );
-        },
-        onError: () => {
-          dispatchToast(
-            <Toast>
-              <ToastTitle>Error</ToastTitle>
-              <ToastBody subtitle="error">Unable to delete project.</ToastBody>
-            </Toast>,
-            { intent: "error" }
-          );
-        },
-      });
-      return;
-    }
+  const handleDelete = React.useCallback(async (): Promise<void> => {
+    if (selectedCount === 0) return;
 
-    if (selectedUids.length > 1) {
-      console.log("Deleting ", selectedUids);
-      bulkDeleteAssetMutation(
-        {
-          payload: {
-            asset_uids: selectedUids,
-            action: "delete",
-          },
-        },
-        {
-          onSuccess: () => {
-            dispatchToast(
-              <Toast>
-                <ToastTitle>Projects deleted successfully!</ToastTitle>
-                <ToastBody subtitle="success">Your projects have been deleted.</ToastBody>
-              </Toast>,
-              { intent: "success" }
-            );
-          },
-          onError: () => {
-            dispatchToast(
-              <Toast>
-                <ToastTitle>Error</ToastTitle>
-                <ToastBody subtitle="error">Unable to delete projects.</ToastBody>
-              </Toast>,
-              { intent: "error" }
-            );
-          },
-        }
+    const onSuccess = (): void => {
+      const message = selectedCount === 1 ? "Project deleted!" : "Projects deleted!";
+      dispatchToast(
+        <Toast>
+          <ToastTitle>{message}</ToastTitle>
+        </Toast>,
+        { intent: "success" }
       );
-      return;
-    }
 
-    console.log("Deleting items with UIDs:", selectedUids);
-  }, [getSelectedUids, deleteAssetMutation, bulkDeleteAssetMutation, dispatchToast]);
+      setSelectedItems(new Set());
+      handleDialogClose();
+    };
+
+    const onError = (err: any): void => {
+      console.error("Delete operation failed:", err);
+      const message =
+        selectedCount === 1 ? "Failed to delete project" : "Failed to delete projects";
+      dispatchToast(
+        <Toast>
+          <ToastTitle>{message}</ToastTitle>
+          <ToastBody subtitle="error">{err.message || "An unknown error occurred."}</ToastBody>
+        </Toast>,
+        { intent: "error" }
+      );
+    };
+
+    if (selectedCount === 1) {
+      deleteAssetMutation(selectedUids[0], { onSuccess, onError });
+    } else {
+      bulkDeleteAssetMutation(
+        { payload: { asset_uids: selectedUids, action: "delete" } },
+        { onSuccess, onError }
+      );
+    }
+  }, [
+    selectedCount,
+    selectedUids,
+    deleteAssetMutation,
+    bulkDeleteAssetMutation,
+    dispatchToast,
+    handleDialogClose,
+    setSelectedItems,
+  ]);
+
+  const sortedRows = sort(
+    getRows((row) => ({
+      ...row,
+      onClick: (e: React.MouseEvent) => toggleRow(e, row.rowId),
+      onKeyDown: (e: React.KeyboardEvent) => {
+        if (e.key === " " && !e.defaultPrevented) {
+          e.preventDefault();
+          toggleRow(e, row.rowId);
+        }
+      },
+      selected: isRowSelected(row.rowId),
+      appearance: isRowSelected(row.rowId) ? ("brand" as const) : ("none" as const),
+    }))
+  );
+
+  const onClickCellActions = (e: React.MouseEvent<HTMLDivElement>): void => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const onKeyDownCellActions = (e: React.KeyboardEvent<HTMLDivElement>): void => {
+    if (e.key === " ") {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  };
+
+  const keyboardNavAttr = useArrowNavigationGroup({ axis: "grid" });
+  const EyeIcon = bundleIcon(EyeFilled, EyeRegular);
 
   const handleViewAsset = React.useCallback(
-    (assetUid: string, e: React.MouseEvent) => {
+    (assetUid: string, e: React.MouseEvent): void => {
       e.stopPropagation();
       e.preventDefault();
       navigate(`${assetUid}`);
     },
     [navigate]
-  );
-
-  const rows = sort(
-    getRows((row) => {
-      const selected = isRowSelected(row.rowId);
-      return {
-        ...row,
-        onClick: (e: React.MouseEvent) => toggleRow(e, row.rowId),
-        onKeyDown: (e: React.KeyboardEvent) => {
-          if (e.key === " " && !e.defaultPrevented) {
-            e.preventDefault();
-            toggleRow(e, row.rowId);
-          }
-        },
-        selected,
-        appearance: selected ? ("brand" as const) : ("none" as const),
-      };
-    })
   );
 
   const headerSortProps = (columnId: TableColumnId) => ({
@@ -296,8 +341,6 @@ const Assets = () => {
     },
     sortDirection: getSortDirection(columnId),
   });
-
-  const keyboardNavAttr = useArrowNavigationGroup({ axis: "grid" });
 
   if (isLoading) {
     return <div>Loading assets...</div>;
@@ -325,56 +368,63 @@ const Assets = () => {
     );
   }
 
-  const selectedCount = selectedRows.size;
-  const EyeIcon = bundleIcon(EyeFilled, EyeRegular);
-
-  const onClickCellActions = (e: React.MouseEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-  };
-
-  const onKeyDownCellActions = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    if (e.key === " ") {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-  };
-
   return (
     <div style={{ width: "100%" }}>
       <Toaster toasterId={toasterId} />
-      <Toolbar style={{ marginBottom: "8px", padding: "4px 0" }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "end", gap: "8px" }}>
+      <Toolbar
+        style={{
+          marginBottom: "12px",
+          padding: "8px 0",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          width: "100%",
+        }}
+      >
+        <div style={{ fontSize: "14px", color: "#666", fontWeight: 500 }}>
+          {items.length} asset{items.length !== 1 ? "s" : ""}
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
           {selectedCount > 0 && (
-            <span style={{ fontSize: "12px", color: "#666" }}>{selectedCount} selected</span>
+            <span style={{ fontSize: "13px", color: "#666", fontWeight: 500 }}>
+              {selectedCount} selected
+            </span>
           )}
-          <Dialog modalType="alert">
+          <Dialog open={isDialogOpen} onOpenChange={(_, data) => setIsDialogOpen(data.open)}>
             <DialogTrigger disableButtonEnhancement>
               <ToolbarButton
-                disabled={selectedCount < 1}
+                disabled={selectedCount < 1 || isDeleting_any}
                 icon={<DeleteRegular />}
                 appearance="primary"
-              />
+                onClick={() => setIsDialogOpen(true)}
+              >
+                Delete ({selectedCount})
+              </ToolbarButton>
             </DialogTrigger>
             <DialogSurface>
               <DialogBody>
-                <DialogTitle>Alert dialog title</DialogTitle>
+                <DialogTitle>Delete {selectedCount === 1 ? "Asset" : "Assets"}</DialogTitle>
                 <DialogContent>
-                  This dialog cannot be dismissed by clicking on the backdrop nor by pressing
-                  Escape. Close button should be pressed to dismiss this Alert
+                  Are you sure you want to delete{" "}
+                  {selectedCount === 1 ? "this asset" : `these ${selectedCount} assets`}? This
+                  action cannot be undone.
                 </DialogContent>
                 <DialogActions>
-                  <ToolbarButton
-                    disabled={selectedCount < 1}
+                  <Button
+                    disabled={isDeleting_any}
                     icon={<DeleteRegular />}
                     onClick={handleDelete}
                     appearance="primary"
                   >
-                    Delete
-                  </ToolbarButton>
-                  <DialogTrigger disableButtonEnhancement>
-                    <Button appearance="secondary">Close</Button>
-                  </DialogTrigger>
+                    {isDeleting_any ? "Deleting..." : "Delete"}
+                  </Button>
+                  <Button
+                    appearance="secondary"
+                    onClick={handleDialogClose}
+                    disabled={isDeleting_any}
+                  >
+                    Cancel
+                  </Button>
                 </DialogActions>
               </DialogBody>
             </DialogSurface>
@@ -385,26 +435,22 @@ const Assets = () => {
       <div
         style={{
           width: "100%",
-          height: "300px",
+          height: "400px",
           overflow: "auto",
-          border: "1px solid #ccc",
-          borderRadius: "4px",
+          border: "1px solid #e1e1e1",
+          borderRadius: "6px",
+          backgroundColor: "#ffffff",
         }}
       >
-        <Table {...keyboardNavAttr} role="grid" sortable aria-label="KoboToolbox Assets Table">
+        <Table {...keyboardNavAttr} sortable aria-label="KoboToolbox Assets Table">
           <TableHeader>
             <TableRow>
               <TableSelectionCell
                 checked={allRowsSelected ? true : someRowsSelected ? "mixed" : false}
-                aria-checked={allRowsSelected ? true : someRowsSelected ? "mixed" : false}
-                role="checkbox"
                 onClick={toggleAllRows}
                 checkboxIndicator={{ "aria-label": "Select all rows" }}
               />
-              <TableHeaderCell
-                {...headerSortProps("name")}
-                style={{ width: "45%", minWidth: "200px" }}
-              >
+              <TableHeaderCell {...headerSortProps("name")} style={{ width: "45%" }}>
                 Project Name
               </TableHeaderCell>
               <TableHeaderCell {...headerSortProps("deployment_status")} style={{ width: "20%" }}>
@@ -422,7 +468,7 @@ const Assets = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {rows.map(({ item, selected, onClick, onKeyDown, appearance }) => (
+            {sortedRows.map(({ item, selected, onClick, onKeyDown, appearance }) => (
               <TableRow
                 key={item.uid}
                 onClick={onClick}
@@ -431,39 +477,20 @@ const Assets = () => {
                 appearance={appearance}
               >
                 <TableSelectionCell
-                  role="gridcell"
-                  aria-selected={selected}
                   checked={selected}
                   checkboxIndicator={{ "aria-label": "Select row" }}
                 />
-
-                <TableCell
-                  tabIndex={0}
-                  role="gridcell"
-                  style={{
-                    width: "45%",
-                    minWidth: "200px",
-                    maxWidth: "300px",
-                  }}
-                >
+                <TableCell style={{ width: "45%" }}>
                   <TableCellLayout
-                    description={`${item.owner_username}`}
+                    description={
+                      <div>
+                        <PersonRegular style={{ marginRight: "4px" }} />
+                        {item.owner_username}{" "}
+                      </div>
+                    }
                     truncate
-                    style={{
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      whiteSpace: "nowrap",
-                    }}
                   >
-                    <div
-                      style={{
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                        fontWeight: "500",
-                      }}
-                      title={item.name}
-                    >
+                    <div style={{ fontWeight: 600 }} title={item.name}>
                       {item.name}
                     </div>
                   </TableCellLayout>
@@ -505,7 +532,7 @@ const Assets = () => {
                             </div>
                             <div style={{ marginBottom: "4px" }}>
                               <CalendarRegular style={{ marginRight: "4px" }} />
-                              <strong>Deployed:</strong> {formatDate(item.date_deployed)}
+                              <strong>Deployed:</strong> {formatDateShort(item.date_deployed)}
                             </div>
                           </div>
                         </TeachingPopoverBody>
@@ -513,18 +540,15 @@ const Assets = () => {
                     </TeachingPopover>
                   </TableCellActions>
                 </TableCell>
-
-                <TableCell tabIndex={0} role="gridcell" style={{ width: "20%" }}>
-                  <TableCellLayout description={<div>{item.asset_type}</div>}>
-                    {getStatusBadge(item.deployment_status)}
-                  </TableCellLayout>
+                <TableCell style={{ width: "20%" }}>
+                  {getStatusBadge(item.deployment_status)}
                 </TableCell>
-
-                <TableCell tabIndex={0} role="gridcell" style={{ width: "20%" }}>
-                  <div style={{ fontSize: "12px" }}>{formatDateShort(item.date_modified)}</div>
+                <TableCell style={{ width: "20%" }}>
+                  <div style={{ fontSize: "13px", color: "#666" }}>
+                    {formatDateShort(item.date_modified)}
+                  </div>
                 </TableCell>
-
-                <TableCell tabIndex={0} role="gridcell" style={{ width: "15%" }}>
+                <TableCell style={{ width: "15%" }}>
                   <Badge appearance="outline" color="informative" size="small">
                     {item.deployment__submission_count}
                   </Badge>

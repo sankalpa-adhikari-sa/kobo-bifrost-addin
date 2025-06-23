@@ -1,3 +1,144 @@
+export const actionOptions = [
+  { name: "update-name", label: "change name", message: "##username## changed project name" },
+  {
+    name: "update-settings",
+    label: "update settings",
+    message: "##username## updated project settings",
+  },
+  { name: "deploy", label: "deploy project", message: "##username## deployed project" },
+  { name: "redeploy", label: "redeploy project", message: "##username## redeployed project" },
+  { name: "archive", label: "archive project", message: "##username## archived project" },
+  { name: "unarchive", label: "unarchive project", message: "##username## unarchived project" },
+  { name: "replace-form", label: "upload new form", message: "##username## uploaded a new form" },
+  {
+    name: "update-content",
+    label: "edit form",
+    message: "##username## edited the form in the form builder",
+  },
+  {
+    name: "update-qa",
+    label: "modify qualitative analysis questions",
+    message: "##username## modified qualitative analysis questions",
+  },
+  {
+    name: "modify-qa-data",
+    label: "edit qualitative analysis data",
+    message: "##username## edited qualitative analysis data",
+  },
+  { name: "export", label: "export data", message: "##username## exported data" },
+  {
+    name: "add-media",
+    label: "add media attachment",
+    message: "##username## added a media attachment",
+  },
+  {
+    name: "delete-media",
+    label: "remove media attachment",
+    message: "##username## removed a media attachment",
+  },
+  {
+    name: "modify-user-permissions",
+    label: "update permissions",
+    message: "##username## updated permissions of ##username2##",
+  },
+  {
+    name: "clone-permissions",
+    label: "clone permissions",
+    message: "##username## cloned permissions from another project",
+  },
+  {
+    name: "share-form-publicly",
+    label: "make project public",
+    message: "##username## made the project publicly accessible",
+  },
+  {
+    name: "share-data-publicly",
+    label: "share data publicly",
+    message: "##username## shared data publicly",
+  },
+  {
+    name: "allow-anonymous-submissions",
+    label: "enable anonymous submissions",
+    message: "##username## enabled anonymous submissions",
+  },
+  {
+    name: "unshare-form-publicly",
+    label: "disable making project public",
+    message: "##username## disabled making project publicly accessible",
+  },
+  {
+    name: "unshare-data-publicly",
+    label: "disable sharing data publicly",
+    message: "##username## disabled sharing data publicly",
+  },
+  {
+    name: "disallow-anonymous-submissions",
+    label: "disable anonymous submissions",
+    message: "##username## disallowed anonymous submissions",
+  },
+  {
+    name: "transfer",
+    label: "transfer project ownership",
+    message: "##username## transferred project ownership to ##username2##",
+  },
+  {
+    name: "enable-sharing",
+    label: "enable data sharing",
+    message: "##username## enabled data sharing",
+  },
+  {
+    name: "modify-sharing",
+    label: "modify data sharing",
+    message: "##username## modified data sharing",
+  },
+  {
+    name: "disable-sharing",
+    label: "disable data sharing",
+    message: "##username## disabled data sharing",
+  },
+  {
+    name: "connect-project",
+    label: "connect project data",
+    message: "##username## connected project data with another project",
+  },
+  {
+    name: "modify-imported-fields",
+    label: "change imported fields",
+    message: "##username## changed imported fields from another project",
+  },
+  {
+    name: "disconnect-project",
+    label: "disconnect project",
+    message: "##username## disconnected project from another project",
+  },
+  {
+    name: "register-service",
+    label: "register a new REST service",
+    message: "##username## registered a new REST service",
+  },
+  {
+    name: "modify-service",
+    label: "modify a REST service",
+    message: "##username## modified a REST service",
+  },
+  {
+    name: "delete-service",
+    label: "delete a REST service",
+    message: "##username## deleted a REST service",
+  },
+  { name: "add-submission", label: "add submission", message: "##username## added a submission" },
+  {
+    name: "modify-submission",
+    label: "edit submission",
+    message: "##username## edited a submission",
+  },
+  {
+    name: "delete-submission",
+    label: "delete a submission",
+    message: "##username## deleted a submission",
+  },
+];
+
 export const sectorOptions = [
   { value: "Public Administration", label: "Public Administration" },
   { value: "Arts, Entertainment, and Recreation", label: "Arts, Entertainment, and Recreation" },
