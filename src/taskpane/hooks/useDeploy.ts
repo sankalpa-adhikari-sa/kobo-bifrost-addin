@@ -22,10 +22,16 @@ const deployForm = async (
 
 export const useDeployForm = () => {
   const { token, kpiUrl } = useStoredToken();
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: ({ assetUid, payload }: { assetUid: string; payload: { active: boolean } }) =>
       deployForm(kpiUrl!, token!, assetUid, payload),
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ["assets", kpiUrl, token, variables.assetUid],
+      });
+    },
   });
 };
 

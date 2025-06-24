@@ -13,11 +13,12 @@ interface ReusableDialogProps {
   open: boolean;
   onClose: () => void;
   title: string;
-  children: ReactNode;
+  children?: ReactNode;
   onSubmit?: () => void;
   submitText?: string;
   cancelText?: string;
   isLoading?: boolean;
+  submitDisabled?: boolean;
   showActions?: boolean;
   maxWidth?: string;
 }
@@ -31,6 +32,7 @@ export const ReusableDialog = ({
   submitText = "Submit",
   cancelText = "Cancel",
   isLoading = false,
+  submitDisabled = false,
   showActions = true,
   maxWidth = "max-w-xl",
 }: ReusableDialogProps) => {
@@ -48,7 +50,12 @@ export const ReusableDialog = ({
           {showActions && (
             <DialogActions className="pt-4 flex justify-end gap-2">
               {onSubmit && (
-                <Button type="submit" appearance="primary" disabled={isLoading} onClick={onSubmit}>
+                <Button
+                  type="submit"
+                  appearance="primary"
+                  disabled={isLoading || submitDisabled}
+                  onClick={onSubmit}
+                >
                   {isLoading ? "Processing..." : submitText}
                 </Button>
               )}

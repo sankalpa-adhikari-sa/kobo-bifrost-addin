@@ -8,6 +8,8 @@ import {
   CalendarRegular,
   EyeFilled,
   EyeRegular,
+  DocumentCopyFilled,
+  DocumentCopyRegular,
 } from "@fluentui/react-icons";
 import {
   TableCell,
@@ -42,7 +44,8 @@ import {
   DataGridBody,
   DataGridCell,
 } from "@fluentui/react-components";
-import { useAssets, useBulkAssetAction, useDeleteAsset } from "../hooks/useAssets";
+import { useAssets, useBulkAssetAction } from "../hooks/useAssets";
+import { useDeleteAsset } from "../hooks/useDanger";
 import {
   TeachingPopover,
   TeachingPopoverBody,
@@ -52,6 +55,7 @@ import {
   TeachingPopoverTrigger,
 } from "@fluentui/react-components";
 import { useNavigate } from "react-router";
+import { CloneAssetDialog } from "../components/dialogs/CloneAssetDialog";
 
 interface RawAssetSettings {
   sector?: {
@@ -128,6 +132,9 @@ interface StatusBadgeConfig {
   appearance: BadgeProps["appearance"];
   color: BadgeProps["color"];
 }
+
+type DialogType = "cloneAsset";
+const CloneIcon = bundleIcon(DocumentCopyFilled, DocumentCopyRegular);
 
 const getStatusBadgeConfig = (status: string): StatusBadgeConfig => {
   const isDeployed = status.toLowerCase() === "deployed";
@@ -301,6 +308,7 @@ const Assets: React.FC = () => {
   ];
 
   const selectedUids: string[] = Array.from(selectedItems).map((id) => String(id));
+  const [activeDialog, setActiveDialog] = React.useState<DialogType | null>(null);
   const selectedCount: number = selectedUids.length;
   const isDeleting_any: boolean = isDeleting || isBulkDeleting;
 
@@ -404,6 +412,17 @@ const Assets: React.FC = () => {
       </div>
     );
   }
+  const columnSizingOptions = {
+    name: {
+      minWidth: 180,
+      defaultWidth: 200,
+    },
+    status: {
+      defaultWidth: 180,
+      minWidth: 120,
+      idealWidth: 180,
+    },
+  };
 
   return (
     <div style={{ width: "100%" }}>
@@ -428,6 +447,22 @@ const Assets: React.FC = () => {
               {selectedCount} selected
             </span>
           )}
+          {selectedCount == 1 && selectedUids.length == 1 ? (
+            <div>
+              <ToolbarButton
+                disabled={selectedCount !== 1}
+                appearance="primary"
+                onClick={() => setActiveDialog("cloneAsset")}
+                icon={<CloneIcon />}
+              />
+              <CloneAssetDialog
+                open={activeDialog === "cloneAsset"}
+                assetId={selectedUids[0]}
+                toasterId={toasterId}
+                onClose={() => setActiveDialog(null)}
+              />
+            </div>
+          ) : null}
           <Dialog open={isDialogOpen} onOpenChange={(_, data) => setIsDialogOpen(data.open)}>
             <DialogTrigger disableButtonEnhancement>
               <ToolbarButton
@@ -468,13 +503,7 @@ const Assets: React.FC = () => {
         </div>
       </Toolbar>
 
-      <div
-        style={{
-          width: "100%",
-          height: "400px",
-          overflowX: "auto",
-        }}
-      >
+      <div style={{ width: "100%", maxHeight: "400px", overflowX: "auto" }}>
         <DataGrid
           items={items}
           columns={columns}
@@ -485,6 +514,11 @@ const Assets: React.FC = () => {
           onSelectionChange={(_, data) => setSelectedItems(data.selectedItems)}
           resizableColumns
           {...keyboardNavAttr}
+          columnSizingOptions={columnSizingOptions}
+          resizableColumnsOptions={{
+            autoFitColumns: false,
+          }}
+          focusMode="row_unstable"
         >
           <DataGridHeader>
             <DataGridRow

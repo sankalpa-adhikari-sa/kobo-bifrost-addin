@@ -44,8 +44,9 @@ import { useStoredToken } from "../hooks/useStoredToken";
 import { useDownloadXlsForm, useDownloadXmlForm } from "../hooks/useDownload";
 import { useGetAssetSnapshots } from "../hooks/usePreview";
 import { UpdateXlsFormsByUrlUpload } from "../components/dialogs/UpdateProjectByUrlUpload";
+import { CloneAssetDialog } from "../components/dialogs/CloneAssetDialog";
 
-type DialogType = "xlsUpload" | "editMetadata" | "xlsUrlUpload";
+type DialogType = "xlsUpload" | "editMetadata" | "xlsUrlUpload" | "cloneAsset";
 
 const AssetDetailsLayout = () => {
   const { uid } = useParams<{ uid: string }>();
@@ -212,7 +213,13 @@ const AssetDetailsLayout = () => {
               {asset.name}
             </Link>
           }
-          description={asset.settings.description || "No description available."}
+          description={
+            asset.settings.description ? (
+              <span className="text-xs italic">{asset.settings.description}</span>
+            ) : (
+              <span className="text-xs italic">No description available.</span>
+            )
+          }
           action={
             <Toolbar size="small">
               <Tooltip content="Asset Settings" relationship="description" withArrow>
@@ -257,7 +264,9 @@ const AssetDetailsLayout = () => {
                     <MenuItem onClick={handleXmlDownload} icon={<XmlFileIcon />}>
                       Download XML form
                     </MenuItem>
-                    <MenuItem icon={<CloneIcon />}>Clone Project</MenuItem>
+                    <MenuItem onClick={() => setActiveDialog("cloneAsset")} icon={<CloneIcon />}>
+                      Clone Project
+                    </MenuItem>
                   </MenuList>
                 </MenuPopover>
               </Menu>
@@ -281,6 +290,12 @@ const AssetDetailsLayout = () => {
         assetUid={uid}
         surveyName={asset.name}
         destination={`${kpiUrl}/api/v2/assets/${uid}/`}
+      />
+      <CloneAssetDialog
+        open={activeDialog === "cloneAsset"}
+        assetId={uid}
+        toasterId={toasterId}
+        onClose={() => setActiveDialog(null)}
       />
       <Outlet />
     </div>

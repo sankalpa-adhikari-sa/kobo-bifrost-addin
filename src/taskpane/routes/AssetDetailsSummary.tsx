@@ -24,7 +24,7 @@ import { useDeployForm, useRedeployForm } from "../hooks/useDeploy";
 import { UpdateXlsFormsByUrlUpload } from "../components/dialogs/UpdateProjectByUrlUpload";
 import { VersionHistoryTable } from "../components/tables/VersionHistoryTable";
 
-type DialogType = "xlsUpload" | "editMetadata" | "xlsUrlUpload";
+type DialogType = "xlsUpload" | "editMetadata" | "xlsUrlUpload" | "cloneAsset";
 
 const AssetDetailsSummary = () => {
   const { uid } = useParams<{ uid: string }>();
@@ -145,35 +145,38 @@ const AssetDetailsSummary = () => {
   console.log(asset);
 
   return (
-    <div className="p-2 min-h-screen   flex flex-col gap-2">
+    <div className="p-2 min-h-screen flex flex-col gap-2">
       <Toaster toasterId={toasterId} />
-      <span className="text-xs font-medium">Current Version</span>
+      <span className="text-sm font-medium ">Current Version</span>
 
       <Card className="p-6 space-y-2 shadow-lg rounded-lg">
         {(hasUndeployedChanges || needsFirstTimeDeployment) && (
           <MessageBar style={{ minHeight: "auto" }} intent="warning" layout="multiline" as="div">
-            <MessageBarBody className="text-sm break-words whitespace-normal">
-              If you want to make these changes public, you must deploy this form.
+            <MessageBarBody>
+              <span className="text-xs break-words whitespace-normal">
+                If you want to make these changes public, you must deploy this form.
+              </span>
             </MessageBarBody>
           </MessageBar>
         )}
 
         <div className="flex flex-row justify-between items-center gap-4">
-          <div className="text-sm  space-y-2">
+          <div className="text-xs  space-y-2">
             <div>
-              <strong className="font-semibold">Version:</strong> v{currentVersion}{" "}
+              <span className="font-semibold italic">Version:</span> v{currentVersion}{" "}
               {needsFirstTimeDeployment || hasUndeployedChanges ? (
                 <span className="text-orange-600 font-medium">(undeployed)</span>
               ) : null}
             </div>
             <div>
-              <strong className="font-semibold">Last Modified:</strong>{" "}
+              <span className="font-semibold italic">Last Modified:</span>{" "}
               {asset.date_modified
                 ? format(new Date(asset.date_modified), "MMMM d, yyyy h:mm a")
                 : "N/A"}
             </div>
             <div>
-              <strong className="font-semibold">Questions:</strong> {asset.summary.row_count}
+              <span className="font-semibold italic">Questions:</span>{" "}
+              {asset.summary.row_count ? asset.summary.row_count : "-"}
             </div>
           </div>
 
@@ -226,8 +229,9 @@ const AssetDetailsSummary = () => {
           </div>
         </div>
       </Card>
-
-      <VersionHistoryTable assetUid={asset.uid} deployedVersion={asset.deployed_versions} />
+      {asset.deployed_versions.count > 0 && (
+        <VersionHistoryTable assetUid={asset.uid} deployedVersion={asset.deployed_versions} />
+      )}
       <UpdateXlsFormsByFileUpload
         open={activeDialog === "xlsUpload"}
         onClose={() => setActiveDialog(null)}

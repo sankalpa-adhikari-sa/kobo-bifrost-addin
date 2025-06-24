@@ -74,7 +74,7 @@ const MediaSettings = ({ assetUid }: { assetUid: string }) => {
         onSuccess: () => {
           dispatchToast(
             <Toast>
-              <ToastTitle>Deleted Asset Updated</ToastTitle>
+              <ToastTitle>Deleted Asset Media</ToastTitle>
             </Toast>,
             { intent: "success" }
           );

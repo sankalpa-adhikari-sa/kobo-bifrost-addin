@@ -51,7 +51,7 @@ export const CloneAssetDialog = ({
         dispatchToast(
           <Toast>
             <ToastTitle>Asset Cloned</ToastTitle>
-            <ToastBody subtitle="Subtitle">Successfully Cloned an asset</ToastBody>
+            <ToastBody>Successfully Cloned an asset</ToastBody>
           </Toast>,
           { intent: "success" }
         );
@@ -63,7 +63,7 @@ export const CloneAssetDialog = ({
         dispatchToast(
           <Toast>
             <ToastTitle>Failed</ToastTitle>
-            <ToastBody subtitle="Error">Could not clone asset.</ToastBody>
+            <ToastBody>Could not clone asset.</ToastBody>
           </Toast>,
           { intent: "error" }
         );

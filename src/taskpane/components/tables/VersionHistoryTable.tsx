@@ -83,9 +83,10 @@ export const VersionHistoryTable = ({
     createTableColumn<VersionItem>({
       columnId: "version",
       compare: (a, b) => a.version.localeCompare(b.version),
-      renderHeaderCell: () => "Version",
+      renderHeaderCell: () => <span className="text-xs">Version</span>,
       renderCell: (item) => (
         <TableCellLayout
+          className="text-xs"
           media={
             <Avatar
               aria-label={item.version}
@@ -108,14 +109,16 @@ export const VersionHistoryTable = ({
     createTableColumn<VersionItem>({
       columnId: "date_modified",
       compare: (a, b) => new Date(a.date_modified).getTime() - new Date(b.date_modified).getTime(),
-      renderHeaderCell: () => "Modified",
-      renderCell: (item) => <TableCellLayout>{formatDate(item.date_modified)}</TableCellLayout>,
+      renderHeaderCell: () => <span className="text-xs">Modified</span>,
+      renderCell: (item) => (
+        <TableCellLayout className="text-xs">{formatDate(item.date_modified)}</TableCellLayout>
+      ),
     }),
     createTableColumn<VersionItem>({
       columnId: "clone",
-      renderHeaderCell: () => "Clone",
+      renderHeaderCell: () => <span className="text-xs">Clone</span>,
       renderCell: (item) => (
-        <TableCellLayout>
+        <TableCellLayout className="text-xs">
           <Button
             appearance="subtle"
             icon={<Copy20Regular />}
@@ -129,9 +132,8 @@ export const VersionHistoryTable = ({
   ];
 
   return (
-    <div>
-      <span className="text-xs font-medium">History</span>
-
+    <div className="  flex flex-col gap-2">
+      <span className="text-sm font-medium ">History</span>
       <Toaster toasterId={toasterId} />
       <div style={{ overflowX: "auto", maxWidth: "100%" }}>
         <DataGrid

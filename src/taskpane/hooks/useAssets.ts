@@ -71,31 +71,6 @@ const bulkAssetAction = async (
   return response.data;
 };
 
-const deleteAsset = async (baseUrl: string, token: string, assetUid: string) => {
-  const response = await axios.delete(
-    `http://localhost:5000/api/v2/assets/${assetUid}?format=json&server=${encodeURIComponent(baseUrl)}`,
-
-    {
-      headers: {
-        Authorization: `Token ${token}`,
-        "Content-Type": "application/json",
-      },
-    }
-  );
-  return response.data;
-};
-
-export const useDeleteAsset = () => {
-  const { token, kpiUrl } = useStoredToken();
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (assetUid: string) => deleteAsset(kpiUrl!, token!, assetUid),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["assets"] });
-    },
-  });
-};
-
 export const useBulkAssetAction = () => {
   const { token, kpiUrl } = useStoredToken();
   const queryClient = useQueryClient();
