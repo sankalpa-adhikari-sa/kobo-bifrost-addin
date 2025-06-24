@@ -95,10 +95,8 @@ const MediaSettings = ({ assetUid }: { assetUid: string }) => {
     return (
       <div className="flex flex-col items-center justify-center py-12 text-center">
         <ErrorCircleFilled className="text-red-600 text-4xl mb-4" />
-        <Body1 className="text-lg font-semibold text-gray-700 mb-2">
-          Failed to load media files
-        </Body1>
-        <Caption1 className="text-gray-500 max-w-md">
+        <Body1 className="text-lg font-semibold  mb-2">Failed to load media files</Body1>
+        <Caption1 className=" max-w-md">
           There was an error retrieving the attached files. Please try again later.
         </Caption1>
       </div>
@@ -113,9 +111,9 @@ const MediaSettings = ({ assetUid }: { assetUid: string }) => {
 
       {isEmpty ? (
         <div className="flex flex-col items-center justify-center py-12 text-center">
-          <DocumentRegular className="text-gray-400 text-4xl mb-4" />
-          <Body1 className="text-lg font-semibold text-gray-700 mb-2">No files attached</Body1>
-          <Caption1 className="text-gray-500 max-w-md mb-4">
+          <DocumentRegular className=" text-4xl mb-4" />
+          <Body1 className="text-lg font-semibold  mb-2">No files attached</Body1>
+          <Caption1 className=" max-w-md mb-4">
             There are no media files associated with this asset yet.
           </Caption1>
           <Button
@@ -129,8 +127,8 @@ const MediaSettings = ({ assetUid }: { assetUid: string }) => {
       ) : (
         <>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold text-gray-800">
-              Attached Files <span className="text-gray-500">({mediaFiles.count})</span>
+            <h2 className="text-xl font-semibold ">
+              Attached Files <span>({mediaFiles.count})</span>
             </h2>
             <Button
               appearance="primary"

@@ -206,7 +206,7 @@ const Assets: React.FC = () => {
   const columns: TableColumnDefinition<AssetItem>[] = [
     createTableColumn<AssetItem>({
       columnId: "name",
-      renderHeaderCell: () => "Project Name",
+      renderHeaderCell: () => <span className="text-xs">Project Name</span>,
       compare: (a, b) => a.name.localeCompare(b.name),
       renderCell: (item) => (
         <TableCell>
@@ -219,7 +219,7 @@ const Assets: React.FC = () => {
             }
             truncate
           >
-            <div style={{ fontWeight: 600 }} title={item.name}>
+            <div className="text-xs font-medium" title={item.name}>
               {item.name}
             </div>
           </TableCellLayout>
@@ -273,32 +273,36 @@ const Assets: React.FC = () => {
     }),
     createTableColumn<AssetItem>({
       columnId: "deployment_status",
-      renderHeaderCell: () => "Status",
+      renderHeaderCell: () => <span className="text-xs">Status</span>,
       compare: (a, b) => a.deployment_status.localeCompare(b.deployment_status),
       renderCell: (item) => (
-        <TableCellLayout>{getStatusBadge(item.deployment_status)}</TableCellLayout>
+        <TableCellLayout className="text-xs">
+          {getStatusBadge(item.deployment_status)}
+        </TableCellLayout>
       ),
     }),
     createTableColumn<AssetItem>({
       columnId: "asset_type",
-      renderHeaderCell: () => "Type",
+      renderHeaderCell: () => <span className="text-xs">Type</span>,
       compare: (a, b) => a.asset_type.localeCompare(b.asset_type),
-      renderCell: (item) => <TableCellLayout>{item.asset_type}</TableCellLayout>,
+      renderCell: (item) => (
+        <TableCellLayout className="text-xs">{item.asset_type}</TableCellLayout>
+      ),
     }),
     createTableColumn<AssetItem>({
       columnId: "date_modified",
-      renderHeaderCell: () => "Modified",
+      renderHeaderCell: () => <span className="text-xs">Modified</span>,
       compare: (a, b) => new Date(a.date_modified).getTime() - new Date(b.date_modified).getTime(),
       renderCell: (item) => (
-        <TableCellLayout>{formatDateShort(item.date_modified)}</TableCellLayout>
+        <TableCellLayout className="text-xs">{formatDateShort(item.date_modified)}</TableCellLayout>
       ),
     }),
     createTableColumn<AssetItem>({
       columnId: "deployment__submission_count",
-      renderHeaderCell: () => "Submissions",
+      renderHeaderCell: () => <span className="text-xs">Submissions</span>,
       compare: (a, b) => a.deployment__submission_count - b.deployment__submission_count,
       renderCell: (item) => (
-        <TableCellLayout>
+        <TableCellLayout className="text-xs">
           <Badge appearance="outline" color="informative" size="small">
             {item.deployment__submission_count}
           </Badge>
@@ -476,9 +480,11 @@ const Assets: React.FC = () => {
               <DialogBody>
                 <DialogTitle>Delete {selectedCount === 1 ? "Asset" : "Assets"}</DialogTitle>
                 <DialogContent>
-                  Are you sure you want to delete{" "}
-                  {selectedCount === 1 ? "this asset" : `these ${selectedCount} assets`}? This
-                  action cannot be undone.
+                  <div className="text-xs">
+                    Are you sure you want to delete{" "}
+                    {selectedCount === 1 ? "this asset" : `these ${selectedCount} assets`}? This
+                    action cannot be undone.
+                  </div>
                 </DialogContent>
                 <DialogActions>
                   <Button

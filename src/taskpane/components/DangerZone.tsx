@@ -10,7 +10,6 @@ import {
   ToastTitle,
   useId,
   useToastController,
-  Text,
   MessageBar,
   MessageBarBody,
 } from "@fluentui/react-components";
@@ -270,8 +269,10 @@ export const DangerZone = ({ assetUid }: { assetUid: string }) => {
         <div className="space-y-4">
           <MessageBar style={{ minHeight: "auto" }} intent="warning" layout="multiline" as="div">
             <MessageBarBody>
-              This action is permanent and irreversible Once deleted, this project and all its data
-              cannot be recovered.
+              <span className="text-xs">
+                This action is permanent and irreversible Once deleted, this project and all its
+                data cannot be recovered.
+              </span>
             </MessageBarBody>
           </MessageBar>
 
@@ -281,10 +282,10 @@ export const DangerZone = ({ assetUid }: { assetUid: string }) => {
                 checked={deleteCheckboxes.dataWillBeDeleted}
                 onChange={(_, data) => handleCheckboxChange("dataWillBeDeleted", !!data.checked)}
               />
-              <Text className="text-sm ">
+              <span className="text-xs ">
                 I understand that all form submissions and data collected for this project will be
                 permanently deleted.
-              </Text>
+              </span>
             </label>
 
             <label className="flex items-start gap-3 cursor-pointer">
@@ -292,9 +293,9 @@ export const DangerZone = ({ assetUid }: { assetUid: string }) => {
                 checked={deleteCheckboxes.formWillBeDeleted}
                 onChange={(_, data) => handleCheckboxChange("formWillBeDeleted", !!data.checked)}
               />
-              <Text className="text-sm ">
+              <span className="text-xs ">
                 I understand that the form configuration and structure will be permanently deleted.
-              </Text>
+              </span>
             </label>
 
             <Divider />
@@ -304,9 +305,9 @@ export const DangerZone = ({ assetUid }: { assetUid: string }) => {
                 checked={deleteCheckboxes.understandPermanent}
                 onChange={(_, data) => handleCheckboxChange("understandPermanent", !!data.checked)}
               />
-              <Text className="text-sm font-medium ">
+              <span className="text-xs font-medium ">
                 I understand that this action is permanent and cannot be undone.
-              </Text>
+              </span>
             </label>
           </div>
         </div>
@@ -326,14 +327,16 @@ export const DangerZone = ({ assetUid }: { assetUid: string }) => {
         <div className="space-y-4">
           <MessageBar style={{ minHeight: "auto" }} intent="warning" layout="multiline" as="div">
             <MessageBarBody>
-              This project will be temporarily disabled but can be restored at any time.
+              <span className="text-xs">
+                This project will be temporarily disabled but can be restored at any time.
+              </span>
             </MessageBarBody>
           </MessageBar>
 
-          <Text>
+          <span className="text-xs">
             Your form will not accept new submissions while archived, but all existing data will be
             preserved.
-          </Text>
+          </span>
         </div>
       </ReusableDialog>
 
@@ -351,13 +354,15 @@ export const DangerZone = ({ assetUid }: { assetUid: string }) => {
         <div className="space-y-4">
           <MessageBar style={{ minHeight: "auto" }} intent="info" layout="multiline" as="div">
             <MessageBarBody>
-              This project will be restored to active status and resume normal operation.
+              <span className="text-xs">
+                This project will be restored to active status and resume normal operation.
+              </span>
             </MessageBarBody>
           </MessageBar>
 
-          <Text>
+          <span className="text-xs">
             Your form will resume accepting submissions and all functionality will be restored.
-          </Text>
+          </span>
         </div>
       </ReusableDialog>
     </div>
