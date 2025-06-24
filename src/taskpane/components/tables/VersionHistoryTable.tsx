@@ -14,7 +14,7 @@ import {
   useId,
   Toaster,
 } from "@fluentui/react-components";
-import { History20Regular, Copy20Regular } from "@fluentui/react-icons";
+import { Copy20Regular } from "@fluentui/react-icons";
 import { useState } from "react";
 import { CloneAssetDialog } from "../dialogs/CloneAssetDialog";
 
@@ -106,16 +106,6 @@ export const VersionHistoryTable = ({
     }),
 
     createTableColumn<VersionItem>({
-      columnId: "date_deployed",
-      compare: (a, b) => new Date(a.date_deployed).getTime() - new Date(b.date_deployed).getTime(),
-      renderHeaderCell: () => "Deployed",
-      renderCell: (item) => (
-        <TableCellLayout media={<History20Regular />}>
-          {formatDate(item.date_deployed)}
-        </TableCellLayout>
-      ),
-    }),
-    createTableColumn<VersionItem>({
       columnId: "date_modified",
       compare: (a, b) => new Date(a.date_modified).getTime() - new Date(b.date_modified).getTime(),
       renderHeaderCell: () => "Modified",
@@ -139,38 +129,35 @@ export const VersionHistoryTable = ({
   ];
 
   return (
-    <div style={{ padding: "16px" }}>
-      <div style={{ marginBottom: "16px" }}>
-        <h3 style={{ margin: 0, marginBottom: "8px" }}>Version History</h3>
-        <p style={{ margin: 0, color: "#666", fontSize: "14px" }}>
-          {deployedVersion.count} version{deployedVersion.count !== 1 ? "s" : ""} total
-        </p>
-      </div>
-      <Toaster toasterId={toasterId} />
+    <div>
+      <span className="text-xs font-medium">History</span>
 
-      <DataGrid
-        items={items}
-        columns={columns}
-        sortable
-        getRowId={(item) => item.uid}
-        focusMode="row_unstable"
-        style={{ minWidth: "100%" }}
-      >
-        <DataGridHeader>
-          <DataGridRow>
-            {({ renderHeaderCell }) => (
-              <DataGridHeaderCell>{renderHeaderCell()}</DataGridHeaderCell>
-            )}
-          </DataGridRow>
-        </DataGridHeader>
-        <DataGridBody<VersionItem>>
-          {({ item, rowId }) => (
-            <DataGridRow<VersionItem> key={rowId}>
-              {({ renderCell }) => <DataGridCell>{renderCell(item)}</DataGridCell>}
+      <Toaster toasterId={toasterId} />
+      <div style={{ overflowX: "auto", maxWidth: "100%" }}>
+        <DataGrid
+          items={items}
+          columns={columns}
+          sortable
+          getRowId={(item) => item.uid}
+          focusMode="row_unstable"
+          style={{ minWidth: "300px" }}
+        >
+          <DataGridHeader>
+            <DataGridRow>
+              {({ renderHeaderCell }) => (
+                <DataGridHeaderCell>{renderHeaderCell()}</DataGridHeaderCell>
+              )}
             </DataGridRow>
-          )}
-        </DataGridBody>
-      </DataGrid>
+          </DataGridHeader>
+          <DataGridBody<VersionItem>>
+            {({ item, rowId }) => (
+              <DataGridRow<VersionItem> key={rowId}>
+                {({ renderCell }) => <DataGridCell>{renderCell(item)}</DataGridCell>}
+              </DataGridRow>
+            )}
+          </DataGridBody>
+        </DataGrid>
+      </div>
 
       <CloneAssetDialog
         onClose={handleCloneDialogClose}

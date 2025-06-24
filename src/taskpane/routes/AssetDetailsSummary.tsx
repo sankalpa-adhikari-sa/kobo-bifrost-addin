@@ -145,7 +145,7 @@ const AssetDetailsSummary = () => {
   console.log(asset);
 
   return (
-    <div className="p-2 h-screen  flex flex-col gap-2">
+    <div className="p-2 min-h-screen   flex flex-col gap-2">
       <Toaster toasterId={toasterId} />
       <span className="text-xs font-medium">Current Version</span>
 
@@ -226,7 +226,7 @@ const AssetDetailsSummary = () => {
           </div>
         </div>
       </Card>
-      <span className="text-xs font-medium">History</span>
+
       <VersionHistoryTable assetUid={asset.uid} deployedVersion={asset.deployed_versions} />
       <UpdateXlsFormsByFileUpload
         open={activeDialog === "xlsUpload"}

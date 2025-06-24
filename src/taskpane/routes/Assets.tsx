@@ -10,20 +10,10 @@ import {
   EyeRegular,
 } from "@fluentui/react-icons";
 import {
-  TableBody,
   TableCell,
-  TableRow,
-  Table,
-  TableHeader,
-  TableHeaderCell,
-  TableSelectionCell,
   TableCellLayout,
-  useTableFeatures,
   TableColumnDefinition,
-  useTableSelection,
-  useTableSort,
   createTableColumn,
-  TableColumnId,
   Badge,
   useArrowNavigationGroup,
   Toolbar,
@@ -45,6 +35,12 @@ import {
   DialogActions,
   BadgeProps,
   SelectionItemId,
+  DataGrid,
+  DataGridHeader,
+  DataGridRow,
+  DataGridHeaderCell,
+  DataGridBody,
+  DataGridCell,
 } from "@fluentui/react-components";
 import { useAssets, useBulkAssetAction, useDeleteAsset } from "../hooks/useAssets";
 import {
@@ -180,25 +176,6 @@ const getStatusBadge = (status: string): React.ReactElement => {
   );
 };
 
-const columns: TableColumnDefinition<AssetItem>[] = [
-  createTableColumn<AssetItem>({
-    columnId: "name",
-    compare: (a, b) => a.name.localeCompare(b.name),
-  }),
-  createTableColumn<AssetItem>({
-    columnId: "deployment_status",
-    compare: (a, b) => a.deployment_status.localeCompare(b.deployment_status),
-  }),
-  createTableColumn<AssetItem>({
-    columnId: "date_modified",
-    compare: (a, b) => new Date(a.date_modified).getTime() - new Date(b.date_modified).getTime(),
-  }),
-  createTableColumn<AssetItem>({
-    columnId: "deployment__submission_count",
-    compare: (a, b) => a.deployment__submission_count - b.deployment__submission_count,
-  }),
-];
-
 const Assets: React.FC = () => {
   const { data, isLoading, error } = useAssets() as UseAssetsReturn;
   const { mutate: deleteAssetMutation, isPending: isDeleting } =
@@ -219,27 +196,109 @@ const Assets: React.FC = () => {
     return transformData(data.results);
   }, [data]);
 
-  const {
-    getRows,
-    selection: { allRowsSelected, someRowsSelected, toggleAllRows, toggleRow, isRowSelected },
-    sort: { getSortDirection, toggleColumnSort, sort },
-  } = useTableFeatures(
-    {
-      columns,
-      items,
-      getRowId: (item: AssetItem) => item.uid,
-    },
-    [
-      useTableSelection({
-        selectionMode: "multiselect",
-        selectedItems: selectedItems,
-        onSelectionChange: (_, data) => setSelectedItems(data.selectedItems),
-      }),
-      useTableSort({
-        defaultSortState: { sortColumn: "date_modified", sortDirection: "descending" },
-      }),
-    ]
-  );
+  const columns: TableColumnDefinition<AssetItem>[] = [
+    createTableColumn<AssetItem>({
+      columnId: "name",
+      renderHeaderCell: () => "Project Name",
+      compare: (a, b) => a.name.localeCompare(b.name),
+      renderCell: (item) => (
+        <TableCell>
+          <TableCellLayout
+            description={
+              <div>
+                <PersonRegular style={{ marginRight: "4px" }} />
+                {item.owner_username}{" "}
+              </div>
+            }
+            truncate
+          >
+            <div style={{ fontWeight: 600 }} title={item.name}>
+              {item.name}
+            </div>
+          </TableCellLayout>
+          <TableCellActions onClick={onClickCellActions} onKeyDown={onKeyDownCellActions}>
+            <Button
+              icon={<EyeIcon />}
+              appearance="subtle"
+              aria-label="View"
+              size="small"
+              onClick={(e) => handleViewAsset(item.uid, e)}
+            />
+            <TeachingPopover>
+              <TeachingPopoverTrigger>
+                <Button
+                  icon={<InfoRegular />}
+                  appearance="subtle"
+                  aria-label="More details"
+                  size="small"
+                />
+              </TeachingPopoverTrigger>
+              <TeachingPopoverSurface>
+                <TeachingPopoverHeader>Asset Details</TeachingPopoverHeader>
+                <TeachingPopoverBody>
+                  <TeachingPopoverTitle>{item.name}</TeachingPopoverTitle>
+                  <div style={{ fontSize: "12px", lineHeight: "1.4", marginTop: "8px" }}>
+                    <div style={{ marginBottom: "4px" }}>
+                      <PersonRegular style={{ marginRight: "4px" }} />
+                      <strong>Owner:</strong> {item.owner_username}
+                    </div>
+                    <div style={{ marginBottom: "4px" }}>
+                      <FolderRegular style={{ marginRight: "4px" }} />
+                      <strong>Type:</strong> {item.asset_type}
+                    </div>
+                    <div style={{ marginBottom: "4px" }}>
+                      <strong>Sector:</strong> {item.sector}
+                    </div>
+                    <div style={{ marginBottom: "4px" }}>
+                      <strong>Country:</strong> {item.country}
+                    </div>
+                    <div style={{ marginBottom: "4px" }}>
+                      <CalendarRegular style={{ marginRight: "4px" }} />
+                      <strong>Deployed:</strong> {formatDateShort(item.date_deployed)}
+                    </div>
+                  </div>
+                </TeachingPopoverBody>
+              </TeachingPopoverSurface>
+            </TeachingPopover>
+          </TableCellActions>
+        </TableCell>
+      ),
+    }),
+    createTableColumn<AssetItem>({
+      columnId: "deployment_status",
+      renderHeaderCell: () => "Status",
+      compare: (a, b) => a.deployment_status.localeCompare(b.deployment_status),
+      renderCell: (item) => (
+        <TableCellLayout>{getStatusBadge(item.deployment_status)}</TableCellLayout>
+      ),
+    }),
+    createTableColumn<AssetItem>({
+      columnId: "asset_type",
+      renderHeaderCell: () => "Type",
+      compare: (a, b) => a.asset_type.localeCompare(b.asset_type),
+      renderCell: (item) => <TableCellLayout>{item.asset_type}</TableCellLayout>,
+    }),
+    createTableColumn<AssetItem>({
+      columnId: "date_modified",
+      renderHeaderCell: () => "Modified",
+      compare: (a, b) => new Date(a.date_modified).getTime() - new Date(b.date_modified).getTime(),
+      renderCell: (item) => (
+        <TableCellLayout>{formatDateShort(item.date_modified)}</TableCellLayout>
+      ),
+    }),
+    createTableColumn<AssetItem>({
+      columnId: "deployment__submission_count",
+      renderHeaderCell: () => "Submissions",
+      compare: (a, b) => a.deployment__submission_count - b.deployment__submission_count,
+      renderCell: (item) => (
+        <TableCellLayout>
+          <Badge appearance="outline" color="informative" size="small">
+            {item.deployment__submission_count}
+          </Badge>
+        </TableCellLayout>
+      ),
+    }),
+  ];
 
   const selectedUids: string[] = Array.from(selectedItems).map((id) => String(id));
   const selectedCount: number = selectedUids.length;
@@ -296,21 +355,6 @@ const Assets: React.FC = () => {
     setSelectedItems,
   ]);
 
-  const sortedRows = sort(
-    getRows((row) => ({
-      ...row,
-      onClick: (e: React.MouseEvent) => toggleRow(e, row.rowId),
-      onKeyDown: (e: React.KeyboardEvent) => {
-        if (e.key === " " && !e.defaultPrevented) {
-          e.preventDefault();
-          toggleRow(e, row.rowId);
-        }
-      },
-      selected: isRowSelected(row.rowId),
-      appearance: isRowSelected(row.rowId) ? ("brand" as const) : ("none" as const),
-    }))
-  );
-
   const onClickCellActions = (e: React.MouseEvent<HTMLDivElement>): void => {
     e.preventDefault();
     e.stopPropagation();
@@ -334,13 +378,6 @@ const Assets: React.FC = () => {
     },
     [navigate]
   );
-
-  const headerSortProps = (columnId: TableColumnId) => ({
-    onClick: (e: React.MouseEvent) => {
-      toggleColumnSort(e, columnId);
-    },
-    sortDirection: getSortDirection(columnId),
-  });
 
   if (isLoading) {
     return <div>Loading assets...</div>;
@@ -435,127 +472,44 @@ const Assets: React.FC = () => {
         style={{
           width: "100%",
           height: "400px",
-          overflow: "auto",
-          border: "1px solid #e1e1e1",
-          borderRadius: "6px",
-          backgroundColor: "#ffffff",
+          overflowX: "auto",
         }}
       >
-        <Table {...keyboardNavAttr} sortable aria-label="KoboToolbox Assets Table">
-          <TableHeader>
-            <TableRow>
-              <TableSelectionCell
-                checked={allRowsSelected ? true : someRowsSelected ? "mixed" : false}
-                onClick={toggleAllRows}
-                checkboxIndicator={{ "aria-label": "Select all rows" }}
-              />
-              <TableHeaderCell {...headerSortProps("name")} style={{ width: "45%" }}>
-                Project Name
-              </TableHeaderCell>
-              <TableHeaderCell {...headerSortProps("deployment_status")} style={{ width: "20%" }}>
-                Status
-              </TableHeaderCell>
-              <TableHeaderCell {...headerSortProps("date_modified")} style={{ width: "20%" }}>
-                Modified
-              </TableHeaderCell>
-              <TableHeaderCell
-                {...headerSortProps("deployment__submission_count")}
-                style={{ width: "15%" }}
+        <DataGrid
+          items={items}
+          columns={columns}
+          sortable
+          getRowId={(item) => item.uid}
+          selectionMode="multiselect"
+          selectedItems={selectedItems}
+          onSelectionChange={(_, data) => setSelectedItems(data.selectedItems)}
+          resizableColumns
+          {...keyboardNavAttr}
+        >
+          <DataGridHeader>
+            <DataGridRow
+              selectionCell={{
+                checkboxIndicator: { "aria-label": "Select all rows" },
+              }}
+            >
+              {({ renderHeaderCell }) => (
+                <DataGridHeaderCell>{renderHeaderCell()}</DataGridHeaderCell>
+              )}
+            </DataGridRow>
+          </DataGridHeader>
+          <DataGridBody>
+            {({ item, rowId }) => (
+              <DataGridRow
+                key={rowId}
+                selectionCell={{
+                  checkboxIndicator: { "aria-label": "Select row" },
+                }}
               >
-                Submissions
-              </TableHeaderCell>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {sortedRows.map(({ item, selected, onClick, onKeyDown, appearance }) => (
-              <TableRow
-                key={item.uid}
-                onClick={onClick}
-                onKeyDown={onKeyDown}
-                aria-selected={selected}
-                appearance={appearance}
-              >
-                <TableSelectionCell
-                  checked={selected}
-                  checkboxIndicator={{ "aria-label": "Select row" }}
-                />
-                <TableCell style={{ width: "45%" }}>
-                  <TableCellLayout
-                    description={
-                      <div>
-                        <PersonRegular style={{ marginRight: "4px" }} />
-                        {item.owner_username}{" "}
-                      </div>
-                    }
-                    truncate
-                  >
-                    <div style={{ fontWeight: 600 }} title={item.name}>
-                      {item.name}
-                    </div>
-                  </TableCellLayout>
-                  <TableCellActions onClick={onClickCellActions} onKeyDown={onKeyDownCellActions}>
-                    <Button
-                      icon={<EyeIcon />}
-                      appearance="subtle"
-                      aria-label="View"
-                      size="small"
-                      onClick={(e) => handleViewAsset(item.uid, e)}
-                    />
-                    <TeachingPopover>
-                      <TeachingPopoverTrigger>
-                        <Button
-                          icon={<InfoRegular />}
-                          appearance="subtle"
-                          aria-label="More details"
-                          size="small"
-                        />
-                      </TeachingPopoverTrigger>
-                      <TeachingPopoverSurface>
-                        <TeachingPopoverHeader>Asset Details</TeachingPopoverHeader>
-                        <TeachingPopoverBody>
-                          <TeachingPopoverTitle>{item.name}</TeachingPopoverTitle>
-                          <div style={{ fontSize: "12px", lineHeight: "1.4", marginTop: "8px" }}>
-                            <div style={{ marginBottom: "4px" }}>
-                              <PersonRegular style={{ marginRight: "4px" }} />
-                              <strong>Owner:</strong> {item.owner_username}
-                            </div>
-                            <div style={{ marginBottom: "4px" }}>
-                              <FolderRegular style={{ marginRight: "4px" }} />
-                              <strong>Type:</strong> {item.asset_type}
-                            </div>
-                            <div style={{ marginBottom: "4px" }}>
-                              <strong>Sector:</strong> {item.sector}
-                            </div>
-                            <div style={{ marginBottom: "4px" }}>
-                              <strong>Country:</strong> {item.country}
-                            </div>
-                            <div style={{ marginBottom: "4px" }}>
-                              <CalendarRegular style={{ marginRight: "4px" }} />
-                              <strong>Deployed:</strong> {formatDateShort(item.date_deployed)}
-                            </div>
-                          </div>
-                        </TeachingPopoverBody>
-                      </TeachingPopoverSurface>
-                    </TeachingPopover>
-                  </TableCellActions>
-                </TableCell>
-                <TableCell style={{ width: "20%" }}>
-                  {getStatusBadge(item.deployment_status)}
-                </TableCell>
-                <TableCell style={{ width: "20%" }}>
-                  <div style={{ fontSize: "13px", color: "#666" }}>
-                    {formatDateShort(item.date_modified)}
-                  </div>
-                </TableCell>
-                <TableCell style={{ width: "15%" }}>
-                  <Badge appearance="outline" color="informative" size="small">
-                    {item.deployment__submission_count}
-                  </Badge>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+                {({ renderCell }) => <DataGridCell>{renderCell(item)}</DataGridCell>}
+              </DataGridRow>
+            )}
+          </DataGridBody>
+        </DataGrid>
       </div>
     </div>
   );
