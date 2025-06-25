@@ -406,17 +406,7 @@ const Assets: React.FC = () => {
 
   if (items.length === 0) {
     return (
-      <div
-        style={{
-          width: "100%",
-          height: "250px",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          border: "1px solid #ccc",
-          borderRadius: "4px",
-        }}
-      >
+      <div className="p-4 min-h-screen flex flex-col gap-4 items-center justify-center ">
         No assets available
       </div>
     );
@@ -434,11 +424,13 @@ const Assets: React.FC = () => {
   };
 
   return (
-    <div style={{ width: "100%" }}>
+    <div className="px-4 pt-4 min-h-screen flex flex-col gap-2 ">
+      <span className="text-base font-medium">My Assets</span>
       <Toaster toasterId={toasterId} />
       <Toolbar
         style={{
           marginBottom: "8px",
+          marginTop: "8px",
           paddingLeft: "8px",
           display: "flex",
           alignItems: "center",
@@ -448,7 +440,7 @@ const Assets: React.FC = () => {
         size="small"
       >
         <div style={{ fontSize: "14px", color: "#666", fontWeight: 500 }}>
-          {items.length} asset{items.length !== 1 ? "s" : ""}
+          {items.length} Asset{items.length !== 1 ? "s" : ""}
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
           {selectedCount > 0 && (

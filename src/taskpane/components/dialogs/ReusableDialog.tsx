@@ -7,6 +7,7 @@ import {
   DialogBody,
   DialogActions,
   Button,
+  Divider,
 } from "@fluentui/react-components";
 
 interface ReusableDialogProps {
@@ -45,7 +46,10 @@ export const ReusableDialog = ({
     <Dialog modalType="alert" open={open} onOpenChange={(_, data) => !data.open && handleClose()}>
       <DialogSurface className={`${maxWidth} w-full rounded-lg shadow-2xl`}>
         <DialogBody>
-          <DialogTitle className="text-sm font-bold mb-4 border-b pb-2">{title}</DialogTitle>
+          <DialogTitle>
+            {title}
+            <Divider />
+          </DialogTitle>
           <DialogContent className="overflow-y-auto max-h-[70vh] pr-2">{children}</DialogContent>
           {showActions && (
             <DialogActions className="pt-4 flex justify-end gap-2">

@@ -535,6 +535,9 @@ export const useCreateProjectFromFile = () => {
       queryClient.invalidateQueries({
         queryKey: ["assets", kpiUrl, token, variables.assetUid || data.asset.uid],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["assets", kpiUrl, token],
+      });
     },
   });
 };
@@ -750,6 +753,9 @@ export const useCreateProjectFromUrl = () => {
     onSuccess: (data, variables) => {
       queryClient.invalidateQueries({
         queryKey: ["assets", kpiUrl, token, variables.assetUid || data.asset.uid],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["assets", kpiUrl, token],
       });
     },
   });

@@ -1,5 +1,5 @@
 import { Control, FieldErrors, useController } from "react-hook-form";
-import { Input, Field, Button, ProgressBar, Badge, Text } from "@fluentui/react-components";
+import { Input, Field, Button, ProgressBar, Badge, Text, Card } from "@fluentui/react-components";
 import {
   AttachRegular,
   DeleteRegular,
@@ -189,18 +189,23 @@ export const MediaFileUploadForm = ({
       </Field>
 
       {selectedFiles.length > 0 && (
-        <div className="space-y-3">
-          <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+        <Card
+          className="space-y-3"
+          style={{
+            backgroundColor: "var(--colorNeutralBackground2)",
+          }}
+        >
+          <div className="p-3  rounded-lg">
             <div className="flex items-center justify-between mb-2">
               <Text weight="semibold" size={300}>
                 Upload Progress
               </Text>
-              <Text size={200} className="text-gray-600">
+              <Text size={200}>
                 {successfulFiles}/{totalFiles} completed
               </Text>
             </div>
             <ProgressBar value={overallProgress} max={100} className="mb-2" />
-            <div className="flex items-center justify-between text-xs text-gray-600">
+            <div className="flex items-center justify-between text-xs ">
               <span>
                 {successfulFiles} successful • {failedFiles} failed • {uploadingFiles} uploading •{" "}
                 {pendingFiles} pending
@@ -210,9 +215,7 @@ export const MediaFileUploadForm = ({
           </div>
 
           <div className="flex items-center justify-between">
-            <h4 className="text-sm font-medium text-gray-700">
-              Selected Files ({selectedFiles.length})
-            </h4>
+            <h4 className="text-sm font-medium ">Selected Files ({selectedFiles.length})</h4>
             <div className="flex gap-2">
               {failedFiles > 0 && !isLoading && (
                 <Button
@@ -255,7 +258,7 @@ export const MediaFileUploadForm = ({
                   {getStatusIcon(file.status)}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center space-x-2">
-                      <p className="text-sm font-medium text-gray-900 truncate">{file.name}</p>
+                      <p className="text-sm font-medium  truncate">{file.name}</p>
                       <Badge
                         appearance={
                           file.status === "success"
@@ -276,6 +279,7 @@ export const MediaFileUploadForm = ({
                                 : undefined
                         }
                         size="small"
+                        className="shrink-0"
                       >
                         {file.status}
                       </Badge>
@@ -314,7 +318,7 @@ export const MediaFileUploadForm = ({
               </div>
             ))}
           </div>
-        </div>
+        </Card>
       )}
     </div>
   );
