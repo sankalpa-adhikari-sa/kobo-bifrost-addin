@@ -4,7 +4,6 @@ import { UpdateProfile } from "../components/UpdateProfile";
 
 const Profile = () => {
   const { data: profileData, isLoading: isProfileLoading } = useGetOwner();
-  console.log(profileData);
 
   if (!profileData || isProfileLoading) {
     return (

@@ -20,7 +20,6 @@ export const EditMetadataDialog = ({ open, onClose, asset }: EditMetadataDialogP
   if (!asset) return null;
 
   const handleSave = () => {
-    console.log("Saving metadata...");
     onClose();
   };
 

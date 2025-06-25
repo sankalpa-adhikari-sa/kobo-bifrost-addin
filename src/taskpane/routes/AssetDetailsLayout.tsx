@@ -45,8 +45,9 @@ import { useDownloadXlsForm, useDownloadXmlForm } from "../hooks/useDownload";
 import { useGetAssetSnapshots } from "../hooks/usePreview";
 import { UpdateXlsFormsByUrlUpload } from "../components/dialogs/UpdateProjectByUrlUpload";
 import { CloneAssetDialog } from "../components/dialogs/CloneAssetDialog";
+import { UpdateXlsFormsByWorkbookUpload } from "../components/dialogs/UpdateProjectByWorkbookUpload";
 
-type DialogType = "xlsUpload" | "editMetadata" | "xlsUrlUpload" | "cloneAsset";
+type DialogType = "xlsUpload" | "editMetadata" | "xlsUrlUpload" | "cloneAsset" | "workbookUpload";
 
 const AssetDetailsLayout = () => {
   const { uid } = useParams<{ uid: string }>();
@@ -209,7 +210,10 @@ const AssetDetailsLayout = () => {
       <Card>
         <CardHeader
           header={
-            <Link to={`/assets/${uid}`} className="text-base font-medium">
+            <Link
+              to={`/assets/${uid}`}
+              className="text-base font-medium break-all whitespace-normal"
+            >
               {asset.name}
             </Link>
           }
@@ -246,6 +250,9 @@ const AssetDetailsLayout = () => {
                     <MenuItem onClick={() => setActiveDialog("xlsUpload")}>Upload XLSForm</MenuItem>
                     <MenuItem onClick={() => setActiveDialog("xlsUrlUpload")}>
                       Upload XLSForm via URL
+                    </MenuItem>
+                    <MenuItem onClick={() => setActiveDialog("workbookUpload")}>
+                      Upload Current Workbook
                     </MenuItem>
                   </MenuList>
                 </MenuPopover>
@@ -285,6 +292,14 @@ const AssetDetailsLayout = () => {
       />
       <UpdateXlsFormsByUrlUpload
         open={activeDialog === "xlsUrlUpload"}
+        onClose={() => setActiveDialog(null)}
+        toasterId={toasterId}
+        assetUid={uid}
+        surveyName={asset.name}
+        destination={`${kpiUrl}/api/v2/assets/${uid}/`}
+      />
+      <UpdateXlsFormsByWorkbookUpload
+        open={activeDialog === "workbookUpload"}
         onClose={() => setActiveDialog(null)}
         toasterId={toasterId}
         assetUid={uid}

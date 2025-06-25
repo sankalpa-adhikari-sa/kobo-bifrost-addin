@@ -58,8 +58,7 @@ export const VersionHistoryTable = ({
     status: index === 0 ? "available" : "away",
   }));
 
-  const handleCloneClick = (uid: string, url: string) => {
-    console.log({ uid, url });
+  const handleCloneClick = (uid: string) => {
     setSelectedVersionId(uid);
     setCloneDialogOpen(true);
   };
@@ -124,7 +123,7 @@ export const VersionHistoryTable = ({
             icon={<Copy20Regular />}
             aria-label="Clone Asset"
             size="small"
-            onClick={() => handleCloneClick(item.uid, item.url)}
+            onClick={() => handleCloneClick(item.uid)}
           />
         </TableCellLayout>
       ),

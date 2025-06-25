@@ -12,6 +12,10 @@ export const projectFileUploadschema = z.object({
   file: z.instanceof(File, { message: "A valid file is required" }),
   name: z.string().optional(),
 });
+export const projectWorkbookUploadschema = z.object({
+  base64Encoded: z.string().base64().min(1, "Please select a workbook or upload a file"),
+  name: z.string().optional(),
+});
 export const mediaUploadschema = z.object({
   file: z.instanceof(File, { message: "A valid file is required" }),
   fileName: z.string(),
@@ -98,6 +102,7 @@ export const cloneAssetFormSchema = z.object({
 export type AssetImportFormData = z.infer<typeof assetImportschema>;
 export type ProjectMetadataFormData = z.infer<typeof projectMetadataFormSchema>;
 export type ProjectFileUploadFormData = z.infer<typeof projectFileUploadschema>;
+export type ProjectWorkbookUploadFormData = z.infer<typeof projectWorkbookUploadschema>;
 export type MediaUploadFormData = z.infer<typeof mediaUploadschema>;
 export type ProjectUrlUploadFormData = z.infer<typeof projectUrlUploadschema>;
 export type EmptySurveyAssetFormData = z.infer<typeof emptySurveyAssetFormSchema>;

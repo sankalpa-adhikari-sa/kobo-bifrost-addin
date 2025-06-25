@@ -3,7 +3,6 @@ import { useTheme } from "./ThemeProvider";
 
 const Preferences = () => {
   const { themeName, toggleTheme } = useTheme();
-  console.log(themeName);
 
   return (
     <div>

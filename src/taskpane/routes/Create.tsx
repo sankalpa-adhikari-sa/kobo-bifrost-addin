@@ -10,21 +10,14 @@ import { useState } from "react";
 import { CreateXlsFormsByFileUpload } from "../components/dialogs/CreateProjectByFileUpload";
 import { CreateXlsFormsByUrlUpload } from "../components/dialogs/CreateProjectByUrlUpload";
 import { CreateEmptySurveyAsset } from "../components/dialogs/CreateEmptySurveyAsset";
-import { exportOfficeDocumentAsBase64 } from "../../utils/officeUtils";
+import { CreateXlsFormsByWorkbookUpload } from "../components/dialogs/CreateProjectByWorkbookUpload";
 
 type DialogType = "xlsUpload" | "xlsUrlUpload" | "workbookUpload" | "emptyAsset";
 
 const Create = () => {
   const [activeDialog, setActiveDialog] = useState<DialogType | null>(null);
   const toasterId = useId("toaster");
-  const handleExportClick = async () => {
-    try {
-      const base64 = await exportOfficeDocumentAsBase64();
-      console.log("Exported base64 string:", base64);
-    } catch (err) {
-      console.error("Failed to export document:", err);
-    }
-  };
+
   return (
     <div className="space-y-2 p-2">
       <Toaster toasterId={toasterId} />
@@ -44,8 +37,7 @@ const Create = () => {
           <div className="p-4">
             <Button
               appearance="primary"
-              // onClick={() => setActiveDialog("workbookUpload")}
-              onClick={handleExportClick}
+              onClick={() => setActiveDialog("workbookUpload")}
               icon={<DocumentBulletList16Regular />}
             >
               Upload Workbook
@@ -116,6 +108,11 @@ const Create = () => {
       />
       <CreateEmptySurveyAsset
         open={activeDialog === "emptyAsset"}
+        onClose={() => setActiveDialog(null)}
+        toasterId={toasterId}
+      />
+      <CreateXlsFormsByWorkbookUpload
+        open={activeDialog === "workbookUpload"}
         onClose={() => setActiveDialog(null)}
         toasterId={toasterId}
       />

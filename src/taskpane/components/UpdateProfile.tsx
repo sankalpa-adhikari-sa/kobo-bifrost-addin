@@ -44,8 +44,6 @@ export const UpdateProfile = () => {
 
   useEffect(() => {
     if (owner?.extra_details) {
-      console.log("Resetting form with:", owner.extra_details);
-
       const resetData: ProfileFormData = {
         name: owner.extra_details.name || "",
         country: owner.extra_details.country || undefined,
@@ -63,8 +61,6 @@ export const UpdateProfile = () => {
   }, [owner, reset]);
 
   const onSubmit = (data: ProfileFormData) => {
-    console.log("Form submitted with data:", data);
-
     const cleanedData: ProfileFormData = {
       ...data,
       organization_website:

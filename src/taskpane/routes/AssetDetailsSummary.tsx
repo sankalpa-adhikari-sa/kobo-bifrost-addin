@@ -142,7 +142,6 @@ const AssetDetailsSummary = () => {
       }
     );
   };
-  console.log(asset);
 
   return (
     <div className="p-2 min-h-screen flex flex-col gap-2">

@@ -129,7 +129,8 @@ const importSurveyAssetFromFile = async (
   baseUrl: string,
   token: string,
   payload: {
-    file: File;
+    file?: File;
+    base64Encoded?: Base64URLString;
     destination: string;
     assetUid: string;
     name?: string;
@@ -137,7 +138,11 @@ const importSurveyAssetFromFile = async (
 ) => {
   const formData = new FormData();
   formData.append("destination", payload.destination);
-  formData.append("file", payload.file);
+  payload.file && formData.append("file", payload.file);
+  if (payload.base64Encoded) {
+    const prefixedBase64 = `data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,${payload.base64Encoded}`;
+    formData.append("base64Encoded", prefixedBase64);
+  }
   formData.append("assetUid", payload.assetUid);
   payload.name && formData.append("name", payload.name);
 
@@ -151,7 +156,6 @@ const importSurveyAssetFromFile = async (
       },
     }
   );
-  console.log(response.data);
   return response.data;
 };
 
@@ -181,7 +185,7 @@ const importSurveyAssetFromUrl = async (
       },
     }
   );
-  console.log(response.data);
+
   return response.data;
 };
 
@@ -321,7 +325,8 @@ export const useCreateProjectFromFile = () => {
 
   return useMutation({
     mutationFn: async (payload: {
-      file: File;
+      file?: File;
+      base64Encoded?: Base64URLString;
       name?: string;
       asset_type?: string;
       onProgress?: (progress: ProjectCreationProgress) => void;
@@ -329,7 +334,6 @@ export const useCreateProjectFromFile = () => {
       destination?: string;
     }) => {
       const isAssetProvided = !!(payload.assetUid && payload.destination);
-      console.log(isAssetProvided);
 
       const steps: ProjectCreationStep[] = [
         {
@@ -379,14 +383,13 @@ export const useCreateProjectFromFile = () => {
           );
         }
 
-        if (!payload.file) {
+        if (!payload.file && !payload.base64Encoded) {
           throw createProjectCreationError(
             "asset_creation",
             "No file provided for project creation.",
             undefined
           );
         }
-
         let asset: { url: string; uid: string };
 
         updateProgress("asset_creation");
@@ -432,6 +435,7 @@ export const useCreateProjectFromFile = () => {
         try {
           importResult = await importSurveyAssetFromFile(kpiUrl, token, {
             file: payload.file,
+            base64Encoded: payload.base64Encoded,
             destination: asset.url,
             assetUid: asset.uid,
             name: payload.name,
@@ -448,8 +452,10 @@ export const useCreateProjectFromFile = () => {
             `Failed to import file: ${(error as Error).message}`,
             error as Error,
             {
-              fileName: payload.file.name,
-              fileSize: payload.file.size,
+              ...(payload.file && {
+                fileName: payload.file.name,
+                fileSize: payload.file.size,
+              }),
               assetUid: asset.uid,
               destination: asset.url,
             }
@@ -475,7 +481,6 @@ export const useCreateProjectFromFile = () => {
                 if (status === "error")
                   throw new Error(`Import processing failed with error status`);
                 if (attempt === maxRetries && status === "processing") {
-                  console.log(statusResult);
                   throw new Error(
                     `Import timed out after ${maxRetries} attempts (${
                       (maxRetries * retryDelay) / 1000
@@ -548,7 +553,6 @@ export const useCreateProjectFromUrl = () => {
       destination?: string;
     }) => {
       const isAssetProvided = !!(payload.assetUid && payload.destination);
-      console.log(isAssetProvided);
 
       const steps: ProjectCreationStep[] = [
         {
@@ -693,7 +697,6 @@ export const useCreateProjectFromUrl = () => {
                 if (status === "error")
                   throw new Error(`Import processing failed with error status`);
                 if (attempt === maxRetries && status === "processing") {
-                  console.log(statusResult);
                   throw new Error(
                     `Import timed out after ${maxRetries} attempts (${
                       (maxRetries * retryDelay) / 1000

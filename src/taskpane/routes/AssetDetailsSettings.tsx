@@ -22,8 +22,7 @@ const DangerZoneIcon = bundleIcon(ErrorCircleFilled, ErrorCircleRegular);
 const AssetDetailsSettings = () => {
   const [selectedValue, setSelectedValue] = useState<TabValue>("general");
 
-  const onTabSelect = (event: SelectTabEvent, data: SelectTabData) => {
-    console.log(event);
+  const onTabSelect = (_: SelectTabEvent, data: SelectTabData) => {
     setSelectedValue(data.value);
   };
   const { uid } = useParams<{ uid: string }>();
