@@ -10,8 +10,8 @@ interface AssetMetadataFormProps {
 }
 const AssetMetadataForm = ({ control, errors }: AssetMetadataFormProps) => {
   return (
-    <div className="space-y-4">
-      <Field label="Asset Name" validationMessage={errors.name?.message}>
+    <div className="space-y-2">
+      <Field label="Asset Name" validationMessage={errors.name?.message} size="small">
         <Controller
           name="name"
           control={control}
@@ -21,7 +21,11 @@ const AssetMetadataForm = ({ control, errors }: AssetMetadataFormProps) => {
         />
       </Field>
 
-      <Field label="Description" validationMessage={errors.settings?.description?.message}>
+      <Field
+        label="Description"
+        validationMessage={errors.settings?.description?.message}
+        size="small"
+      >
         <Controller
           name="settings.description"
           control={control}
@@ -36,7 +40,7 @@ const AssetMetadataForm = ({ control, errors }: AssetMetadataFormProps) => {
         />
       </Field>
 
-      <Field label="Sector" validationMessage={errors.settings?.sector?.message}>
+      <Field label="Sector" validationMessage={errors.settings?.sector?.message} size="small">
         <Controller
           name="settings.sector"
           control={control}
@@ -66,6 +70,7 @@ const AssetMetadataForm = ({ control, errors }: AssetMetadataFormProps) => {
       <Field
         label="Country/Countries of Operation"
         validationMessage={errors.settings?.country?.message}
+        size="small"
       >
         <Controller
           name="settings.country"

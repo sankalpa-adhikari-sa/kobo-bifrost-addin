@@ -138,6 +138,13 @@ export const actionOptions = [
     message: "##username## deleted a submission",
   },
 ];
+export const organizationTypeOptions = [
+  { value: "non-profit", label: "Non-profit organization" },
+  { value: "government", label: "Government institution" },
+  { value: "educational", label: "Educational organization" },
+  { value: "commercial", label: "A commercial/for-profit company" },
+  { value: "none", label: "I am not associated with any organization" },
+] as const;
 
 export const sectorOptions = [
   { value: "Public Administration", label: "Public Administration" },
@@ -177,7 +184,8 @@ export const sectorOptions = [
     label: "Humanitarian - Sanitation, Water & Hygiene",
   },
   { value: "Other", label: "Other" },
-];
+] as const;
+
 export const countriesOptions = [
   { value: "AFG", label: "Afghanistan" },
   { value: "ALA", label: "Åland Islands" },
@@ -430,4 +438,4 @@ export const countriesOptions = [
   { value: "YEM", label: "Yemen" },
   { value: "ZMB", label: "Zambia" },
   { value: "ZWE", label: "Zimbabwe" },
-];
+] as const;

@@ -109,7 +109,6 @@ export const useImportMediaFromFile = () => {
       };
     }) => importMediaFromFile(kpiUrl!, token!, assetUid, payload),
     onSuccess: (_, variables) => {
-      // Invalidate the media query to refresh the list
       queryClient.invalidateQueries({
         queryKey: ["media", kpiUrl, token, variables.assetUid],
       });

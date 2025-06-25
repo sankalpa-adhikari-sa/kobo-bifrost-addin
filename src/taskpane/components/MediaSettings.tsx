@@ -46,7 +46,7 @@ const useStyles = makeStyles({
   },
   grid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+    gridTemplateColumns: "repeat(auto-fill, 1fr)",
     gap: "16px",
     marginTop: "16px",
   },
@@ -127,7 +127,7 @@ const MediaSettings = ({ assetUid }: { assetUid: string }) => {
       ) : (
         <>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold ">
+            <h2 className="text-sm font-semibold ">
               Attached Files <span>({mediaFiles.count})</span>
             </h2>
             <Button
@@ -145,9 +145,7 @@ const MediaSettings = ({ assetUid }: { assetUid: string }) => {
                 <div className="flex items-start">
                   <DocumentFilled className={styles.fileIcon} />
                   <div className="flex-1 min-w-0">
-                    <Body1 className="font-medium text-gray-900 truncate">
-                      {file.metadata.filename}
-                    </Body1>
+                    <Body1 className="font-medium  truncate">{file.metadata.filename}</Body1>
 
                     <div className="flex flex-row items-center justify-between mt-3">
                       <div>
@@ -168,9 +166,7 @@ const MediaSettings = ({ assetUid }: { assetUid: string }) => {
                         </div>
 
                         <div className="flex flex-row items-center mt-2">
-                          <Caption1 className="text-gray-600">
-                            {file.metadata.mimetype || "Unknown type"}
-                          </Caption1>
+                          <Caption1>{file.metadata.mimetype || "Unknown type"}</Caption1>
                         </div>
                       </div>
                       <div className="flex flex-row gap-2">

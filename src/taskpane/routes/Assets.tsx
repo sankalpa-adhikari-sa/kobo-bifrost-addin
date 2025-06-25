@@ -43,6 +43,7 @@ import {
   DataGridHeaderCell,
   DataGridBody,
   DataGridCell,
+  Spinner,
 } from "@fluentui/react-components";
 import { useAssets, useBulkAssetAction } from "../hooks/useAssets";
 import { useDeleteAsset } from "../hooks/useDanger";
@@ -392,7 +393,11 @@ const Assets: React.FC = () => {
   );
 
   if (isLoading) {
-    return <div>Loading assets...</div>;
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Spinner label="Loading asset ..." />
+      </div>
+    );
   }
 
   if (error) {

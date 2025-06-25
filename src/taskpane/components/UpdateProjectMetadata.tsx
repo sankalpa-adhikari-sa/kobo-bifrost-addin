@@ -82,13 +82,15 @@ export const UpdateProjectMetadata = ({ assetUid }: { assetUid: string }) => {
   if (isAssetError || !asset) return <div>Error loading asset data or asset not found.</div>;
 
   return (
-    <div>
+    <div className="flex flex-col gap-2 pt-2">
       <AssetMetadataForm
         control={control as Control<ProjectMetadataFormData>}
         errors={errors}
         isLoading={isUpdateMetadataPending}
       />
-      <Button onClick={handleSubmit(onSubmit)}>Submit</Button>
+      <Button type="submit" onClick={handleSubmit(onSubmit)} appearance="primary">
+        Submit
+      </Button>
     </div>
   );
 };

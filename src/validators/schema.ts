@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { countriesOptions, organizationTypeOptions, sectorOptions } from "../utils/constants";
 export const assetImportschema = z.object({
   file: z.any().refine((val) => val instanceof File, {
     message: "A valid file is required",
@@ -68,6 +69,23 @@ export const projectMetadataFormSchema = z.object({
       .min(1, "At least one country is required"),
   }),
 });
+
+const countryValues = countriesOptions.map((opt) => opt.value);
+const sectorValues = sectorOptions.map((opt) => opt.value);
+const organizationTypeValues = organizationTypeOptions.map((opt) => opt.value);
+
+export const profileSchema = z.object({
+  country: z.enum(countryValues as [string, ...string[]]),
+  city: z.string().optional(),
+  sector: z.enum(sectorValues as [string, ...string[]]),
+  organization_type: z.enum(organizationTypeValues as [string, ...string[]]),
+  organization: z.string().min(1, "Organization name is required"),
+  organization_website: z.string().url().optional().or(z.literal("")),
+  linkedin: z.string().url().optional().or(z.literal("")),
+  bio: z.string().optional(),
+  name: z.string().min(1, "Fullname is required"),
+});
+export type ProfileFormData = z.infer<typeof profileSchema>;
 
 export const emptyAssetFormSchema = z.object({
   asset_type: z.string(),

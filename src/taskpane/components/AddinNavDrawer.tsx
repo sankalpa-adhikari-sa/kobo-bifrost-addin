@@ -25,6 +25,7 @@ import {
 } from "@fluentui/react-icons";
 import React from "react";
 import { useNavigate, useLocation } from "react-router";
+import Preferences from "./Preferences";
 
 const JobPostings = bundleIcon(NotePin20Filled, NotePin20Regular);
 const Dashboard = bundleIcon(Board20Filled, Board20Regular);
@@ -48,7 +49,7 @@ const AddinNavDrawer: React.FC<AddinNavDrawerProps> = ({ isOpen, setIsOpen, togg
         return "3";
       case "/assets":
         return "4";
-      case "/settings":
+      case "/profile":
         return "5";
       case "/token-manager":
         return "6";
@@ -93,14 +94,15 @@ const AddinNavDrawer: React.FC<AddinNavDrawerProps> = ({ isOpen, setIsOpen, togg
             <NavSubItem value="4" onClick={() => handleNavigation("/assets")}>
               Assets
             </NavSubItem>
-            <NavSubItem value="5" onClick={() => handleNavigation("/settings")}>
-              Settings
+            <NavSubItem value="5" onClick={() => handleNavigation("/profile")}>
+              Profile
             </NavSubItem>
           </NavSubItemGroup>
         </NavCategory>
         <NavItem icon={<Settings />} value="6" onClick={() => handleNavigation("/token-manager")}>
           Token Manager
         </NavItem>
+        <Preferences />
       </NavDrawerBody>
     </NavDrawer>
   );
