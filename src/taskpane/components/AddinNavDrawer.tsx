@@ -17,6 +17,8 @@ import {
   Board20Filled,
   Board20Regular,
   bundleIcon,
+  DocumentBulletList20Filled,
+  DocumentBulletList20Regular,
   NotePin20Filled,
   NotePin20Regular,
   PersonCircle32Regular,
@@ -30,6 +32,7 @@ import Preferences from "./Preferences";
 const JobPostings = bundleIcon(NotePin20Filled, NotePin20Regular);
 const Dashboard = bundleIcon(Board20Filled, Board20Regular);
 const Settings = bundleIcon(Settings20Filled, Settings20Regular);
+const Workbook = bundleIcon(DocumentBulletList20Filled, DocumentBulletList20Regular);
 
 interface AddinNavDrawerProps {
   isOpen: boolean;
@@ -53,6 +56,8 @@ const AddinNavDrawer: React.FC<AddinNavDrawerProps> = ({ isOpen, setIsOpen, togg
         return "5";
       case "/token-manager":
         return "6";
+      case "/workbook":
+        return "7";
       default:
         return "1";
     }
@@ -99,6 +104,9 @@ const AddinNavDrawer: React.FC<AddinNavDrawerProps> = ({ isOpen, setIsOpen, togg
             </NavSubItem>
           </NavSubItemGroup>
         </NavCategory>
+        <NavItem icon={<Workbook />} value="7" onClick={() => handleNavigation("/workbook")}>
+          Workbook
+        </NavItem>
         <NavItem icon={<Settings />} value="6" onClick={() => handleNavigation("/token-manager")}>
           Token Manager
         </NavItem>

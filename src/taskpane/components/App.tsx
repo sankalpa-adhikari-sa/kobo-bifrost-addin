@@ -30,6 +30,7 @@ import { CreateXlsFormsByFileUpload } from "./dialogs/CreateProjectByFileUpload"
 import { CreateXlsFormsByUrlUpload } from "./dialogs/CreateProjectByUrlUpload";
 import { CreateEmptySurveyAsset } from "./dialogs/CreateEmptySurveyAsset";
 import { CreateXlsFormsByWorkbookUpload } from "./dialogs/CreateProjectByWorkbookUpload";
+import { Workbook } from "../routes/Workbook";
 
 export interface AppProps {
   title: string;
@@ -102,6 +103,7 @@ const App: React.FC<AppProps> = ({ title, isOfficeInitialized }) => {
         <Route path="assets" element={<Assets />} />
         <Route path="create" element={<Create />} />
         <Route path="profile" element={<Profile />} />
+        <Route path="workbook" element={<Workbook />} />
         <Route path="assets/:uid" element={<AssetDetailsLayout />}>
           <Route index element={<AssetDetailsSummary />} />
           <Route path="settings" element={<AssetDetailsSettings />} />
