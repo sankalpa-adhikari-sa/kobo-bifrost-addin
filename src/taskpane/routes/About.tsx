@@ -20,7 +20,7 @@ const About: React.FC = () => {
         <CardHeader
           header={
             <Text weight="semibold" size={300}>
-              KoboToolbox Add-in
+              Kobo-bifrost
             </Text>
           }
         />

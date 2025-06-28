@@ -83,7 +83,10 @@ const AddinNavDrawer: React.FC<AddinNavDrawerProps> = ({ isOpen, setIsOpen, togg
       </NavDrawerHeader>
       <NavDrawerBody>
         <AppItem icon={<PersonCircle32Regular />} as="a">
-          Kobotoolbox Add-in
+          <p className="flex flex-col">
+            <span>Kobo-bifrost</span>
+            <span className="text-xs italic">Addin for Kobotoolbox</span>
+          </p>
         </AppItem>
         <NavItem icon={<Dashboard />} value="1" onClick={() => handleNavigation("/")}>
           About
