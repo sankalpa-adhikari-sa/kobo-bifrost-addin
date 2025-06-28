@@ -173,15 +173,31 @@ const AssetDetailsLayout = () => {
   const handleXlsDownload = () => {
     xlsDownloadMutation.mutate(uid, {
       onSuccess: (blob) => {
-        const url = window.URL.createObjectURL(blob);
+        console.log("Blob size:", blob.size, "Type:", blob.type);
+
+        if (blob.size === 0) {
+          console.error("Received empty blob");
+          return;
+        }
+
+        const xlsxBlob = blob.type.includes("spreadsheet")
+          ? blob
+          : new Blob([blob], {
+              type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            });
+
+        const url = window.URL.createObjectURL(xlsxBlob);
         const a = document.createElement("a");
         a.style.display = "none";
         a.href = url;
-        a.download = `${asset.name}.xls`;
+        a.download = `${asset.name}.xlsx`;
         document.body.appendChild(a);
         a.click();
-        window.URL.revokeObjectURL(url);
-        document.body.removeChild(a);
+
+        setTimeout(() => {
+          window.URL.revokeObjectURL(url);
+          document.body.removeChild(a);
+        }, 100);
 
         dispatchToast(
           <Toast>
@@ -203,7 +219,6 @@ const AssetDetailsLayout = () => {
       },
     });
   };
-
   return (
     <div className="p-2 min-h-screen  flex flex-col gap-2">
       <Toaster toasterId={toasterId} />

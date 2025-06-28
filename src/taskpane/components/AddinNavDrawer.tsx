@@ -91,7 +91,7 @@ const AddinNavDrawer: React.FC<AddinNavDrawerProps> = ({ isOpen, setIsOpen, togg
         <NavDivider />
         <NavSectionHeader>Configuration</NavSectionHeader>
         <NavCategory value="2">
-          <NavCategoryItem icon={<JobPostings />}>Data Management</NavCategoryItem>
+          <NavCategoryItem icon={<JobPostings />}>Asset Management</NavCategoryItem>
           <NavSubItemGroup>
             <NavSubItem value="3" onClick={() => handleNavigation("/create")}>
               Create

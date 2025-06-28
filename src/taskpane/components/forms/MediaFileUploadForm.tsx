@@ -244,15 +244,26 @@ export const MediaFileUploadForm = ({
             {selectedFiles.map((file) => (
               <div
                 key={file.id}
-                className={`flex items-center justify-between p-3 border rounded-lg ${
-                  file.status === "success"
-                    ? "border-green-200 bg-green-50"
-                    : file.status === "error"
-                      ? "border-red-200 bg-red-50"
-                      : file.status === "uploading"
-                        ? "border-blue-200 bg-blue-50"
-                        : "border-gray-200 bg-gray-50"
-                }`}
+                className="flex items-center justify-between p-3 rounded-lg"
+                style={{
+                  backgroundColor:
+                    file.status === "success"
+                      ? "var(--colorPaletteGreenBackground1)"
+                      : file.status === "error"
+                        ? "var(--colorPaletteRedBackground1)"
+                        : file.status === "uploading"
+                          ? "var(--colorPaletteBlueBackground1)"
+                          : "var(--colorNeutralBackground2)",
+                  border: `1px solid ${
+                    file.status === "success"
+                      ? "var(--colorPaletteGreenBorder2)"
+                      : file.status === "error"
+                        ? "var(--colorPaletteRedBorder2)"
+                        : file.status === "uploading"
+                          ? "var(--colorPaletteBlueBorder2)"
+                          : "var(--colorNeutralStroke2)"
+                  }`,
+                }}
               >
                 <div className="flex items-center space-x-3 flex-1 min-w-0">
                   {getStatusIcon(file.status)}

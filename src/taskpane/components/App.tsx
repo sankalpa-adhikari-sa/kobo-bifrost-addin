@@ -8,6 +8,8 @@ import {
   Hamburger,
   Menu,
   MenuButton,
+  MenuGroup,
+  MenuGroupHeader,
   MenuItem,
   MenuList,
   MenuPopover,
@@ -31,6 +33,7 @@ import { CreateXlsFormsByUrlUpload } from "./dialogs/CreateProjectByUrlUpload";
 import { CreateEmptySurveyAsset } from "./dialogs/CreateEmptySurveyAsset";
 import { CreateXlsFormsByWorkbookUpload } from "./dialogs/CreateProjectByWorkbookUpload";
 import { Workbook } from "../routes/Workbook";
+import { EmptyDocumentIcon, LinkIcon, WorkbookIcon, XlsxIcon } from "../../utils/icons";
 
 export interface AppProps {
   title: string;
@@ -63,13 +66,24 @@ const App: React.FC<AppProps> = ({ title, isOfficeInitialized }) => {
           </MenuTrigger>
           <MenuPopover>
             <MenuList>
-              <MenuItem onClick={() => setActiveDialog("xlsUpload")}>Upload XLSForm</MenuItem>
-              <MenuItem onClick={() => setActiveDialog("xlsUrlUpload")}>
-                Upload XLSForm via URL
-              </MenuItem>
-              <MenuItem onClick={() => setActiveDialog("workbookUpload")}>
-                Upload Current Workbook
-              </MenuItem>
+              <MenuGroup>
+                <MenuGroupHeader>Create new asset</MenuGroupHeader>
+                <MenuItem icon={<XlsxIcon />} onClick={() => setActiveDialog("xlsUpload")}>
+                  Upload XLSForm
+                </MenuItem>
+                <MenuItem icon={<LinkIcon />} onClick={() => setActiveDialog("xlsUrlUpload")}>
+                  Upload XLSForm via URL
+                </MenuItem>
+                <MenuItem icon={<WorkbookIcon />} onClick={() => setActiveDialog("workbookUpload")}>
+                  Upload Current Workbook
+                </MenuItem>
+                <MenuItem
+                  icon={<EmptyDocumentIcon />}
+                  onClick={() => setActiveDialog("emptyAsset")}
+                >
+                  Create Empty Asset
+                </MenuItem>
+              </MenuGroup>
             </MenuList>
           </MenuPopover>
         </Menu>

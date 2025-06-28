@@ -46,7 +46,8 @@ export const CreateEmptySurveyAsset = ({ open, onClose, toasterId }: CreateEmpty
           </Toast>,
           { intent: "success" }
         );
-        reset();
+
+        handleClose();
       },
       onError: (error: any) => {
         console.error("Create asset error:", error);

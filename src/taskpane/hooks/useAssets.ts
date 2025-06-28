@@ -233,18 +233,26 @@ export const useCheckImportStatus = (importId: string) => {
 };
 export const useCreateEmptyAsset = () => {
   const { token, kpiUrl } = useStoredToken();
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (payload: { asset_type: string }) => createEmptyAsset(kpiUrl!, token!, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["assets", , kpiUrl, token] });
+    },
   });
 };
 
 export const useCreateEmptySurveyAsset = () => {
   const { token, kpiUrl } = useStoredToken();
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (payload: EmptySurveyAssetFormData) =>
       createEmptySurveyAsset(kpiUrl!, token!, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["assets", kpiUrl, token] });
+    },
   });
 };
 
