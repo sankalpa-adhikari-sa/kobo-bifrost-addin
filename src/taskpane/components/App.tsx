@@ -33,7 +33,7 @@ import { CreateXlsFormsByUrlUpload } from "./dialogs/CreateProjectByUrlUpload";
 import { CreateEmptySurveyAsset } from "./dialogs/CreateEmptySurveyAsset";
 import { CreateXlsFormsByWorkbookUpload } from "./dialogs/CreateProjectByWorkbookUpload";
 import { Workbook } from "../routes/Workbook";
-import { EmptyDocumentIcon, LinkIcon, WorkbookIcon, XlsxIcon } from "../../utils/icons";
+import { EmptyDocumentIcon, LinkIcon, WorkbookIcon, XlsxIcon } from "./primitives/icons";
 
 export interface AppProps {
   title: string;

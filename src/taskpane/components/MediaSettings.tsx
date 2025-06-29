@@ -11,7 +11,6 @@ import {
   Toast,
   ToastTitle,
   Toaster,
-  tokens,
 } from "@fluentui/react-components";
 import {
   DocumentFilled,
@@ -27,14 +26,9 @@ import {
 } from "@fluentui/react-icons";
 import { useState } from "react";
 import { MediaUpload } from "./dialogs/MediaUpload";
+import { useDestructiveStyles } from "./primitives/styles";
 
 const useStyles = makeStyles({
-  destructive: {
-    backgroundColor: tokens.colorPaletteRedBackground3,
-  },
-  destructiveIcon: {
-    color: tokens.colorNeutralForegroundOnBrand,
-  },
   fileIcon: {
     fontSize: "32px",
     color: "#4F52B2",
@@ -58,6 +52,8 @@ const DeleteIcon = bundleIcon(DeleteFilled, DeleteRegular);
 
 const MediaSettings = ({ assetUid }: { assetUid: string }) => {
   const styles = useStyles();
+  const destructiveStyles = useDestructiveStyles();
+
   const { data: mediaFiles, isLoading, isError } = useMedia(assetUid);
   const [activeDialog, setActiveDialog] = useState<DialogType | null>(null);
   const toasterId = useId("toaster");
@@ -173,9 +169,8 @@ const MediaSettings = ({ assetUid }: { assetUid: string }) => {
                         <Button
                           disabled={isDeleteMediaPending}
                           onClick={() => handleMediaDelete(file.uid)}
-                          icon={<DeleteIcon className={styles.destructiveIcon} />}
-                          appearance="primary"
-                          className={styles.destructive}
+                          icon={<DeleteIcon className={destructiveStyles.destructiveIcon} />}
+                          className={destructiveStyles.destructive}
                         />
                         <Button
                           as="a"

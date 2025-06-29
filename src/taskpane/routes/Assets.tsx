@@ -450,7 +450,7 @@ const Assets: React.FC = () => {
           )}
           {selectedCount == 1 && selectedUids.length == 1 ? (
             <div>
-              <ToolbarButton
+              <Button
                 disabled={selectedCount !== 1}
                 appearance="primary"
                 onClick={() => setActiveDialog("cloneAsset")}
