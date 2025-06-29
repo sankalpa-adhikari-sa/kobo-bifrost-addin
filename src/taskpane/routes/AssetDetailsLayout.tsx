@@ -21,6 +21,8 @@ import {
   Toast,
   ToastTitle,
   ToastBody,
+  MenuGroup,
+  MenuGroupHeader,
 } from "@fluentui/react-components";
 import {
   ArrowUploadRegular,
@@ -46,6 +48,7 @@ import { useGetAssetSnapshots } from "../hooks/usePreview";
 import { UpdateXlsFormsByUrlUpload } from "../components/dialogs/UpdateProjectByUrlUpload";
 import { CloneAssetDialog } from "../components/dialogs/CloneAssetDialog";
 import { UpdateXlsFormsByWorkbookUpload } from "../components/dialogs/UpdateProjectByWorkbookUpload";
+import { LinkIcon, WorkbookIcon, XlsxIcon } from "../components/primitives/icons";
 
 type DialogType = "xlsUpload" | "editMetadata" | "xlsUrlUpload" | "cloneAsset" | "workbookUpload";
 
@@ -262,13 +265,21 @@ const AssetDetailsLayout = () => {
                 </MenuTrigger>
                 <MenuPopover>
                   <MenuList>
-                    <MenuItem onClick={() => setActiveDialog("xlsUpload")}>Upload XLSForm</MenuItem>
-                    <MenuItem onClick={() => setActiveDialog("xlsUrlUpload")}>
-                      Upload XLSForm via URL
-                    </MenuItem>
-                    <MenuItem onClick={() => setActiveDialog("workbookUpload")}>
-                      Upload Current Workbook
-                    </MenuItem>
+                    <MenuGroup>
+                      <MenuGroupHeader>Update an asset</MenuGroupHeader>
+                      <MenuItem icon={<XlsxIcon />} onClick={() => setActiveDialog("xlsUpload")}>
+                        Upload XLSForm
+                      </MenuItem>
+                      <MenuItem icon={<LinkIcon />} onClick={() => setActiveDialog("xlsUrlUpload")}>
+                        Upload XLSForm via URL
+                      </MenuItem>
+                      <MenuItem
+                        icon={<WorkbookIcon />}
+                        onClick={() => setActiveDialog("workbookUpload")}
+                      >
+                        Upload Current Workbook
+                      </MenuItem>
+                    </MenuGroup>
                   </MenuList>
                 </MenuPopover>
               </Menu>

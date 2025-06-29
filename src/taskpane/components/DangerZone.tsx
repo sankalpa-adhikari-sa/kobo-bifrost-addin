@@ -25,6 +25,8 @@ import { useArchiveAsset, useDeleteAsset } from "../hooks/useDanger";
 import { ReusableDialog } from "./dialogs/ReusableDialog";
 import { useState } from "react";
 import { useNavigate } from "react-router";
+import { DeleteIcon } from "./primitives/icons";
+import { useDestructiveStyles } from "./primitives/styles";
 
 type DialogType = "deleteAsset" | "archiveAsset" | "unarchiveAsset";
 
@@ -35,6 +37,7 @@ interface DeleteCheckboxes {
 }
 
 export const DangerZone = ({ assetUid }: { assetUid: string }) => {
+  const destructiveStyles = useDestructiveStyles();
   const [activeDialog, setActiveDialog] = useState<DialogType | null>(null);
   const [deleteCheckboxes, setDeleteCheckboxes] = useState<DeleteCheckboxes>({
     dataWillBeDeleted: false,
@@ -245,9 +248,10 @@ export const DangerZone = ({ assetUid }: { assetUid: string }) => {
             </div>
           </div>
           <Button
+            className={destructiveStyles.destructive}
+            icon={<DeleteIcon fontSize={16} className={destructiveStyles.destructiveIcon} />}
             appearance="primary"
             onClick={() => setActiveDialog("deleteAsset")}
-            className="bg-red-600 border-red-600 hover:bg-red-700 text-sm px-3 py-1.5 w-full sm:w-auto"
           >
             Delete
           </Button>
@@ -277,7 +281,7 @@ export const DangerZone = ({ assetUid }: { assetUid: string }) => {
           </MessageBar>
 
           <div className="space-y-3">
-            <label className="flex items-start gap-3 cursor-pointer">
+            <label className="flex items-center gap-3 cursor-pointer">
               <Checkbox
                 checked={deleteCheckboxes.dataWillBeDeleted}
                 onChange={(_, data) => handleCheckboxChange("dataWillBeDeleted", !!data.checked)}
@@ -288,7 +292,7 @@ export const DangerZone = ({ assetUid }: { assetUid: string }) => {
               </span>
             </label>
 
-            <label className="flex items-start gap-3 cursor-pointer">
+            <label className="flex items-center gap-3 cursor-pointer">
               <Checkbox
                 checked={deleteCheckboxes.formWillBeDeleted}
                 onChange={(_, data) => handleCheckboxChange("formWillBeDeleted", !!data.checked)}
@@ -300,7 +304,7 @@ export const DangerZone = ({ assetUid }: { assetUid: string }) => {
 
             <Divider />
 
-            <label className="flex items-start gap-3 cursor-pointer">
+            <label className="flex items-center gap-3 cursor-pointer">
               <Checkbox
                 checked={deleteCheckboxes.understandPermanent}
                 onChange={(_, data) => handleCheckboxChange("understandPermanent", !!data.checked)}

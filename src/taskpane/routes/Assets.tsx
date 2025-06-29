@@ -57,6 +57,7 @@ import {
 } from "@fluentui/react-components";
 import { useNavigate } from "react-router";
 import { CloneAssetDialog } from "../components/dialogs/CloneAssetDialog";
+import { useDestructiveStyles } from "../components/primitives/styles";
 
 interface RawAssetSettings {
   sector?: {
@@ -185,6 +186,7 @@ const getStatusBadge = (status: string): React.ReactElement => {
 };
 
 const Assets: React.FC = () => {
+  const destructiveStyles = useDestructiveStyles();
   const { data, isLoading, error } = useAssets() as UseAssetsReturn;
   const { mutate: deleteAssetMutation, isPending: isDeleting } =
     useDeleteAsset() as UseDeleteAssetReturn;
@@ -468,8 +470,8 @@ const Assets: React.FC = () => {
             <DialogTrigger disableButtonEnhancement>
               <ToolbarButton
                 disabled={selectedCount < 1 || isDeleting_any}
-                icon={<DeleteRegular />}
-                appearance="primary"
+                icon={<DeleteRegular className={destructiveStyles.destructiveIcon} />}
+                className={destructiveStyles.destructive}
                 onClick={() => setIsDialogOpen(true)}
               />
             </DialogTrigger>
@@ -485,8 +487,9 @@ const Assets: React.FC = () => {
                 </DialogContent>
                 <DialogActions>
                   <Button
+                    className={destructiveStyles.destructive}
                     disabled={isDeleting_any}
-                    icon={<DeleteRegular />}
+                    icon={<DeleteRegular className={destructiveStyles.destructiveIcon} />}
                     onClick={handleDelete}
                     appearance="primary"
                   >
