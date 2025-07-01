@@ -23,6 +23,7 @@ import { checkFormDeploymentStatus } from "../../utils/deploymentstatus";
 import { useDeployForm, useRedeployForm } from "../hooks/useDeploy";
 import { UpdateXlsFormsByUrlUpload } from "../components/dialogs/UpdateProjectByUrlUpload";
 import { VersionHistoryTable } from "../components/tables/VersionHistoryTable";
+import { CollectDataCard } from "../components/CollectDataCard";
 
 type DialogType = "xlsUpload" | "editMetadata" | "xlsUrlUpload" | "cloneAsset";
 
@@ -142,6 +143,7 @@ const AssetDetailsSummary = () => {
       }
     );
   };
+  console.log(asset.deployment__links);
 
   return (
     <div className="p-2 min-h-screen flex flex-col gap-2">
@@ -230,6 +232,12 @@ const AssetDetailsSummary = () => {
       </Card>
       {asset.deployed_versions.count > 0 && (
         <VersionHistoryTable assetUid={asset.uid} deployedVersion={asset.deployed_versions} />
+      )}
+      {asset.deployment__links && Object.keys(asset.deployment__links).length > 0 && (
+        <div className="flex flex-col space-y-2 ">
+          <span className="text-sm font-medium ">Collect data</span>
+          <CollectDataCard deploymentLinks={asset.deployment__links} />
+        </div>
       )}
       <UpdateXlsFormsByFileUpload
         open={activeDialog === "xlsUpload"}

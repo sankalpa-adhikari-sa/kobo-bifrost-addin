@@ -66,6 +66,7 @@ interface RawAssetSettings {
   country?: Array<{
     label: string;
   }>;
+  group?: string;
 }
 
 interface RawAssetItem {
@@ -95,6 +96,7 @@ interface AssetItem {
   sector: string;
   country: string;
   uid: string;
+  group: string;
 }
 
 interface UseAssetsReturn {
@@ -158,6 +160,7 @@ const transformData = (rawData: RawAssetItem[]): AssetItem[] => {
       asset_type: item.asset_type || "N/A",
       sector: item.settings?.sector?.label || "N/A",
       country: item.settings?.country?.[0]?.label || "N/A",
+      group: item.settings?.group || "N/A",
       uid: item.uid || "",
     })
   );
@@ -291,6 +294,12 @@ const Assets: React.FC = () => {
       renderCell: (item) => (
         <TableCellLayout className="text-xs">{item.asset_type}</TableCellLayout>
       ),
+    }),
+    createTableColumn<AssetItem>({
+      columnId: "group",
+      renderHeaderCell: () => <span className="text-xs">Group</span>,
+      compare: (a, b) => a.group.localeCompare(b.group),
+      renderCell: (item) => <TableCellLayout className="text-xs">{item.group}</TableCellLayout>,
     }),
     createTableColumn<AssetItem>({
       columnId: "date_modified",
