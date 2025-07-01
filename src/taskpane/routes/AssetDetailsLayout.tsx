@@ -263,7 +263,7 @@ const AssetDetailsLayout = () => {
               </Tooltip>
               <Menu>
                 <MenuTrigger disableButtonEnhancement>
-                  <Tooltip content="Upload Asset" relationship="label">
+                  <Tooltip content="Upload Asset" relationship="description" withArrow>
                     <MenuButton appearance="subtle" icon={<UploadIcon />} />
                   </Tooltip>
                 </MenuTrigger>
@@ -289,7 +289,7 @@ const AssetDetailsLayout = () => {
               </Menu>
               <Menu>
                 <MenuTrigger disableButtonEnhancement>
-                  <Tooltip content="Other Options " relationship="label">
+                  <Tooltip content="Other Options" relationship="description" withArrow>
                     <MenuButton appearance="subtle" icon={<HorizontalOptionIcon />} />
                   </Tooltip>
                 </MenuTrigger>

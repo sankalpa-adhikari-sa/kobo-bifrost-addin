@@ -62,7 +62,14 @@ const App: React.FC<AppProps> = ({ title, isOfficeInitialized }) => {
         </Tooltip>
         <Menu>
           <MenuTrigger disableButtonEnhancement>
-            <MenuButton shape="circular" appearance="primary" size="small" icon={<UploadIcon />} />
+            <Tooltip content={"Create a new asset"} relationship="label" withArrow>
+              <MenuButton
+                shape="circular"
+                appearance="primary"
+                size="small"
+                icon={<UploadIcon />}
+              />
+            </Tooltip>
           </MenuTrigger>
           <MenuPopover>
             <MenuList>

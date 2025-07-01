@@ -7,6 +7,7 @@ import {
   Switch,
   Toolbar,
   ToolbarButton,
+  Tooltip,
 } from "@fluentui/react-components";
 import { useState } from "react";
 import { CopyIcon, LinkIcon } from "./primitives/icons";
@@ -193,9 +194,13 @@ export const CollectDataCard = ({ deploymentLinks, assetUid }: CollectDataCardPr
           </div>
         )}
         <Toolbar size="small" className="flex flex-row items-center justify-end">
-          <ToolbarButton appearance="subtle" icon={<CopyIcon />} onClick={handleCopy} />
+          <Tooltip content={"Copy"} relationship="label" withArrow>
+            <ToolbarButton appearance="subtle" icon={<CopyIcon />} onClick={handleCopy} />
+          </Tooltip>
           {shouldShowOpenButton && (
-            <ToolbarButton appearance="subtle" icon={<LinkIcon />} onClick={handleOpen} />
+            <Tooltip content={"Open"} relationship="label" withArrow>
+              <ToolbarButton appearance="subtle" icon={<LinkIcon />} onClick={handleOpen} />
+            </Tooltip>
           )}
         </Toolbar>
         <Divider />
