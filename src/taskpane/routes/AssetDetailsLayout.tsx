@@ -225,7 +225,11 @@ const AssetDetailsLayout = () => {
   return (
     <div className="p-2 min-h-screen  flex flex-col gap-2">
       <Toaster toasterId={toasterId} />
-      <Card>
+      <Card
+        style={{
+          backgroundColor: "var(--colorNeutralBackground3)",
+        }}
+      >
         <CardHeader
           header={
             <Link

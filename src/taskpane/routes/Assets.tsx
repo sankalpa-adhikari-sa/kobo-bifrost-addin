@@ -435,13 +435,11 @@ const Assets: React.FC = () => {
   };
 
   return (
-    <div className="px-4 pt-4 min-h-screen flex flex-col gap-2 ">
+    <div className="px-4 min-h-screen flex flex-col gap-2 ">
       <span className="text-base font-medium">My Assets</span>
       <Toaster toasterId={toasterId} />
       <Toolbar
         style={{
-          marginBottom: "8px",
-          marginTop: "8px",
           paddingLeft: "8px",
           display: "flex",
           alignItems: "center",
@@ -534,6 +532,10 @@ const Assets: React.FC = () => {
             autoFitColumns: false,
           }}
           focusMode="row_unstable"
+          style={{
+            backgroundColor: "var(--colorNeutralBackground3)",
+            borderRadius: "4px",
+          }}
         >
           <DataGridHeader>
             <DataGridRow

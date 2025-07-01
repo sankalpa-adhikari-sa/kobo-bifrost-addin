@@ -252,15 +252,15 @@ export const MediaFileUploadForm = ({
                       : file.status === "error"
                         ? "var(--colorPaletteRedBackground1)"
                         : file.status === "uploading"
-                          ? "var(--colorPaletteBlueBackground1)"
-                          : "var(--colorNeutralBackground2)",
+                          ? "var(--colorNeutralBackground1)"
+                          : "var(--colorNeutralBackground1)",
                   border: `1px solid ${
                     file.status === "success"
                       ? "var(--colorPaletteGreenBorder2)"
                       : file.status === "error"
                         ? "var(--colorPaletteRedBorder2)"
                         : file.status === "uploading"
-                          ? "var(--colorPaletteBlueBorder2)"
+                          ? "var(--colorNeutralStroke2)"
                           : "var(--colorNeutralStroke2)"
                   }`,
                 }}

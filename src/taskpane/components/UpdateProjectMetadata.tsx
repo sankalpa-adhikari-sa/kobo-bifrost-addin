@@ -9,6 +9,7 @@ import {
   useId,
   Button,
   Spinner,
+  Card,
 } from "@fluentui/react-components";
 import { ProjectMetadataFormData, projectMetadataFormSchema } from "../../validators/schema";
 import { useAssetsById, useUpdateProjectMetadata } from "../hooks/useAssets";
@@ -82,7 +83,12 @@ export const UpdateProjectMetadata = ({ assetUid }: { assetUid: string }) => {
   if (isAssetError || !asset) return <div>Error loading asset data or asset not found.</div>;
 
   return (
-    <div className="flex flex-col gap-2 pt-2">
+    <Card
+      style={{
+        backgroundColor: "var(--colorNeutralBackground3)",
+      }}
+      className="flex flex-col gap-2 mt-2"
+    >
       <AssetMetadataForm
         control={control as Control<ProjectMetadataFormData>}
         errors={errors}
@@ -91,6 +97,6 @@ export const UpdateProjectMetadata = ({ assetUid }: { assetUid: string }) => {
       <Button type="submit" onClick={handleSubmit(onSubmit)} appearance="primary">
         Submit
       </Button>
-    </div>
+    </Card>
   );
 };

@@ -143,14 +143,18 @@ const AssetDetailsSummary = () => {
       }
     );
   };
-  console.log(asset.deployment__links);
 
   return (
     <div className="p-2 min-h-screen flex flex-col gap-2">
       <Toaster toasterId={toasterId} />
       <span className="text-sm font-medium ">Current Version</span>
 
-      <Card className="p-6 space-y-2 shadow-lg rounded-lg">
+      <Card
+        style={{
+          backgroundColor: "var(--colorNeutralBackground3)",
+        }}
+        className="p-6 space-y-2 shadow-lg rounded-lg"
+      >
         {(hasUndeployedChanges || needsFirstTimeDeployment) && (
           <MessageBar style={{ minHeight: "auto" }} intent="warning" layout="multiline" as="div">
             <MessageBarBody>
@@ -234,10 +238,7 @@ const AssetDetailsSummary = () => {
         <VersionHistoryTable assetUid={asset.uid} deployedVersion={asset.deployed_versions} />
       )}
       {asset.deployment__links && Object.keys(asset.deployment__links).length > 0 && (
-        <div className="flex flex-col space-y-2 ">
-          <span className="text-sm font-medium ">Collect data</span>
-          <CollectDataCard deploymentLinks={asset.deployment__links} />
-        </div>
+        <CollectDataCard deploymentLinks={asset.deployment__links} assetUid={asset.uid} />
       )}
       <UpdateXlsFormsByFileUpload
         open={activeDialog === "xlsUpload"}

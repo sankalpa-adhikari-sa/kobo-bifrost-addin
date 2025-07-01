@@ -1,5 +1,21 @@
-import { Button, Card, Divider, Dropdown, Option } from "@fluentui/react-components";
+import {
+  Card,
+  CardHeader,
+  Divider,
+  Dropdown,
+  Option,
+  Switch,
+  Toolbar,
+  ToolbarButton,
+} from "@fluentui/react-components";
 import { useState } from "react";
+import { CopyIcon, LinkIcon } from "./primitives/icons";
+import {
+  useAddAnonymousSubmissionPermission,
+  useDeleteAnonymousSubmissionPermission,
+  usePermissionAssignments,
+} from "../hooks/usePermission";
+import { useStoredToken } from "../hooks/useStoredToken";
 
 interface CollectDataCardProps {
   deploymentLinks: {
@@ -12,10 +28,53 @@ interface CollectDataCardProps {
     single_url: string;
     url: string;
   };
+  assetUid: string;
 }
 
-export const CollectDataCard = ({ deploymentLinks }: CollectDataCardProps) => {
-  const [selectedOption, setSelectedOption] = useState("offline_url"); // Default to Online-Offline
+export const CollectDataCard = ({ deploymentLinks, assetUid }: CollectDataCardProps) => {
+  const { kpiUrl } = useStoredToken();
+  const { data: permissions } = usePermissionAssignments(assetUid);
+  const AnonymousSubmissionMutation = useAddAnonymousSubmissionPermission();
+  const DeleteAnonymousSubmissionMutation = useDeleteAnonymousSubmissionPermission();
+
+  const anonymousPermission = permissions?.find(
+    (perm: any) =>
+      perm.user.includes("/api/v2/users/AnonymousUser/") &&
+      perm.permission.includes("/api/v2/permissions/add_submissions/") &&
+      perm.label === "Add submissions"
+  );
+
+  const isAnonymousSubmissionEnabled = !!anonymousPermission;
+
+  const handleAnonymousSubmission = () => {
+    AnonymousSubmissionMutation.mutate({
+      assetUid: assetUid,
+      payload: {
+        permission: `${kpiUrl}/api/v2/permissions/add_submissions/`,
+        user: `${kpiUrl}/api/v2/users/AnonymousUser/`,
+      },
+    });
+  };
+
+  const handleDeleteAnonymousSubmission = () => {
+    if (anonymousPermission?.url) {
+      console.log(anonymousPermission.url);
+      DeleteAnonymousSubmissionMutation.mutate({
+        permissionUrl: anonymousPermission.url,
+        assetUid,
+      });
+    }
+  };
+
+  const handleSwitchToggle = () => {
+    if (isAnonymousSubmissionEnabled) {
+      handleDeleteAnonymousSubmission();
+    } else {
+      handleAnonymousSubmission();
+    }
+  };
+
+  const [selectedOption, setSelectedOption] = useState("offline_url");
 
   const options = [
     {
@@ -88,47 +147,34 @@ export const CollectDataCard = ({ deploymentLinks }: CollectDataCardProps) => {
   const shouldShowOpenButton = selectedOption !== "iframe_url";
 
   return (
-    <Card
-      style={{
-        backgroundColor: "var(--colorNeutralBackground3)",
-      }}
-    >
-      <div className="flex flex-row items-center justify-between">
-        <Dropdown
-          value={getCurrentLabel()}
-          onOptionSelect={(_, data) => {
-            if (data.optionValue) {
-              setSelectedOption(data.optionValue);
-            }
-          }}
-          placeholder="Select deployment type"
-        >
-          {options.map((option) => (
-            <Option key={option.value} value={option.value}>
-              {option.label}
-            </Option>
-          ))}
-        </Dropdown>
-
-        <div className="flex flex-row gap-2">
-          <Button onClick={handleCopy}>
-            Copy {selectedOption === "iframe_url" ? "Code" : "Link"}
-          </Button>
-          {shouldShowOpenButton && <Button onClick={handleOpen}>Open</Button>}
-        </div>
-      </div>
-
-      <div style={{ marginTop: "16px" }}>
-        <div
-          style={{
-            marginBottom: "12px",
-            color: "var(--colorNeutralForeground2)",
-            fontSize: "14px",
-          }}
-        >
-          {getCurrentDescription()}
-        </div>
-
+    <div className="flex flex-col gap-2 pt-2 ">
+      <span className="text-sm font-medium ">Collect data</span>
+      <Card
+        style={{
+          backgroundColor: "var(--colorNeutralBackground3)",
+        }}
+      >
+        <CardHeader
+          header={
+            <Dropdown
+              value={getCurrentLabel()}
+              onOptionSelect={(_, data) => {
+                if (data.optionValue) {
+                  setSelectedOption(data.optionValue);
+                }
+              }}
+              placeholder="Select deployment type"
+              className="w-full rounded-md mb-2"
+            >
+              {options.map((option) => (
+                <Option key={option.value} value={option.value}>
+                  {option.label}
+                </Option>
+              ))}
+            </Dropdown>
+          }
+          description={<span className="text-xs">{getCurrentDescription()}</span>}
+        />
         {selectedOption === "iframe_url" && (
           <div
             style={{
@@ -146,8 +192,18 @@ export const CollectDataCard = ({ deploymentLinks }: CollectDataCardProps) => {
             </pre>
           </div>
         )}
-      </div>
-      <Divider />
-    </Card>
+        <Toolbar size="small" className="flex flex-row items-center justify-end">
+          <ToolbarButton appearance="subtle" icon={<CopyIcon />} onClick={handleCopy} />
+          {shouldShowOpenButton && (
+            <ToolbarButton appearance="subtle" icon={<LinkIcon />} onClick={handleOpen} />
+          )}
+        </Toolbar>
+        <Divider />
+        <div className="flex flex-row items-center">
+          <Switch checked={isAnonymousSubmissionEnabled} onChange={handleSwitchToggle} />
+          Allow submissions to this form without a username and password
+        </div>
+      </Card>
+    </div>
   );
 };

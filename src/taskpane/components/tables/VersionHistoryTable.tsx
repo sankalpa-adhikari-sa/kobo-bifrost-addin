@@ -14,9 +14,9 @@ import {
   useId,
   Toaster,
 } from "@fluentui/react-components";
-import { Copy20Regular } from "@fluentui/react-icons";
 import { useState } from "react";
 import { CloneAssetDialog } from "../dialogs/CloneAssetDialog";
+import { CloneIcon } from "../primitives/icons";
 
 interface deployedVerionType {
   count: number;
@@ -120,7 +120,7 @@ export const VersionHistoryTable = ({
         <TableCellLayout className="text-xs">
           <Button
             appearance="subtle"
-            icon={<Copy20Regular />}
+            icon={<CloneIcon />}
             aria-label="Clone Asset"
             size="small"
             onClick={() => handleCloneClick(item.uid)}
@@ -131,7 +131,7 @@ export const VersionHistoryTable = ({
   ];
 
   return (
-    <div className="  flex flex-col gap-2">
+    <div className="flex flex-col gap-2 pt-2">
       <span className="text-sm font-medium ">History</span>
       <Toaster toasterId={toasterId} />
       <div style={{ overflowX: "auto", maxWidth: "100%" }}>
@@ -141,7 +141,11 @@ export const VersionHistoryTable = ({
           sortable
           getRowId={(item) => item.uid}
           focusMode="row_unstable"
-          style={{ minWidth: "300px" }}
+          style={{
+            minWidth: "300px",
+            backgroundColor: "var(--colorNeutralBackground3)",
+            borderRadius: "4px",
+          }}
         >
           <DataGridHeader>
             <DataGridRow>

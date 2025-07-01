@@ -137,7 +137,12 @@ const MediaSettings = ({ assetUid }: { assetUid: string }) => {
 
           <div className={styles.grid}>
             {mediaFiles.results.map((file: any) => (
-              <Card key={file.uid}>
+              <Card
+                style={{
+                  backgroundColor: "var(--colorNeutralBackground3)",
+                }}
+                key={file.uid}
+              >
                 <div className="flex items-start">
                   <DocumentFilled className={styles.fileIcon} />
                   <div className="flex-1 min-w-0">

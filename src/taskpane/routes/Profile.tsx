@@ -1,4 +1,4 @@
-import { Avatar, Spinner } from "@fluentui/react-components";
+import { Avatar, Card, Spinner } from "@fluentui/react-components";
 import { useGetOwner } from "../hooks/useMe";
 import { UpdateProfile } from "../components/UpdateProfile";
 
@@ -22,7 +22,13 @@ const Profile = () => {
           <span className="text-xs italic">{profileData.email}</span>
         </div>
       </div>
-      <UpdateProfile />
+      <Card
+        style={{
+          backgroundColor: "var(--colorNeutralBackground3)",
+        }}
+      >
+        <UpdateProfile />
+      </Card>
     </div>
   );
 };
