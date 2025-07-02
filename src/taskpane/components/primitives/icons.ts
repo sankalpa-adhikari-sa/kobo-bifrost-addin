@@ -5,8 +5,16 @@ import {
   ArrowClockwiseRegular,
   ArrowDownloadFilled,
   ArrowDownloadRegular,
+  ArrowNextFilled,
+  ArrowNextRegular,
+  ArrowPreviousFilled,
+  ArrowPreviousRegular,
   ArrowUploadRegular,
   bundleIcon,
+  ChevronLeftFilled,
+  ChevronLeftRegular,
+  ChevronRightFilled,
+  ChevronRightRegular,
   CopyFilled,
   CopyRegular,
   DeleteFilled,
@@ -17,6 +25,8 @@ import {
   DocumentBulletListMultipleFilled,
   DocumentBulletListMultipleRegular,
   DocumentBulletListRegular,
+  DocumentCatchUpFilled,
+  DocumentCatchUpRegular,
   DocumentCopyFilled,
   DocumentCopyRegular,
   DocumentFilled,
@@ -59,6 +69,7 @@ export const DangerZoneIcon = bundleIcon(ErrorCircleFilled, ErrorCircleRegular);
 export const DeleteIcon = bundleIcon(DeleteFilled, DeleteRegular);
 export const CloneIcon = bundleIcon(DocumentCopyFilled, DocumentCopyRegular);
 export const CopyIcon = bundleIcon(CopyFilled, CopyRegular);
+export const ActivityIcon = bundleIcon(DocumentCatchUpFilled, DocumentCatchUpRegular);
 export const EyeIcon = bundleIcon(EyeFilled, EyeRegular);
 export const SettingsIcon = bundleIcon(SettingsFilled, SettingsRegular);
 export const HorizontalOptionIcon = bundleIcon(MoreHorizontalFilled, MoreHorizontalRegular);
@@ -67,3 +78,8 @@ export const ArchiveIcon = bundleIcon(ArrowClockwiseFilled, ArrowClockwiseRegula
 export const DownloadIcon = bundleIcon(ArrowDownloadFilled, ArrowDownloadRegular);
 export const PersonIcon = bundleIcon(PersonFilled, PersonRegular);
 export const PersonCircleIcon = bundleIcon(PersonCircleFilled, PersonCircleRegular);
+
+export const PreviousIcon = bundleIcon(ArrowPreviousFilled, ArrowPreviousRegular);
+export const NextIcon = bundleIcon(ArrowNextFilled, ArrowNextRegular);
+export const ChevronLeftIcon = bundleIcon(ChevronLeftFilled, ChevronLeftRegular);
+export const ChevronRightIcon = bundleIcon(ChevronRightFilled, ChevronRightRegular);

@@ -14,6 +14,8 @@ import MediaSettings from "../components/MediaSettings";
 import { useParams } from "react-router";
 import { UpdateProjectMetadata } from "../components/UpdateProjectMetadata";
 import { DangerZone } from "../components/DangerZone";
+import { ActivityIcon } from "../components/primitives/icons";
+import { AssetActivity } from "../components/AssetActivity";
 
 const GeneralIcon = bundleIcon(SlideSettingsFilled, SlideSettingsRegular);
 const MediaIcon = bundleIcon(ImageFilled, ImageRegular);
@@ -42,11 +44,15 @@ const AssetDetailsSettings = () => {
         <Tab id="Action" icon={<DangerZoneIcon />} value="action">
           Action
         </Tab>
+        <Tab id="Activity" icon={<ActivityIcon />} value="activity">
+          Activity
+        </Tab>
       </TabList>
       <div>
         {selectedValue === "general" && <UpdateProjectMetadata assetUid={uid} />}
         {selectedValue === "media" && <MediaSettings assetUid={uid} />}
         {selectedValue === "action" && <DangerZone assetUid={uid} />}
+        {selectedValue === "activity" && <AssetActivity assetUid={uid} />}
       </div>
     </div>
   );
