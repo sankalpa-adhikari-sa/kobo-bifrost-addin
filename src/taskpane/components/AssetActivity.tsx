@@ -15,7 +15,7 @@ import {
   TableCellLayout,
 } from "@fluentui/react-components";
 import { ChevronLeftIcon, ChevronRightIcon, NextIcon, PreviousIcon } from "./primitives/icons";
-import { useActivity } from "../hooks/useActivity";
+import { useActions, useActivity } from "../hooks/useActivity";
 import { actionOptions } from "../../utils/constants";
 
 interface ActivityItem {
@@ -36,13 +36,17 @@ interface AssetActivityProps {
 export const AssetActivity = ({ assetUid }: AssetActivityProps) => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
+  const [q, setQ] = useState("NOT action:'add-submission'");
   const offset = (page - 1) * limit;
 
   const { data: assetActions } = useActivity({
     assetUid,
     offset,
     limit,
+    q,
   });
+
+  const { data: actionsData } = useActions({ assetUid });
 
   const totalCount = assetActions?.count || 0;
   const totalPages = Math.ceil(totalCount / limit);
@@ -77,6 +81,7 @@ export const AssetActivity = ({ assetUid }: AssetActivityProps) => {
   const columns: TableColumnDefinition<(typeof activityData)[0]>[] = [
     createTableColumn<(typeof activityData)[0]>({
       columnId: "eventDescription",
+      compare: (a, b) => a.eventDescription.localeCompare(b.eventDescription),
       renderHeaderCell: () => <span className="text-xs">Event Description</span>,
       renderCell: (item) => (
         <TableCellLayout className="text-xs">{item.eventDescription}</TableCellLayout>
@@ -84,6 +89,7 @@ export const AssetActivity = ({ assetUid }: AssetActivityProps) => {
     }),
     createTableColumn<(typeof activityData)[0]>({
       columnId: "date",
+      compare: (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
       renderHeaderCell: () => "Date",
       renderCell: (item) => <TableCellLayout className="text-xs">{item.date}</TableCellLayout>,
     }),
@@ -112,13 +118,59 @@ export const AssetActivity = ({ assetUid }: AssetActivityProps) => {
     }
   };
 
+  const handleActionFilterChange = (_: unknown, data: { optionValue?: string }) => {
+    if (data.optionValue) {
+      if (data.optionValue === "all") {
+        setQ("NOT action:'add-submission'");
+      } else {
+        setQ(`action:'${data.optionValue}'`);
+      }
+      setPage(1);
+    }
+  };
+
+  const getActionLabel = (actionName: string): string => {
+    const actionOption = actionOptions.find((option) => option.name === actionName);
+    return actionOption ? actionOption.label : actionName;
+  };
+
+  const getCurrentFilterValue = (): string => {
+    if (q === "NOT action:'add-submission'") return "all";
+    const match = q.match(/action:'([^']+)'/);
+    return match ? match[1] : "all";
+  };
+  const getCurrentFilterLabel = (): string => {
+    const currentValue = getCurrentFilterValue();
+    if (currentValue === "all") return "All Actions";
+    return getActionLabel(currentValue);
+  };
+
   const isFirstPage = page === 1;
   const isLastPage = page >= totalPages;
   const hasNoData = totalCount === 0;
-
   return (
     <div>
-      <h4>Recent Project Activity</h4>
+      <h4 className="text-base font-medium">Recent Project Activity</h4>
+      {actionsData?.actions && (
+        <div className="flex flex-row items-center justify-end gap-4 mb-4">
+          <div className="flex flex-col">
+            <Dropdown
+              size="small"
+              selectedOptions={[getCurrentFilterValue()]}
+              value={getCurrentFilterLabel()}
+              onOptionSelect={handleActionFilterChange}
+              style={{ minWidth: "180px" }}
+            >
+              <Option value="all">All Actions</Option>
+              {(actionsData?.actions || []).map((action: string) => (
+                <Option className="capitalize" key={action} value={action}>
+                  {getActionLabel(action)}
+                </Option>
+              ))}
+            </Dropdown>
+          </div>
+        </div>
+      )}
 
       {totalCount > 0 && (
         <div style={{ fontSize: "0.875rem", color: "#666", margin: "8px 0" }}>
@@ -158,34 +210,36 @@ export const AssetActivity = ({ assetUid }: AssetActivityProps) => {
               </DataGridBody>
             </DataGrid>
           </div>
+          <div className="flex flex-row items-center justify-between">
+            <Toolbar size="small">
+              <ToolbarButton
+                icon={<PreviousIcon />}
+                onClick={handleFirstPage}
+                disabled={isFirstPage || hasNoData}
+              />
+              <ToolbarButton
+                icon={<ChevronLeftIcon />}
+                onClick={handlePrevious}
+                disabled={isFirstPage || hasNoData}
+              />
 
-          <Toolbar size="small">
-            <ToolbarButton
-              icon={<PreviousIcon />}
-              onClick={handleFirstPage}
-              disabled={isFirstPage || hasNoData}
-            />
-            <ToolbarButton
-              icon={<ChevronLeftIcon />}
-              onClick={handlePrevious}
-              disabled={isFirstPage || hasNoData}
-            />
+              <span className="text-xs" style={{ margin: "0 8px" }}>
+                Page {totalCount > 0 ? page : 0} of {totalPages || 0}
+              </span>
 
-            <span style={{ margin: "0 8px" }}>
-              Page {totalCount > 0 ? page : 0} of {totalPages || 0}
-            </span>
-
-            <ToolbarButton
-              icon={<ChevronRightIcon />}
-              onClick={handleNext}
-              disabled={isLastPage || hasNoData}
-            />
-            <ToolbarButton
-              icon={<NextIcon />}
-              onClick={handleLastPage}
-              disabled={isLastPage || hasNoData}
-            />
+              <ToolbarButton
+                icon={<ChevronRightIcon />}
+                onClick={handleNext}
+                disabled={isLastPage || hasNoData}
+              />
+              <ToolbarButton
+                icon={<NextIcon />}
+                onClick={handleLastPage}
+                disabled={isLastPage || hasNoData}
+              />
+            </Toolbar>
             <Dropdown
+              size="small"
               value={limit.toString()}
               onOptionSelect={handleLimitChange}
               disabled={hasNoData}
@@ -199,7 +253,7 @@ export const AssetActivity = ({ assetUid }: AssetActivityProps) => {
               <Option value="50">50 rows</Option>
               <Option value="100">100 rows</Option>
             </Dropdown>
-          </Toolbar>
+          </div>
         </div>
       ) : (
         <div style={{ padding: "20px", textAlign: "center", color: "#666" }}>
