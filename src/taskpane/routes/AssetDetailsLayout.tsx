@@ -223,7 +223,7 @@ const AssetDetailsLayout = () => {
     });
   };
   return (
-    <div className="p-2 min-h-screen  flex flex-col gap-2">
+    <div className="p-4 min-h-screen  flex flex-col gap-2">
       <Toaster toasterId={toasterId} />
       <Card
         style={{

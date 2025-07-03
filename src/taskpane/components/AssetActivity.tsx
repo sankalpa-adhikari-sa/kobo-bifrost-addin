@@ -13,6 +13,7 @@ import {
   TableColumnDefinition,
   createTableColumn,
   TableCellLayout,
+  Spinner,
 } from "@fluentui/react-components";
 import { ChevronLeftIcon, ChevronRightIcon, NextIcon, PreviousIcon } from "./primitives/icons";
 import { useActions, useActivity } from "../hooks/useActivity";
@@ -39,7 +40,7 @@ export const AssetActivity = ({ assetUid }: AssetActivityProps) => {
   const [q, setQ] = useState("NOT action:'add-submission'");
   const offset = (page - 1) * limit;
 
-  const { data: assetActions } = useActivity({
+  const { data: assetActions, isLoading } = useActivity({
     assetUid,
     offset,
     limit,
@@ -139,6 +140,7 @@ export const AssetActivity = ({ assetUid }: AssetActivityProps) => {
     const match = q.match(/action:'([^']+)'/);
     return match ? match[1] : "all";
   };
+
   const getCurrentFilterLabel = (): string => {
     const currentValue = getCurrentFilterValue();
     if (currentValue === "all") return "All Actions";
@@ -147,12 +149,20 @@ export const AssetActivity = ({ assetUid }: AssetActivityProps) => {
 
   const isFirstPage = page === 1;
   const isLastPage = page >= totalPages;
-  const hasNoData = totalCount === 0;
+  const hasNoData = !isLoading && totalCount === 0;
+  const shouldShowData = !isLoading && activityData.length > 0;
+
   return (
     <div>
       <h4 className="text-base font-medium">Recent Project Activity</h4>
       {actionsData?.actions && (
-        <div className="flex flex-row items-center justify-end gap-4 mb-4">
+        <div className="flex flex-row items-center justify-between gap-4 my-2">
+          {totalCount > 0 && !isLoading && (
+            <div className="text-xs text-[var(--colorNeutralForeground3)]">
+              Showing {Math.min((page - 1) * limit + 1, totalCount)} to{" "}
+              {Math.min(page * limit, totalCount)} of {totalCount} items
+            </div>
+          )}
           <div className="flex flex-col">
             <Dropdown
               size="small"
@@ -160,6 +170,7 @@ export const AssetActivity = ({ assetUid }: AssetActivityProps) => {
               value={getCurrentFilterLabel()}
               onOptionSelect={handleActionFilterChange}
               style={{ minWidth: "180px" }}
+              disabled={isLoading}
             >
               <Option value="all">All Actions</Option>
               {(actionsData?.actions || []).map((action: string) => (
@@ -172,14 +183,11 @@ export const AssetActivity = ({ assetUid }: AssetActivityProps) => {
         </div>
       )}
 
-      {totalCount > 0 && (
-        <div style={{ fontSize: "0.875rem", color: "#666", margin: "8px 0" }}>
-          Showing {Math.min((page - 1) * limit + 1, totalCount)} to{" "}
-          {Math.min(page * limit, totalCount)} of {totalCount} items
+      {isLoading ? (
+        <div style={{ padding: "40px", textAlign: "center" }}>
+          <Spinner size="medium" />
         </div>
-      )}
-
-      {activityData.length > 0 ? (
+      ) : shouldShowData ? (
         <div>
           <div style={{ overflowX: "auto", maxWidth: "100%" }}>
             <DataGrid
@@ -215,12 +223,12 @@ export const AssetActivity = ({ assetUid }: AssetActivityProps) => {
               <ToolbarButton
                 icon={<PreviousIcon />}
                 onClick={handleFirstPage}
-                disabled={isFirstPage || hasNoData}
+                disabled={isFirstPage || isLoading}
               />
               <ToolbarButton
                 icon={<ChevronLeftIcon />}
                 onClick={handlePrevious}
-                disabled={isFirstPage || hasNoData}
+                disabled={isFirstPage || isLoading}
               />
 
               <span className="text-xs" style={{ margin: "0 8px" }}>
@@ -230,19 +238,19 @@ export const AssetActivity = ({ assetUid }: AssetActivityProps) => {
               <ToolbarButton
                 icon={<ChevronRightIcon />}
                 onClick={handleNext}
-                disabled={isLastPage || hasNoData}
+                disabled={isLastPage || isLoading}
               />
               <ToolbarButton
                 icon={<NextIcon />}
                 onClick={handleLastPage}
-                disabled={isLastPage || hasNoData}
+                disabled={isLastPage || isLoading}
               />
             </Toolbar>
             <Dropdown
               size="small"
               value={limit.toString()}
               onOptionSelect={handleLimitChange}
-              disabled={hasNoData}
+              disabled={isLoading || hasNoData}
               style={{
                 minWidth: "60px",
                 padding: 0,

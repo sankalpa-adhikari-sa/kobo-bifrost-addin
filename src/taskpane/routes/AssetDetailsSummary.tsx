@@ -145,7 +145,7 @@ const AssetDetailsSummary = () => {
   };
 
   return (
-    <div className="p-2 min-h-screen flex flex-col gap-2">
+    <div className="pt-2 min-h-screen flex flex-col gap-2">
       <Toaster toasterId={toasterId} />
       <span className="text-sm font-medium ">Current Version</span>
 

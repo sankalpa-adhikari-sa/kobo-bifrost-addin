@@ -34,7 +34,7 @@ const AssetDetailsSettings = () => {
 
   return (
     <div>
-      <TabList selectedValue={selectedValue} onTabSelect={onTabSelect}>
+      <TabList size="small" selectedValue={selectedValue} onTabSelect={onTabSelect}>
         <Tab id="General" icon={<GeneralIcon />} value="general">
           General
         </Tab>
