@@ -21,7 +21,7 @@ import {
   Globe20Regular,
   CheckmarkCircle20Filled,
 } from "@fluentui/react-icons";
-import { useStoredToken } from "../hooks/useStoredToken";
+import { useStoredToken } from "../hooks/AuthProvider";
 
 const useStyles = makeStyles({
   container: {

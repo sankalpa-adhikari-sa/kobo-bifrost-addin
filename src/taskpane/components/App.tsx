@@ -40,10 +40,12 @@ import {
   HomeIcon,
   LinkIcon,
   PersonIcon,
+  SettingsIcon,
   WorkbookIcon,
   XlsxIcon,
 } from "./primitives/icons";
 import { AssetDetails } from "../routes/AssetDetails";
+import { useStoredToken } from "../hooks/AuthProvider";
 
 export interface AppProps {
   title: string;
@@ -65,6 +67,7 @@ const App: React.FC<AppProps> = ({ title, isOfficeInitialized }) => {
   const UploadIcon = bundleIcon(DocumentAdd16Filled, DocumentAdd16Regular);
   const [activeDialog, setActiveDialog] = React.useState<DialogType | null>(null);
   const navigate = useNavigate();
+  const { token, kpiUrl, isLoading } = useStoredToken();
   return (
     <div>
       <div className="flex flex-row items-baseline justify-between pr-4">
@@ -95,27 +98,40 @@ const App: React.FC<AppProps> = ({ title, isOfficeInitialized }) => {
             </MenuTrigger>
             <MenuPopover>
               <MenuList>
-                <MenuGroup>
-                  <MenuGroupHeader>Create new asset</MenuGroupHeader>
-                  <MenuItem icon={<XlsxIcon />} onClick={() => setActiveDialog("xlsUpload")}>
-                    Upload XLSForm
-                  </MenuItem>
-                  <MenuItem icon={<LinkIcon />} onClick={() => setActiveDialog("xlsUrlUpload")}>
-                    Upload XLSForm via URL
-                  </MenuItem>
-                  <MenuItem
-                    icon={<WorkbookIcon />}
-                    onClick={() => setActiveDialog("workbookUpload")}
-                  >
-                    Upload Current Workbook
-                  </MenuItem>
-                  <MenuItem
-                    icon={<EmptyDocumentIcon />}
-                    onClick={() => setActiveDialog("emptyAsset")}
-                  >
-                    Create Empty Asset
-                  </MenuItem>
-                </MenuGroup>
+                {isLoading ? (
+                  <MenuGroup>
+                    <MenuGroupHeader>Loading...</MenuGroupHeader>
+                  </MenuGroup>
+                ) : !token || !kpiUrl ? (
+                  <MenuGroup>
+                    <MenuGroupHeader>Create new asset</MenuGroupHeader>
+                    <MenuItem icon={<SettingsIcon />} onClick={() => navigate("/token-manager")}>
+                      Setup Account
+                    </MenuItem>
+                  </MenuGroup>
+                ) : (
+                  <MenuGroup>
+                    <MenuGroupHeader>Create new asset</MenuGroupHeader>
+                    <MenuItem icon={<XlsxIcon />} onClick={() => setActiveDialog("xlsUpload")}>
+                      Upload XLSForm
+                    </MenuItem>
+                    <MenuItem icon={<LinkIcon />} onClick={() => setActiveDialog("xlsUrlUpload")}>
+                      Upload XLSForm via URL
+                    </MenuItem>
+                    <MenuItem
+                      icon={<WorkbookIcon />}
+                      onClick={() => setActiveDialog("workbookUpload")}
+                    >
+                      Upload Current Workbook
+                    </MenuItem>
+                    <MenuItem
+                      icon={<EmptyDocumentIcon />}
+                      onClick={() => setActiveDialog("emptyAsset")}
+                    >
+                      Create Empty Asset
+                    </MenuItem>
+                  </MenuGroup>
+                )}
               </MenuList>
             </MenuPopover>
           </Menu>

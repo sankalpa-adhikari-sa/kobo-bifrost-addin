@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useStoredToken } from "./useStoredToken";
+import { useStoredToken } from "./AuthProvider";
 import axios from "axios";
 import { ProfileFormData } from "../../validators/schema";
 

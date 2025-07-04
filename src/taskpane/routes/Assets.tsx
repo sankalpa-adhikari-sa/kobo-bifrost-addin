@@ -62,7 +62,7 @@ import { useNavigate } from "react-router";
 import { CloneAssetDialog } from "../components/dialogs/CloneAssetDialog";
 import { useDestructiveStyles } from "../components/primitives/styles";
 import { formatDate } from "../../utils/utils";
-import { useStoredToken } from "../hooks/useStoredToken";
+import { useStoredToken } from "../hooks/AuthProvider";
 import { SettingsIcon } from "../components/primitives/icons";
 
 interface RawAssetSettings {

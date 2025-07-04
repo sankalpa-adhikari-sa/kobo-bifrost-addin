@@ -6,6 +6,7 @@ import { ThemeProvider, useTheme } from "./components/ThemeProvider";
 import App from "./components/App";
 import { MemoryRouter } from "react-router";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { AuthProvider } from "./hooks/AuthProvider";
 const APP_TITLE = "Kobotoolbox Add-in";
 const queryClient = new QueryClient();
 
@@ -26,7 +27,9 @@ const ThemedApp: React.FC = () => {
 const AppWithProviders: React.FC = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider>
-      <ThemedApp />
+      <AuthProvider>
+        <ThemedApp />
+      </AuthProvider>
       <ReactQueryDevtools initialIsOpen={false} />
     </ThemeProvider>
   </QueryClientProvider>

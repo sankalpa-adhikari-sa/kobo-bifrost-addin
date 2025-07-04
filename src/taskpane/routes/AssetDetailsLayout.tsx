@@ -43,7 +43,7 @@ import {
 } from "@fluentui/react-icons";
 import { useAssetsById } from "../hooks/useAssets";
 import { UpdateXlsFormsByFileUpload } from "../components/dialogs/UpdateProjectByFileUpload";
-import { useStoredToken } from "../hooks/useStoredToken";
+import { useStoredToken } from "../hooks/AuthProvider";
 import { useDownloadXlsForm, useDownloadXmlForm } from "../hooks/useDownload";
 import { useGetAssetSnapshots } from "../hooks/usePreview";
 import { UpdateXlsFormsByUrlUpload } from "../components/dialogs/UpdateProjectByUrlUpload";

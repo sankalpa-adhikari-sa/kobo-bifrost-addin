@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useStoredToken } from "./useStoredToken";
+import { useStoredToken } from "./AuthProvider";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 const fetchActivity = async (

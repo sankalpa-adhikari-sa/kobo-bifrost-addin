@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useStoredToken } from "./useStoredToken";
+import { useStoredToken } from "./AuthProvider";
 import axios from "axios";
 
 const cloneAsset = async (

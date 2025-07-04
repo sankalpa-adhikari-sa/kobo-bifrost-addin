@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import { useStoredToken } from "./useStoredToken";
+import { useStoredToken } from "./AuthProvider";
 
 const deleteMedia = async (
   baseUrl: string,

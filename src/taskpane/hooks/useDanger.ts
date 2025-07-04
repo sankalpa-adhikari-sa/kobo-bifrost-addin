@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import { useStoredToken } from "./useStoredToken";
+import { useStoredToken } from "./AuthProvider";
 
 const deleteAsset = async (baseUrl: string, token: string, assetUid: string) => {
   const response = await axios.delete(

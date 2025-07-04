@@ -1,7 +1,7 @@
 import { Avatar, Button, Card, CardPreview, Spinner, Text } from "@fluentui/react-components";
 import { useGetOwner } from "../hooks/useMe";
 import { UpdateProfile } from "../components/UpdateProfile";
-import { useStoredToken } from "../hooks/useStoredToken";
+import { useStoredToken } from "../hooks/AuthProvider";
 import { SettingsIcon } from "../components/primitives/icons";
 import { useNavigate } from "react-router";
 

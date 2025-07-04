@@ -16,7 +16,7 @@ import {
   useDeleteAnonymousSubmissionPermission,
   usePermissionAssignments,
 } from "../hooks/usePermission";
-import { useStoredToken } from "../hooks/useStoredToken";
+import { useStoredToken } from "../hooks/AuthProvider";
 
 interface CollectDataCardProps {
   deploymentLinks: {

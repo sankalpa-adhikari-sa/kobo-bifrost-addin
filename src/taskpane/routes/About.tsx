@@ -2,7 +2,7 @@ import React from "react";
 import { Card, CardHeader, CardPreview, Divider } from "@fluentui/react-components";
 import { Text, Button } from "@fluentui/react-components";
 import { Link, useNavigate } from "react-router";
-import { useStoredToken } from "../hooks/useStoredToken";
+import { useStoredToken } from "../hooks/AuthProvider";
 import { EmptyDocumentIcon, OpenLinkIcon, SettingsIcon } from "../components/primitives/icons";
 
 const About: React.FC = () => {
@@ -116,9 +116,9 @@ const About: React.FC = () => {
             <Link
               to="https://docs.getodk.org/tutorial-first-form/"
               target="_blank"
-              className="inline-flex items-center gap-2 text-blue-600 hover:underline transition-all"
+              className="inline-flex items-center gap-2  text-[var(--colorBrandForeground2)] hover:underline transition-all"
             >
-              <OpenLinkIcon className="w-4 h-4 text-blue-500 group-hover:text-blue-700" />
+              <OpenLinkIcon className="w-4 h-4 text-[var(--colorBrandForeground2)] group-hover:text-[var(--colorBrandForeground3)]" />
               GetODK Docs
             </Link>
           </li>
@@ -126,9 +126,9 @@ const About: React.FC = () => {
             <Link
               to="https://xlsform.org/en/"
               target="_blank"
-              className="inline-flex items-center gap-2 text-blue-600 hover:underline transition-all"
+              className="inline-flex items-center gap-2  text-[var(--colorBrandForeground2)] hover:underline transition-all"
             >
-              <OpenLinkIcon className="w-4 h-4 text-blue-500 group-hover:text-blue-700" />
+              <OpenLinkIcon className="w-4 h-4  text-[var(--colorBrandForeground2)] group-hover:text-[var(--colorBrandForeground3)]" />
               XLSForm Docs
             </Link>
           </li>
@@ -136,9 +136,9 @@ const About: React.FC = () => {
             <Link
               to="https://www.kobotoolbox.org/"
               target="_blank"
-              className="inline-flex items-center gap-2 text-blue-600 hover:underline transition-all"
+              className="inline-flex items-center gap-2  text-[var(--colorBrandForeground2)] hover:underline transition-all"
             >
-              <OpenLinkIcon className="w-4 h-4 text-blue-500 group-hover:text-blue-700" />
+              <OpenLinkIcon className="w-4 h-4  text-[var(--colorBrandForeground2)] group-hover:text-[var(--colorBrandForeground3)]" />
               KoboToolbox
             </Link>
           </li>
