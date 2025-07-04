@@ -2,23 +2,27 @@ import axios from "axios";
 import { useStoredToken } from "./useStoredToken";
 import { useQuery } from "@tanstack/react-query";
 
-const fetchSubmissionCounts = async (baseUrl: string, token: string, assetUid: string) => {
-  const response = await axios.get(
-    `http://localhost:5000//api/v2/assets/${assetUid}/counts/?format=json&server=${encodeURIComponent(baseUrl)}`,
-    {
-      headers: {
-        Authorization: `Token ${token}`,
-      },
-      params: {
-        days: 7,
-      },
-    }
-  );
+const fetchSubmissionCounts = async (
+  baseUrl: string,
+  token: string,
+  assetUid: string,
+  days: number = 7
+) => {
+  const response = await axios.get(`http://localhost:5000/api/v2/assets/${assetUid}/counts/`, {
+    headers: {
+      Authorization: `Token ${token}`,
+    },
+    params: {
+      days: days,
+      server: baseUrl,
+      format: "json",
+    },
+  });
   return response.data;
 };
 export const fetchSubmissionData = async (baseUrl: string, token: string, assetUid: string) => {
   const response = await axios.get(
-    `http://localhost:5000//api/v2/assets/${assetUid}/data/?format=json&server=${encodeURIComponent(baseUrl)}`,
+    `http://localhost:5000/api/v2/assets/${assetUid}/data/?format=json&server=${encodeURIComponent(baseUrl)}`,
     {
       headers: {
         Authorization: `Token ${token}`,
@@ -38,7 +42,7 @@ export const duplicateData = async (
   dataUid: string
 ) => {
   const response = await axios.post(
-    `http://localhost:5000//api/v2/assets/${assetUid}/data/${dataUid}/duplicate/?server=${encodeURIComponent(baseUrl)}`,
+    `http://localhost:5000/api/v2/assets/${assetUid}/data/${dataUid}/duplicate/?server=${encodeURIComponent(baseUrl)}`,
     {
       headers: {
         Authorization: `Token ${token}`,
@@ -54,7 +58,7 @@ export const deleteData = async (
   dataUid: string
 ) => {
   const response = await axios.delete(
-    `http://localhost:5000//api/v2/assets/${assetUid}/data/${dataUid}/?server=${encodeURIComponent(baseUrl)}`,
+    `http://localhost:5000/api/v2/assets/${assetUid}/data/${dataUid}/?server=${encodeURIComponent(baseUrl)}`,
     {
       headers: {
         Authorization: `Token ${token}`,
@@ -71,7 +75,7 @@ export const bulkDeleteData = async (
   submissionIds: string[]
 ) => {
   const response = await axios.patch(
-    `http://localhost:5000//api/v2/assets/${assetUid}/data/bulk/?server=${encodeURIComponent(baseUrl)}`,
+    `http://localhost:5000/api/v2/assets/${assetUid}/data/bulk/?server=${encodeURIComponent(baseUrl)}`,
     {
       payload: {
         submission_ids: submissionIds,
@@ -86,12 +90,12 @@ export const bulkDeleteData = async (
   return response.data;
 };
 
-export const useSubmissionCounts = ({ assetUid }: { assetUid: string }) => {
+export const useSubmissionCounts = ({ assetUid, days }: { assetUid: string; days?: number }) => {
   const { token, kpiUrl, isLoading: isAuthLoading } = useStoredToken();
 
   return useQuery({
-    queryKey: ["asset_submission_count", kpiUrl, token, assetUid],
-    queryFn: () => fetchSubmissionCounts(kpiUrl!, token!, assetUid),
+    queryKey: ["asset_submission_count", kpiUrl, token, assetUid, days],
+    queryFn: () => fetchSubmissionCounts(kpiUrl!, token!, assetUid, days),
     enabled: !!kpiUrl && !!token && !isAuthLoading,
   });
 };

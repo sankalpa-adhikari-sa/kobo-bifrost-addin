@@ -48,6 +48,7 @@ const AssetMetadataForm = ({ control, errors }: AssetMetadataFormProps) => {
             <Dropdown
               placeholder="Select Sector"
               value={value?.label || ""}
+              selectedOptions={value ? [value.value] : []}
               onOptionSelect={(_, data) => {
                 const selectedValue = data.optionValue;
                 if (selectedValue) {
@@ -75,26 +76,32 @@ const AssetMetadataForm = ({ control, errors }: AssetMetadataFormProps) => {
         <Controller
           name="settings.country"
           control={control}
-          render={({ field: { onChange, value } }) => (
-            <Dropdown
-              multiselect
-              placeholder="Select Countries"
-              selectedOptions={value?.map((c: any) => c.value) || []}
-              onOptionSelect={(_, data) => {
-                const selectedCountries = countriesOptions.filter((country) =>
-                  data.selectedOptions.includes(country.value)
-                );
-                onChange(selectedCountries);
-              }}
-              className="w-full rounded-md"
-            >
-              {countriesOptions.map((country) => (
-                <Option key={country.value} value={country.value}>
-                  {country.label}
-                </Option>
-              ))}
-            </Dropdown>
-          )}
+          render={({ field: { onChange, value } }) => {
+            const displayValue =
+              value && value.length > 0 ? value.map((c) => c.label).join(", ") : "";
+
+            return (
+              <Dropdown
+                multiselect
+                placeholder="Select Countries"
+                value={displayValue}
+                selectedOptions={value?.map((c) => c.value) || []}
+                onOptionSelect={(_, data) => {
+                  const selectedCountries = countriesOptions.filter((country) =>
+                    data.selectedOptions.includes(country.value)
+                  );
+                  onChange(selectedCountries);
+                }}
+                className="w-full rounded-md"
+              >
+                {countriesOptions.map((country) => (
+                  <Option key={country.value} value={country.value}>
+                    {country.label}
+                  </Option>
+                ))}
+              </Dropdown>
+            );
+          }}
         />
       </Field>
     </div>

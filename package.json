@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "@azure/msal-node": "^3.6.0",
+    "@fluentui/react-charts": "^9.1.5",
     "@fluentui/react-components": "^9.55.1",
     "@fluentui/react-icons": "^2.0.264",
     "@hookform/resolvers": "^5.1.1",
@@ -47,6 +48,7 @@
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.58.1",
     "react-router": "^7.6.2",
+    "recharts": "^3.0.2",
     "tailwindcss": "^4.1.10",
     "zod": "^3.25.67"
   },

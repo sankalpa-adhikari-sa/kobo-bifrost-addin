@@ -14,18 +14,17 @@ import {
   MessageBarBody,
 } from "@fluentui/react-components";
 import { useAssetsById } from "../hooks/useAssets";
-import {
-  ErrorCircleFilled,
-  DeleteFilled,
-  ArchiveFilled,
-  WarningFilled,
-  ArrowClockwiseFilled,
-} from "@fluentui/react-icons";
 import { useArchiveAsset, useDeleteAsset } from "../hooks/useDanger";
 import { ReusableDialog } from "./dialogs/ReusableDialog";
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import { DeleteIcon } from "./primitives/icons";
+import {
+  ArchiveIcon,
+  DeleteIcon,
+  ErrorCircleIcon,
+  UnArchiveIcon,
+  WarningIcon,
+} from "./primitives/icons";
 import { useDestructiveStyles } from "./primitives/styles";
 
 type DialogType = "deleteAsset" | "archiveAsset" | "unarchiveAsset";
@@ -84,7 +83,7 @@ export const DangerZone = ({ assetUid }: { assetUid: string }) => {
   if (isAssetError || !asset) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center">
-        <ErrorCircleFilled className="text-red-600 text-5xl mb-4" />
+        <ErrorCircleIcon filled className="text-red-600 text-5xl mb-4" />
         <Body1 className="text-xl font-semibold  mb-2">Failed to load asset</Body1>
         <Caption1 className=" max-w-md">
           There was an error retrieving the asset data. Please refresh the page or try again later.
@@ -182,7 +181,7 @@ export const DangerZone = ({ assetUid }: { assetUid: string }) => {
         intent="error"
         layout="multiline"
         as="div"
-        icon={<WarningFilled />}
+        icon={<WarningIcon filled />}
       >
         <MessageBarBody>
           <div className="text-xs">
@@ -196,7 +195,7 @@ export const DangerZone = ({ assetUid }: { assetUid: string }) => {
         {asset.deployment_status === "deployed" && (
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-3 gap-3">
             <div className="flex items-center gap-3">
-              <ArchiveFilled className="shrink-0" />
+              <ArchiveIcon filled className="shrink-0" />
               <div>
                 <div className="text-sm font-medium ">Archive Project</div>
                 <div className="text-xs  mt-0.5">
@@ -218,7 +217,7 @@ export const DangerZone = ({ assetUid }: { assetUid: string }) => {
         {asset.deployment_status === "archived" && asset.deployment__active === false && (
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-3 gap-3">
             <div className="flex items-center gap-3">
-              <ArrowClockwiseFilled className="shrink-0" />
+              <UnArchiveIcon filled className="shrink-0" />
               <div>
                 <div className="text-sm font-medium ">Unarchive Project</div>
                 <div className="text-xs  mt-0.5">
@@ -238,7 +237,7 @@ export const DangerZone = ({ assetUid }: { assetUid: string }) => {
         <Divider />
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-3 gap-3">
           <div className="flex items-center gap-3">
-            <DeleteFilled className="text-red-500 shrink-0" />
+            <DeleteIcon filled className="text-red-500 shrink-0" />
             <div>
               <div className="text-sm font-medium ">Delete Project</div>
               <div className="text-xs  mt-0.5">

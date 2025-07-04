@@ -14,7 +14,7 @@ const Profile = () => {
   }
 
   return (
-    <div className="p-2 min-h-screen  flex flex-col gap-2">
+    <div className="p-4 min-h-screen  flex flex-col gap-2">
       <div className="flex flex-row items-center gap-2">
         <Avatar />
         <div className="flex flex-col gap-1">

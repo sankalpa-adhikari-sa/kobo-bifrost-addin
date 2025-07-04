@@ -10,7 +10,7 @@ import {
   Tooltip,
 } from "@fluentui/react-components";
 import { useState } from "react";
-import { CopyIcon, LinkIcon } from "./primitives/icons";
+import { CopyIcon, OpenLinkIcon } from "./primitives/icons";
 import {
   useAddAnonymousSubmissionPermission,
   useDeleteAnonymousSubmissionPermission,
@@ -199,7 +199,7 @@ export const CollectDataCard = ({ deploymentLinks, assetUid }: CollectDataCardPr
           </Tooltip>
           {shouldShowOpenButton && (
             <Tooltip content={"Open"} relationship="label" withArrow>
-              <ToolbarButton appearance="subtle" icon={<LinkIcon />} onClick={handleOpen} />
+              <ToolbarButton appearance="subtle" icon={<OpenLinkIcon />} onClick={handleOpen} />
             </Tooltip>
           )}
         </Toolbar>

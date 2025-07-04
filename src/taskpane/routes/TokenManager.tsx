@@ -119,7 +119,7 @@ export const TokenManager = () => {
   };
 
   return (
-    <div className={styles.container}>
+    <div className="min-h-screen p-4">
       <Card className={styles.card}>
         <CardHeader>
           <div style={{ display: "flex", alignItems: "center", gap: tokens.spacingHorizontalS }}>

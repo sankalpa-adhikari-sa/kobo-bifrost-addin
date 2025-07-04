@@ -266,8 +266,8 @@ export const useUpdateProjectMetadata = () => {
     mutationFn: ({ assetUid, payload }: { assetUid: string; payload: ProjectMetadataFormData }) =>
       updateProjectMetadata(kpiUrl!, token!, assetUid, payload),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["assets", , kpiUrl, token, variables.assetUid] });
-      queryClient.invalidateQueries({ queryKey: ["assets", , kpiUrl, token] });
+      queryClient.invalidateQueries({ queryKey: ["assets", kpiUrl, token, variables.assetUid] });
+      queryClient.invalidateQueries({ queryKey: ["assets", kpiUrl, token] });
     },
   });
 };

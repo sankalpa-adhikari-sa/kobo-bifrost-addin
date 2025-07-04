@@ -14,9 +14,23 @@ import {
   createTableColumn,
   TableCellLayout,
   Spinner,
+  Button,
+  Toast,
+  ToastTitle,
+  ToastBody,
+  useToastController,
+  useId,
+  Toaster,
+  Tooltip,
 } from "@fluentui/react-components";
-import { ChevronLeftIcon, ChevronRightIcon, NextIcon, PreviousIcon } from "./primitives/icons";
-import { useActions, useActivity } from "../hooks/useActivity";
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  DownloadIcon,
+  NextIcon,
+  PreviousIcon,
+} from "./primitives/icons";
+import { useActions, useActivity, useExportActivity } from "../hooks/useActivity";
 import { actionOptions } from "../../utils/constants";
 
 interface ActivityItem {
@@ -48,6 +62,9 @@ export const AssetActivity = ({ assetUid }: AssetActivityProps) => {
   });
 
   const { data: actionsData } = useActions({ assetUid });
+  const exportAssetActivityMutation = useExportActivity();
+  const toasterId = useId("toaster");
+  const { dispatchToast } = useToastController(toasterId);
 
   const totalCount = assetActions?.count || 0;
   const totalPages = Math.ceil(totalCount / limit);
@@ -152,8 +169,38 @@ export const AssetActivity = ({ assetUid }: AssetActivityProps) => {
   const hasNoData = !isLoading && totalCount === 0;
   const shouldShowData = !isLoading && activityData.length > 0;
 
+  const handleExportAssetActivity = () => {
+    exportAssetActivityMutation.mutate(
+      { assetUid: assetUid },
+      {
+        onSuccess: () => {
+          dispatchToast(
+            <Toast>
+              <ToastTitle>Exporting data</ToastTitle>
+              <ToastBody subtitle="Success">
+                Your export request is currently being processed. Once the export is complete,
+                you'll receive an email with all the details.
+              </ToastBody>
+            </Toast>,
+            { intent: "success" }
+          );
+        },
+        onError: () => {
+          dispatchToast(
+            <Toast>
+              <ToastTitle>Export Failed</ToastTitle>
+              <ToastBody subtitle="Error">Failed to export an Asse Activity</ToastBody>
+            </Toast>,
+            { intent: "error" }
+          );
+        },
+      }
+    );
+  };
+
   return (
     <div>
+      <Toaster toasterId={toasterId} />
       <h4 className="text-base font-medium">Recent Project Activity</h4>
       {actionsData?.actions && (
         <div className="flex flex-row items-center justify-between gap-4 my-2">
@@ -163,7 +210,7 @@ export const AssetActivity = ({ assetUid }: AssetActivityProps) => {
               {Math.min(page * limit, totalCount)} of {totalCount} items
             </div>
           )}
-          <div className="flex flex-col">
+          <div className="flex flex-row gap-2">
             <Dropdown
               size="small"
               selectedOptions={[getCurrentFilterValue()]}
@@ -179,6 +226,15 @@ export const AssetActivity = ({ assetUid }: AssetActivityProps) => {
                 </Option>
               ))}
             </Dropdown>
+            <Tooltip content={"Export all activity"} relationship="description" withArrow>
+              <Button
+                onClick={handleExportAssetActivity}
+                icon={<DownloadIcon />}
+                size="small"
+                appearance="primary"
+                disabled={exportAssetActivityMutation.isPending}
+              />
+            </Tooltip>
           </div>
         </div>
       )}

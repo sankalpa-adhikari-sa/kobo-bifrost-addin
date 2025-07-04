@@ -10,6 +10,7 @@ import {
   Button,
   Spinner,
   Card,
+  Toaster,
 } from "@fluentui/react-components";
 import { ProjectMetadataFormData, projectMetadataFormSchema } from "../../validators/schema";
 import { useAssetsById, useUpdateProjectMetadata } from "../hooks/useAssets";
@@ -46,7 +47,7 @@ export const UpdateProjectMetadata = ({ assetUid }: { assetUid: string }) => {
         settings: {
           description: asset.settings?.description || "",
           sector: asset.settings?.sector || "",
-          country: asset.settings?.country || "",
+          country: asset.settings?.country || [],
         },
       });
     }
@@ -89,6 +90,7 @@ export const UpdateProjectMetadata = ({ assetUid }: { assetUid: string }) => {
       }}
       className="flex flex-col gap-2 mt-2"
     >
+      <Toaster toasterId={toasterId} />
       <AssetMetadataForm
         control={control as Control<ProjectMetadataFormData>}
         errors={errors}

@@ -19,7 +19,7 @@ const Create = () => {
   const toasterId = useId("toaster");
 
   return (
-    <div className="space-y-2 p-2">
+    <div className="space-y-2 px-4 min-h-screen">
       <Toaster toasterId={toasterId} />
 
       <div className="space-y-1 flex flex-col">

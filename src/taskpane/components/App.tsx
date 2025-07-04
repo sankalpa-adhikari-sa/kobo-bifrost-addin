@@ -24,7 +24,6 @@ import Assets from "../routes/Assets";
 import Create from "../routes/Create";
 import About from "../routes/About";
 import AssetDetailsSettings from "../routes/AssetDetailsSettings";
-import AssetDetailsSummary from "../routes/AssetDetailsSummary";
 import AssetDetailsLayout from "../routes/AssetDetailsLayout";
 import Profile from "../routes/Profile";
 import { bundleIcon, DocumentAdd16Filled, DocumentAdd16Regular } from "@fluentui/react-icons";
@@ -34,6 +33,7 @@ import { CreateEmptySurveyAsset } from "./dialogs/CreateEmptySurveyAsset";
 import { CreateXlsFormsByWorkbookUpload } from "./dialogs/CreateProjectByWorkbookUpload";
 import { Workbook } from "../routes/Workbook";
 import { EmptyDocumentIcon, LinkIcon, WorkbookIcon, XlsxIcon } from "./primitives/icons";
+import { AssetDetails } from "../routes/AssetDetails";
 
 export interface AppProps {
   title: string;
@@ -126,7 +126,7 @@ const App: React.FC<AppProps> = ({ title, isOfficeInitialized }) => {
         <Route path="profile" element={<Profile />} />
         <Route path="workbook" element={<Workbook />} />
         <Route path="assets/:uid" element={<AssetDetailsLayout />}>
-          <Route index element={<AssetDetailsSummary />} />
+          <Route index element={<AssetDetails />} />
           <Route path="settings" element={<AssetDetailsSettings />} />
         </Route>
       </Routes>
