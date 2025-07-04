@@ -15,11 +15,14 @@ import {
   MenuPopover,
   MenuTrigger,
   Toaster,
+  Toolbar,
+  ToolbarButton,
+  ToolbarDivider,
   Tooltip,
   useId,
   useRestoreFocusTarget,
 } from "@fluentui/react-components";
-import { Route, Routes } from "react-router";
+import { Route, Routes, useNavigate } from "react-router";
 import Assets from "../routes/Assets";
 import Create from "../routes/Create";
 import About from "../routes/About";
@@ -32,7 +35,14 @@ import { CreateXlsFormsByUrlUpload } from "./dialogs/CreateProjectByUrlUpload";
 import { CreateEmptySurveyAsset } from "./dialogs/CreateEmptySurveyAsset";
 import { CreateXlsFormsByWorkbookUpload } from "./dialogs/CreateProjectByWorkbookUpload";
 import { Workbook } from "../routes/Workbook";
-import { EmptyDocumentIcon, LinkIcon, WorkbookIcon, XlsxIcon } from "./primitives/icons";
+import {
+  EmptyDocumentIcon,
+  HomeIcon,
+  LinkIcon,
+  PersonIcon,
+  WorkbookIcon,
+  XlsxIcon,
+} from "./primitives/icons";
 import { AssetDetails } from "../routes/AssetDetails";
 
 export interface AppProps {
@@ -54,46 +64,62 @@ const App: React.FC<AppProps> = ({ title, isOfficeInitialized }) => {
   const toggleDrawer = () => setDrawerOpen((prev) => !prev);
   const UploadIcon = bundleIcon(DocumentAdd16Filled, DocumentAdd16Regular);
   const [activeDialog, setActiveDialog] = React.useState<DialogType | null>(null);
+  const navigate = useNavigate();
   return (
     <div>
       <div className="flex flex-row items-baseline justify-between pr-4">
         <Tooltip content="Toggle navigation pane" relationship="label">
           <Hamburger onClick={toggleDrawer} {...restoreFocusTargetAttributes} />
         </Tooltip>
-        <Menu>
-          <MenuTrigger disableButtonEnhancement>
-            <Tooltip content={"Create a new asset"} relationship="label" withArrow>
-              <MenuButton
-                shape="circular"
-                appearance="primary"
-                size="small"
-                icon={<UploadIcon />}
-              />
-            </Tooltip>
-          </MenuTrigger>
-          <MenuPopover>
-            <MenuList>
-              <MenuGroup>
-                <MenuGroupHeader>Create new asset</MenuGroupHeader>
-                <MenuItem icon={<XlsxIcon />} onClick={() => setActiveDialog("xlsUpload")}>
-                  Upload XLSForm
-                </MenuItem>
-                <MenuItem icon={<LinkIcon />} onClick={() => setActiveDialog("xlsUrlUpload")}>
-                  Upload XLSForm via URL
-                </MenuItem>
-                <MenuItem icon={<WorkbookIcon />} onClick={() => setActiveDialog("workbookUpload")}>
-                  Upload Current Workbook
-                </MenuItem>
-                <MenuItem
-                  icon={<EmptyDocumentIcon />}
-                  onClick={() => setActiveDialog("emptyAsset")}
-                >
-                  Create Empty Asset
-                </MenuItem>
-              </MenuGroup>
-            </MenuList>
-          </MenuPopover>
-        </Menu>
+        <Toolbar size="small" className="flex flex-row items-center gap-2 mt-2 ">
+          <Tooltip content={"Assets"} relationship="label" withArrow>
+            <ToolbarButton
+              onClick={() => navigate("/assets")}
+              appearance="primary"
+              icon={<HomeIcon />}
+            />
+          </Tooltip>
+          <Tooltip content={"Profile"} relationship="label" withArrow>
+            <ToolbarButton
+              onClick={() => navigate("/profile")}
+              appearance="primary"
+              icon={<PersonIcon />}
+            />
+          </Tooltip>
+          <ToolbarDivider />
+          <Menu>
+            <MenuTrigger disableButtonEnhancement>
+              <Tooltip content={"Create a new asset"} relationship="label" withArrow>
+                <MenuButton shape="circular" appearance="primary" icon={<UploadIcon />} />
+              </Tooltip>
+            </MenuTrigger>
+            <MenuPopover>
+              <MenuList>
+                <MenuGroup>
+                  <MenuGroupHeader>Create new asset</MenuGroupHeader>
+                  <MenuItem icon={<XlsxIcon />} onClick={() => setActiveDialog("xlsUpload")}>
+                    Upload XLSForm
+                  </MenuItem>
+                  <MenuItem icon={<LinkIcon />} onClick={() => setActiveDialog("xlsUrlUpload")}>
+                    Upload XLSForm via URL
+                  </MenuItem>
+                  <MenuItem
+                    icon={<WorkbookIcon />}
+                    onClick={() => setActiveDialog("workbookUpload")}
+                  >
+                    Upload Current Workbook
+                  </MenuItem>
+                  <MenuItem
+                    icon={<EmptyDocumentIcon />}
+                    onClick={() => setActiveDialog("emptyAsset")}
+                  >
+                    Create Empty Asset
+                  </MenuItem>
+                </MenuGroup>
+              </MenuList>
+            </MenuPopover>
+          </Menu>
+        </Toolbar>
       </div>
       <Toaster toasterId={toasterId} />
       <AddinNavDrawer isOpen={drawerOpen} setIsOpen={setDrawerOpen} toggleOpen={toggleDrawer} />

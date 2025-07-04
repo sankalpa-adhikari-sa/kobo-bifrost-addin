@@ -30,7 +30,7 @@ export const projectUrlUploadschema = z.object({
 export const emptySurveyAssetFormSchema = z.object({
   name: z.string().min(1, "Asset name is required"),
   settings: z.object({
-    description: z.string().min(1, "Description is required"),
+    description: z.string(),
     sector: z.object(
       {
         value: z.string(),
@@ -55,7 +55,7 @@ export const emptySurveyAssetFormSchema = z.object({
 export const projectMetadataFormSchema = z.object({
   name: z.string().min(1, "Asset name is required"),
   settings: z.object({
-    description: z.string().min(1, "Description is required"),
+    description: z.string().optional(),
     sector: z.object(
       {
         value: z.string(),

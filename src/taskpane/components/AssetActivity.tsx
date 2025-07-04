@@ -198,7 +198,7 @@ export const AssetActivity = ({ assetUid }: AssetActivityProps) => {
   };
 
   return (
-    <div>
+    <div className="mt-2">
       <Toaster toasterId={toasterId} />
       <h4 className="text-base font-medium">Recent Project Activity</h4>
       {actionsData?.actions && (

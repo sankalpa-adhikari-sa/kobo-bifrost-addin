@@ -47,6 +47,8 @@ import {
   FormRegular,
   GridFilled,
   GridRegular,
+  HomeFilled,
+  HomeRegular,
   ImageFilled,
   ImageMultipleFilled,
   ImageMultipleRegular,
@@ -122,3 +124,4 @@ export const DeployIcon = bundleIcon(RocketFilled, RocketRegular);
 export const ArchiveIcon = bundleIcon(ArchiveFilled, ArchiveRegular);
 export const ErrorCircleIcon = bundleIcon(ErrorCircleFilled, ErrorCircleRegular);
 export const WarningIcon = bundleIcon(WarningFilled, WarningRegular);
+export const HomeIcon = bundleIcon(HomeFilled, HomeRegular);

@@ -3,14 +3,14 @@ import { Card, CardHeader, CardPreview, Divider } from "@fluentui/react-componen
 import { Text, Button } from "@fluentui/react-components";
 import { Link, useNavigate } from "react-router";
 import { useStoredToken } from "../hooks/useStoredToken";
-import { DocumentRegular, LinkRegular, Settings16Regular } from "@fluentui/react-icons";
+import { EmptyDocumentIcon, OpenLinkIcon, SettingsIcon } from "../components/primitives/icons";
 
 const About: React.FC = () => {
   const navigate = useNavigate();
   const { token, kpiUrl } = useStoredToken();
 
   return (
-    <div className="p-3 min-h-screen flex flex-col">
+    <div className="p-3 min-h-screen">
       <Card
         style={{
           backgroundColor: "var(--colorNeutralBackground3)",
@@ -60,7 +60,7 @@ const About: React.FC = () => {
               <Button
                 appearance="primary"
                 size="small"
-                icon={<Settings16Regular />}
+                icon={<SettingsIcon />}
                 onClick={() => navigate("/token-manager")}
                 className="float-right"
               >
@@ -91,7 +91,7 @@ const About: React.FC = () => {
               <Button
                 appearance="primary"
                 size="small"
-                icon={<DocumentRegular />}
+                icon={<EmptyDocumentIcon />}
                 onClick={() => navigate("/assets")}
                 className="float-right"
               >
@@ -101,14 +101,49 @@ const About: React.FC = () => {
           </CardPreview>
         </Card>
       )}
-      <Divider />
-      <Link
-        to="#"
-        className="inline-flex items-center gap-1.5 text-xs no-underline hover:underline transition-colors"
+      <Divider className="my-4" />
+      <Card
+        style={{
+          backgroundColor: "var(--colorNeutralBackground3)",
+        }}
+        className=" rounded-2xl shadow-sm  "
       >
-        <LinkRegular className="w-3 h-3" />
-        View on GitHub
-      </Link>
+        <h3 className="text-sm font-semibold">Helpful Resources</h3>
+        <Divider />
+
+        <ul className="flex flex-col gap-3 text-sm">
+          <li>
+            <Link
+              to="https://docs.getodk.org/tutorial-first-form/"
+              target="_blank"
+              className="inline-flex items-center gap-2 text-blue-600 hover:underline transition-all"
+            >
+              <OpenLinkIcon className="w-4 h-4 text-blue-500 group-hover:text-blue-700" />
+              GetODK Docs
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="https://xlsform.org/en/"
+              target="_blank"
+              className="inline-flex items-center gap-2 text-blue-600 hover:underline transition-all"
+            >
+              <OpenLinkIcon className="w-4 h-4 text-blue-500 group-hover:text-blue-700" />
+              XLSForm Docs
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="https://www.kobotoolbox.org/"
+              target="_blank"
+              className="inline-flex items-center gap-2 text-blue-600 hover:underline transition-all"
+            >
+              <OpenLinkIcon className="w-4 h-4 text-blue-500 group-hover:text-blue-700" />
+              KoboToolbox
+            </Link>
+          </li>
+        </ul>
+      </Card>
     </div>
   );
 };

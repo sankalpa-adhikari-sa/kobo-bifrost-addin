@@ -23,6 +23,7 @@ import {
   ToastBody,
   MenuGroup,
   MenuGroupHeader,
+  tokens,
 } from "@fluentui/react-components";
 import {
   ArrowUploadRegular,
@@ -233,18 +234,14 @@ const AssetDetailsLayout = () => {
         <CardHeader
           header={
             <Link
+              style={{
+                color: tokens.colorBrandForeground2,
+              }}
               to={`/assets/${uid}`}
-              className="text-base font-medium break-all whitespace-normal"
+              className="text-base font-medium break-all whitespace-normal hover:underline"
             >
               {asset.name}
             </Link>
-          }
-          description={
-            asset.settings.description ? (
-              <span className="text-xs italic">{asset.settings.description}</span>
-            ) : (
-              <span className="text-xs italic">No description available.</span>
-            )
           }
           action={
             <Toolbar size="small">
@@ -310,6 +307,13 @@ const AssetDetailsLayout = () => {
             </Toolbar>
           }
         />
+        {asset.settings.description ? (
+          <span className="text-xs italic overflow-hidden overflow-ellipsis max-h-12 ">
+            {asset.settings.description}
+          </span>
+        ) : (
+          <span className="text-xs italic">No description available.</span>
+        )}
       </Card>
 
       <UpdateXlsFormsByFileUpload
