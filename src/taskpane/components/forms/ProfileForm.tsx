@@ -1,4 +1,4 @@
-import { Controller, Control, FieldErrors } from "react-hook-form";
+import { Controller, Control, FieldErrors, useWatch } from "react-hook-form";
 import { Input, Textarea, Dropdown, Option, Field } from "@fluentui/react-components";
 import { countriesOptions, organizationTypeOptions, sectorOptions } from "../../../utils/constants";
 import { ProfileFormData } from "../../../validators/schema";
@@ -10,6 +10,10 @@ interface ProfileFormsProps {
 }
 
 const ProfileForms = ({ control, errors }: ProfileFormsProps) => {
+  const organizationType = useWatch({
+    control,
+    name: "organization_type",
+  });
   return (
     <div className="space-y-2">
       <Field required label="Full Name" validationMessage={errors.name?.message} size="small">
@@ -132,28 +136,28 @@ const ProfileForms = ({ control, errors }: ProfileFormsProps) => {
           }}
         />
       </Field>
-
-      <Field
-        required
-        label="Organization Name"
-        validationMessage={errors.organization?.message}
-        size="small"
-      >
-        <Controller
-          name="organization"
-          control={control}
-          render={({ field }) => (
-            <Textarea
-              {...field}
-              value={field.value || ""}
-              placeholder="Name of your Organization"
-              className="w-full rounded-md"
-              rows={3}
-            />
-          )}
-        />
-      </Field>
-
+      {organizationType !== "none" && (
+        <Field
+          required
+          label="Organization Name"
+          validationMessage={errors.organization?.message}
+          size="small"
+        >
+          <Controller
+            name="organization"
+            control={control}
+            render={({ field }) => (
+              <Textarea
+                {...field}
+                value={field.value || ""}
+                placeholder="Name of your Organization"
+                className="w-full rounded-md"
+                rows={3}
+              />
+            )}
+          />
+        </Field>
+      )}
       <Field
         label="Organization Website"
         validationMessage={errors.organization_website?.message}

@@ -78,17 +78,30 @@ const countryValues = countriesOptions.map((opt) => opt.value);
 const sectorValues = sectorOptions.map((opt) => opt.value);
 const organizationTypeValues = organizationTypeOptions.map((opt) => opt.value);
 
-export const profileSchema = z.object({
-  country: z.enum(countryValues as [string, ...string[]]),
-  city: z.string().optional(),
-  sector: z.enum(sectorValues as [string, ...string[]]),
-  organization_type: z.enum(organizationTypeValues as [string, ...string[]]),
-  organization: z.string().min(1, "Organization name is required"),
-  organization_website: z.string().url().optional().or(z.literal("")),
-  linkedin: z.string().url().optional().or(z.literal("")),
-  bio: z.string().optional(),
-  name: z.string().min(1, "Fullname is required"),
-});
+export const profileSchema = z
+  .object({
+    country: z.enum(countryValues as [string, ...string[]]),
+    city: z.string().optional(),
+    sector: z.enum(sectorValues as [string, ...string[]]),
+    organization_type: z.enum(organizationTypeValues as [string, ...string[]]),
+    organization: z.string(),
+    organization_website: z.string().url().optional().or(z.literal("")),
+    linkedin: z.string().url().optional().or(z.literal("")),
+    bio: z.string().optional(),
+    name: z.string().min(1, "Fullname is required"),
+  })
+  .superRefine((data, ctx) => {
+    if (
+      data.organization_type !== "none" &&
+      (!data.organization || data.organization.trim() === "")
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Organization name is required",
+        path: ["organization"],
+      });
+    }
+  });
 export type ProfileFormData = z.infer<typeof profileSchema>;
 
 export const emptyAssetFormSchema = z.object({
