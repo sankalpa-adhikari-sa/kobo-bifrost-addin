@@ -17,6 +17,7 @@ import {
 import { useState } from "react";
 import { CloneAssetDialog } from "../dialogs/CloneAssetDialog";
 import { CloneIcon } from "../primitives/icons";
+import { formatDate } from "../../../utils/utils";
 
 interface deployedVerionType {
   count: number;
@@ -68,16 +69,6 @@ export const VersionHistoryTable = ({
     setSelectedVersionId("");
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
-
   const columns: TableColumnDefinition<VersionItem>[] = [
     createTableColumn<VersionItem>({
       columnId: "version",
@@ -110,7 +101,15 @@ export const VersionHistoryTable = ({
       compare: (a, b) => new Date(a.date_modified).getTime() - new Date(b.date_modified).getTime(),
       renderHeaderCell: () => <span className="text-xs">Modified</span>,
       renderCell: (item) => (
-        <TableCellLayout className="text-xs">{formatDate(item.date_modified)}</TableCellLayout>
+        <TableCellLayout className="text-xs">
+          {formatDate(item.date_modified, "en-US", {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+          })}
+        </TableCellLayout>
       ),
     }),
     createTableColumn<VersionItem>({

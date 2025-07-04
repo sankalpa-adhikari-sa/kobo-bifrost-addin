@@ -1,6 +1,7 @@
 import { Badge, Card, Divider, Label, makeStyles, tokens } from "@fluentui/react-components";
 import { useAssetsById } from "../../hooks/useAssets";
 import { LoadingSkeleton } from "../primitives/LoadingSkeleton";
+import { formatDate } from "../../../utils/utils";
 
 const useStyles = makeStyles({
   label: {
@@ -67,7 +68,15 @@ export const ProjectInformationCard = ({ assetUid }: { assetUid: string }) => {
               {isAssetLoading ? (
                 <LoadingSkeleton size={12} />
               ) : (
-                <span>{asset?.date_modified || "N/A"}</span>
+                <span>
+                  {formatDate(asset?.date_modified, "en-US", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  }) || "N/A"}
+                </span>
               )}
             </div>
             <div className="flex flex-col gap-2">
@@ -75,7 +84,15 @@ export const ProjectInformationCard = ({ assetUid }: { assetUid: string }) => {
               {isAssetLoading ? (
                 <LoadingSkeleton size={12} />
               ) : (
-                <span>{asset?.date_deployed || "N/A"}</span>
+                <span>
+                  {formatDate(asset?.date_deployed, "en-US", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  }) || "N/A"}
+                </span>
               )}
             </div>
           </div>

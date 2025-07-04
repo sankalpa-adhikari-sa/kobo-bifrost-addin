@@ -32,6 +32,7 @@ import {
 } from "./primitives/icons";
 import { useActions, useActivity, useExportActivity } from "../hooks/useActivity";
 import { actionOptions } from "../../utils/constants";
+import { formatDate } from "../../utils/utils";
 
 interface ActivityItem {
   uid: string;
@@ -81,19 +82,17 @@ export const AssetActivity = ({ assetUid }: AssetActivityProps) => {
     return actionOption.getMessage(username, targetUser);
   };
 
-  const formatDate = (dateString: string): string => {
-    try {
-      return new Date(dateString).toLocaleString();
-    } catch {
-      return dateString;
-    }
-  };
-
   const activityData =
     assetActions?.results?.map((item: ActivityItem) => ({
       id: item.uid,
       eventDescription: getEventDescription(item),
-      date: formatDate(item.date_created),
+      date: formatDate(item.date_created, "en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
     })) || [];
 
   const columns: TableColumnDefinition<(typeof activityData)[0]>[] = [

@@ -20,8 +20,8 @@ export const SubmissionsCard = ({ assetUid }: { assetUid: string }) => {
   const timeRangeButtons = [
     { days: 7, label: "Past 7 days" },
     { days: 31, label: "Past 31 days" },
-    { days: 93, label: "Past 93 days" },
-    { days: 366, label: "Past 366 days" },
+    { days: 93, label: "Past 3 months" },
+    { days: 366, label: "Past 12 months" },
   ];
 
   const handleTimeRangeClick = (days: number) => {

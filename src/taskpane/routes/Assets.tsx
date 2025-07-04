@@ -58,6 +58,7 @@ import {
 import { useNavigate } from "react-router";
 import { CloneAssetDialog } from "../components/dialogs/CloneAssetDialog";
 import { useDestructiveStyles } from "../components/primitives/styles";
+import { formatDate } from "../../utils/utils";
 
 interface RawAssetSettings {
   sector?: {
@@ -169,7 +170,7 @@ const transformData = (rawData: RawAssetItem[]): AssetItem[] => {
 const formatDateShort = (dateString: string | null): string => {
   if (!dateString) return "Not deployed";
   try {
-    return new Date(dateString).toLocaleDateString("en-US", {
+    return formatDate(dateString, "en-US", {
       month: "short",
       day: "numeric",
       year: "numeric",
