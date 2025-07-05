@@ -62,7 +62,7 @@ import { CloneAssetDialog } from "../components/dialogs/CloneAssetDialog";
 import { useDestructiveStyles } from "../components/primitives/styles";
 import { formatDate } from "../../utils/utils";
 import { useStoredToken } from "../hooks/AuthProvider";
-import { SettingsIcon } from "../components/primitives/icons";
+import { InfoIcon, SettingsIcon } from "../components/primitives/icons";
 import { TablePagination } from "../components/tables/TablePagination";
 import { useCallback, useMemo, useState } from "react";
 
@@ -496,8 +496,20 @@ const Assets = () => {
 
   if (items.length === 0) {
     return (
-      <div className="p-4 min-h-screen flex flex-col gap-4 items-center justify-center ">
-        No assets available
+      <div className="min-h-screen p-4 flex items-center justify-center">
+        <Card
+          style={{
+            backgroundColor: "var(--colorNeutralBackground3)",
+          }}
+          className="m-3 min-h-40 w-full flex items-center justify-center"
+        >
+          <div className="flex flex-col gap-2 items-center">
+            <InfoIcon filled primaryFill="var(--colorNeutralForeground2)" fontSize={20} />
+            <span style={{ color: "var(--colorNeutralForeground2)", fontSize: "14px" }}>
+              No asset groups found
+            </span>
+          </div>
+        </Card>
       </div>
     );
   }

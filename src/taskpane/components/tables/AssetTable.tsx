@@ -462,9 +462,15 @@ const AssetsTable = ({
 
   if (items.length === 0) {
     return (
-      <div className="text-base font-medium flex capitalize items-center gap-2 text-[var(--colorBrandForeground2)]">
-        <FolderIcon />
-        <span>{group.label}</span>
+      <div>
+        <div className="text-base font-medium flex capitalize items-center gap-2 text-[var(--colorBrandForeground2)]">
+          <FolderIcon />
+          <span>{group.label}</span>
+        </div>
+        <div className="text-xs italic text-[var(--colorNeutralForeground3)] text-center">
+          No Assets availabe for group{" "}
+          <span className="font-medium capitalize">"{group.label}"</span>
+        </div>
       </div>
     );
   }

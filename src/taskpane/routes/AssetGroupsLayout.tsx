@@ -66,7 +66,8 @@ export const AssetGroupsLayout = () => {
           Add
         </Button>
       </div>
-      {profileData.extra_details.asset_groups ? (
+      {profileData.extra_details.asset_groups &&
+      profileData.extra_details.asset_groups.length > 0 ? (
         profileData.extra_details.asset_groups.map((item: { label: string; value: string }) => (
           <div>
             <AssetsTable group={item} />
