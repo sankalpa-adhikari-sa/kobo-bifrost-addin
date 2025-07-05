@@ -20,19 +20,33 @@ const fetchSubmissionCounts = async (
   });
   return response.data;
 };
-export const fetchSubmissionData = async (baseUrl: string, token: string, assetUid: string) => {
-  const response = await axios.get(
-    `http://localhost:5000/api/v2/assets/${assetUid}/data/?format=json&server=${encodeURIComponent(baseUrl)}`,
-    {
-      headers: {
-        Authorization: `Token ${token}`,
-      },
-      params: {
-        limit: 100,
-      },
-    }
-  );
+export const fetchSubmissionData = async (
+  baseUrl: string,
+  token: string,
+  assetUid: string,
+  limit: number = 100
+) => {
+  const response = await axios.get(`http://localhost:5000/api/v2/assets/${assetUid}/data/`, {
+    headers: {
+      Authorization: `Token ${token}`,
+    },
+    params: {
+      limit: limit,
+      server: baseUrl,
+      format: "json",
+    },
+  });
   return response.data;
+};
+
+export const useSubmissionData = ({ assetUid, limit }: { assetUid: string; limit?: number }) => {
+  const { token, kpiUrl, isLoading: isAuthLoading } = useStoredToken();
+
+  return useQuery({
+    queryKey: ["data", kpiUrl, token, assetUid, limit],
+    queryFn: () => fetchSubmissionData(kpiUrl!, token!, assetUid, limit),
+    enabled: !!kpiUrl && !!token && !isAuthLoading,
+  });
 };
 
 export const duplicateData = async (
@@ -114,7 +128,7 @@ export const updateValidationStatus = async (
   validation_status: ValidationStatusUid
 ) => {
   const response = await axios.patch(
-    `http://localhost:5000//api/v2/assets/${assetUid}/data/${dataUid}/validation_status/?format=json&server=${encodeURIComponent(baseUrl)}`,
+    `http://localhost:5000/api/v2/assets/${assetUid}/data/${dataUid}/validation_status/?format=json&server=${encodeURIComponent(baseUrl)}`,
     {
       "validation_status.uid": validation_status,
     },
@@ -135,7 +149,7 @@ export const bulkUpdateValidationStatus = async (
   validation_status: ValidationStatusUid
 ) => {
   const response = await axios.patch(
-    `http://localhost:5000//api/v2/assets/${assetUid}/data/validation_status/?format=json&server=${encodeURIComponent(baseUrl)}`,
+    `http://localhost:5000/api/v2/assets/${assetUid}/data/validation_status/?format=json&server=${encodeURIComponent(baseUrl)}`,
     {
       payload: {
         submission_ids: submissionIds,
@@ -158,7 +172,7 @@ export const deleteValidationStatus = async (
   dataUid: string
 ) => {
   const response = await axios.delete(
-    `http://localhost:5000//api/v2/assets/${assetUid}/data/${dataUid}/validation_status/?format=json&server=${encodeURIComponent(baseUrl)}`,
+    `http://localhost:5000/api/v2/assets/${assetUid}/data/${dataUid}/validation_status/?format=json&server=${encodeURIComponent(baseUrl)}`,
     {
       headers: {
         Authorization: `Token ${token}`,

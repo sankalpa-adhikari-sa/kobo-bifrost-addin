@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useStoredToken } from "./AuthProvider";
 import axios from "axios";
-import { ProfileFormData } from "../../validators/schema";
+import { AssetGroupsFormData, ProfileFormData } from "../../validators/schema";
 
 const fetchOwner = async (baseUrl: string, token: string) => {
   const response = await axios.get(
@@ -38,6 +38,35 @@ const patchProfile = async (baseUrl: string, token: string, payload: ProfileForm
     }
   );
   return response.data;
+};
+
+const addAssetGroups = async (baseUrl: string, token: string, payload: AssetGroupsFormData) => {
+  const response = await axios.patch(
+    `http://localhost:5000/me/?format=json&server=${encodeURIComponent(baseUrl)}`,
+    {
+      extra_details: payload,
+    },
+    {
+      headers: {
+        Authorization: `Token ${token}`,
+      },
+    }
+  );
+  return response.data;
+};
+export const useAddAssetGroups = () => {
+  const { token, kpiUrl } = useStoredToken();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ payload }: { payload: AssetGroupsFormData }) =>
+      addAssetGroups(kpiUrl!, token!, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["owner", kpiUrl, token],
+      });
+    },
+  });
 };
 
 export const useUpdateProfile = () => {

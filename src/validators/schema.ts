@@ -74,6 +74,21 @@ export const projectMetadataFormSchema = z.object({
   }),
 });
 
+export const assetGroupsFormSchema = z.object({
+  asset_groups: z.array(
+    z.object({
+      value: z
+        .string()
+        .min(1, "Group value is required")
+        .refine(
+          (val) => /^[a-z][a-z0-9_]*$/.test(val),
+          "Value must be in snake_case format (lowercase letters, numbers, and underscores only, starting with a letter)"
+        ),
+      label: z.string().min(1, "Group label is required"),
+    })
+  ),
+});
+
 const countryValues = countriesOptions.map((opt) => opt.value);
 const sectorValues = sectorOptions.map((opt) => opt.value);
 const organizationTypeValues = organizationTypeOptions.map((opt) => opt.value);
@@ -113,6 +128,7 @@ export const cloneAssetFormSchema = z.object({
 });
 
 export type AssetImportFormData = z.infer<typeof assetImportschema>;
+export type AssetGroupsFormData = z.infer<typeof assetGroupsFormSchema>;
 export type ProjectMetadataFormData = z.infer<typeof projectMetadataFormSchema>;
 export type ProjectFileUploadFormData = z.infer<typeof projectFileUploadschema>;
 export type ProjectWorkbookUploadFormData = z.infer<typeof projectWorkbookUploadschema>;

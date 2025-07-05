@@ -58,6 +58,8 @@ const AddinNavDrawer: React.FC<AddinNavDrawerProps> = ({ isOpen, setIsOpen, togg
         return "6";
       case "/workbook":
         return "7";
+      case "/asset-groups":
+        return "8";
       default:
         return "1";
     }
@@ -104,6 +106,9 @@ const AddinNavDrawer: React.FC<AddinNavDrawerProps> = ({ isOpen, setIsOpen, togg
             </NavSubItem>
             <NavSubItem value="5" onClick={() => handleNavigation("/profile")}>
               Profile
+            </NavSubItem>
+            <NavSubItem value="8" onClick={() => handleNavigation("/asset-groups")}>
+              Asset Groups
             </NavSubItem>
           </NavSubItemGroup>
         </NavCategory>

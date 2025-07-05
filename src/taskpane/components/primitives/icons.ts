@@ -39,6 +39,8 @@ import {
   DocumentTextRegular,
   DraftsFilled,
   DraftsRegular,
+  EraserFilled,
+  EraserRegular,
   ErrorCircleFilled,
   ErrorCircleRegular,
   EyeFilled,
@@ -125,3 +127,4 @@ export const ArchiveIcon = bundleIcon(ArchiveFilled, ArchiveRegular);
 export const ErrorCircleIcon = bundleIcon(ErrorCircleFilled, ErrorCircleRegular);
 export const WarningIcon = bundleIcon(WarningFilled, WarningRegular);
 export const HomeIcon = bundleIcon(HomeFilled, HomeRegular);
+export const EraserIcon = bundleIcon(EraserFilled, EraserRegular);

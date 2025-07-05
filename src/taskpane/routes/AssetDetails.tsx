@@ -9,7 +9,7 @@ import {
 } from "@fluentui/react-components";
 import { useState } from "react";
 import { useParams } from "react-router";
-import { FormIcon, SummaryIcon } from "../components/primitives/icons";
+import { FormIcon, SummaryIcon, TableIcon } from "../components/primitives/icons";
 import { AssetDetailsData } from "./AssetDetailsData";
 import { AssetDetailsSummary } from "./AssetDetailsSummary";
 import AssetDetailsForm from "./AssetDetailsForm";
@@ -39,9 +39,9 @@ export const AssetDetails = () => {
         <Tab id="Form" icon={<FormIcon />} value="form">
           Form
         </Tab>
-        {/* <Tab id="Data" icon={<TableIcon />} value="data">
+        <Tab id="Data" icon={<TableIcon />} value="data">
           Data
-        </Tab> */}
+        </Tab>
       </TabList>
       <div className="mt-2">
         {selectedValue === "summary" && <AssetDetailsSummary assetUid={uid} />}

@@ -473,3 +473,106 @@ export const countriesOptions = [
   { value: "ZMB", label: "Zambia" },
   { value: "ZWE", label: "Zimbabwe" },
 ] as const;
+
+export enum ValidationStatusName {
+  validation_status_not_approved = "validation_status_not_approved",
+  validation_status_approved = "validation_status_approved",
+  validation_status_on_hold = "validation_status_on_hold",
+}
+export enum ValidationStatusAdditionalName {
+  no_status = "no_status",
+  show_all = "show_all",
+}
+export type ValidationStatusOptionName = ValidationStatusName | ValidationStatusAdditionalName;
+
+export interface ValidationStatusOption {
+  value: ValidationStatusOptionName;
+  label: string;
+}
+
+export enum AssetTypeName {
+  question = "question",
+  block = "block",
+  template = "template",
+  survey = "survey",
+  collection = "collection",
+  empty = "empty",
+}
+export type AssetFileType = "map_layer" | "form_media";
+
+export enum GroupTypeBeginName {
+  begin_group = "begin_group",
+  begin_score = "begin_score",
+  begin_rank = "begin_rank",
+  begin_kobomatrix = "begin_kobomatrix",
+  begin_repeat = "begin_repeat",
+}
+export enum GroupTypeEndName {
+  end_group = "end_group",
+  end_score = "end_score",
+  end_rank = "end_rank",
+  end_kobomatrix = "end_kobomatrix",
+  end_repeat = "end_repeat",
+}
+export enum CollectionMethodName {
+  offline_url = "offline_url",
+  url = "url",
+  single_url = "single_url",
+  single_once_url = "single_once_url",
+  iframe_url = "iframe_url",
+  preview_url = "preview_url",
+  android = "android",
+}
+export enum MetaQuestionTypeName {
+  start = "start",
+  end = "end",
+  today = "today",
+  username = "username",
+  deviceid = "deviceid",
+  phonenumber = "phonenumber",
+  audit = "audit",
+  "start-geopoint" = "start-geopoint",
+}
+export enum QuestionTypeName {
+  acknowledge = "acknowledge",
+  audio = "audio",
+  "background-audio" = "background-audio",
+  "background-geopoint" = "background-geopoint",
+  barcode = "barcode",
+  calculate = "calculate",
+  date = "date",
+  datetime = "datetime",
+  decimal = "decimal",
+  "xml-external" = "xml-external",
+  file = "file",
+  geopoint = "geopoint",
+  geoshape = "geoshape",
+  geotrace = "geotrace",
+  hidden = "hidden",
+  image = "image",
+  integer = "integer",
+  kobomatrix = "kobomatrix",
+  note = "note",
+  range = "range",
+  rank = "rank",
+  score = "score",
+  select_multiple = "select_multiple",
+  select_multiple_from_file = "select_multiple_from_file",
+  select_one = "select_one",
+  select_one_from_file = "select_one_from_file",
+  text = "text",
+  time = "time",
+  video = "video",
+}
+export enum MiscRowTypeName {
+  score__row = "score__row",
+  rank__level = "rank__level",
+}
+
+export type AnyRowTypeName =
+  | QuestionTypeName
+  | MetaQuestionTypeName
+  | GroupTypeBeginName
+  | GroupTypeEndName
+  | MiscRowTypeName;
+export type AssetsBulkAction = "archive" | "delete" | "unarchive";
