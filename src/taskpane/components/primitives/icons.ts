@@ -45,6 +45,8 @@ import {
   ErrorCircleRegular,
   EyeFilled,
   EyeRegular,
+  FolderFilled,
+  FolderRegular,
   FormFilled,
   FormRegular,
   GridFilled,
@@ -55,6 +57,8 @@ import {
   ImageMultipleFilled,
   ImageMultipleRegular,
   ImageRegular,
+  InfoFilled,
+  InfoRegular,
   LinkFilled,
   LinkRegular,
   LocationFilled,
@@ -128,3 +132,5 @@ export const ErrorCircleIcon = bundleIcon(ErrorCircleFilled, ErrorCircleRegular)
 export const WarningIcon = bundleIcon(WarningFilled, WarningRegular);
 export const HomeIcon = bundleIcon(HomeFilled, HomeRegular);
 export const EraserIcon = bundleIcon(EraserFilled, EraserRegular);
+export const FolderIcon = bundleIcon(FolderFilled, FolderRegular);
+export const InfoIcon = bundleIcon(InfoFilled, InfoRegular);

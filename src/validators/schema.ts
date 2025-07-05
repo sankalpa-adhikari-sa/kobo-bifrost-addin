@@ -71,6 +71,7 @@ export const projectMetadataFormSchema = z.object({
         })
       )
       .min(1, "At least one country is required"),
+    group: z.string().optional(),
   }),
 });
 

@@ -2,8 +2,6 @@ import { useState } from "react";
 import {
   Dropdown,
   Option,
-  Toolbar,
-  ToolbarButton,
   DataGrid,
   DataGridHeader,
   DataGridHeaderCell,
@@ -23,16 +21,11 @@ import {
   Toaster,
   Tooltip,
 } from "@fluentui/react-components";
-import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  DownloadIcon,
-  NextIcon,
-  PreviousIcon,
-} from "./primitives/icons";
+import { DownloadIcon } from "./primitives/icons";
 import { useActions, useActivity, useExportActivity } from "../hooks/useActivity";
 import { actionOptions } from "../../utils/constants";
 import { formatDate } from "../../utils/utils";
+import { TablePagination } from "./tables/TablePagination";
 
 interface ActivityItem {
   uid: string;
@@ -273,50 +266,21 @@ export const AssetActivity = ({ assetUid }: AssetActivityProps) => {
               </DataGridBody>
             </DataGrid>
           </div>
-          <div className="flex flex-row items-center justify-between">
-            <Toolbar size="small">
-              <ToolbarButton
-                icon={<PreviousIcon />}
-                onClick={handleFirstPage}
-                disabled={isFirstPage || isLoading}
-              />
-              <ToolbarButton
-                icon={<ChevronLeftIcon />}
-                onClick={handlePrevious}
-                disabled={isFirstPage || isLoading}
-              />
-
-              <span className="text-xs" style={{ margin: "0 8px" }}>
-                Page {totalCount > 0 ? page : 0} of {totalPages || 0}
-              </span>
-
-              <ToolbarButton
-                icon={<ChevronRightIcon />}
-                onClick={handleNext}
-                disabled={isLastPage || isLoading}
-              />
-              <ToolbarButton
-                icon={<NextIcon />}
-                onClick={handleLastPage}
-                disabled={isLastPage || isLoading}
-              />
-            </Toolbar>
-            <Dropdown
-              size="small"
-              value={limit.toString()}
-              onOptionSelect={handleLimitChange}
-              disabled={isLoading || hasNoData}
-              style={{
-                minWidth: "60px",
-                padding: 0,
-              }}
-            >
-              <Option value="10">10 rows</Option>
-              <Option value="30">30 rows</Option>
-              <Option value="50">50 rows</Option>
-              <Option value="100">100 rows</Option>
-            </Dropdown>
-          </div>
+          <TablePagination
+            isFirstPage={isFirstPage}
+            isLastPage={isLastPage}
+            isLoading={isLoading}
+            hasNoData={hasNoData}
+            handleFirstPage={handleFirstPage}
+            handlePrevious={handlePrevious}
+            handleLimitChange={handleLimitChange}
+            handleLastPage={handleLastPage}
+            handleNext={handleNext}
+            limit={limit}
+            totalCount={totalCount}
+            totalPages={totalPages}
+            page={page}
+          />
         </div>
       ) : (
         <div style={{ padding: "20px", textAlign: "center", color: "#666" }}>

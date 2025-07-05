@@ -46,7 +46,8 @@ import {
 } from "./primitives/icons";
 import { AssetDetails } from "../routes/AssetDetails";
 import { useStoredToken } from "../hooks/AuthProvider";
-import { AssetGroups } from "../routes/AssetGroups";
+import { AddAssetGroups } from "../routes/AddAssetGroups";
+import { AssetGroupsLayout } from "../routes/AssetGroupsLayout";
 
 export interface AppProps {
   title: string;
@@ -168,7 +169,8 @@ const App: React.FC<AppProps> = ({ title, isOfficeInitialized }) => {
         <Route path="create" element={<Create />} />
         <Route path="profile" element={<Profile />} />
         <Route path="workbook" element={<Workbook />} />
-        <Route path="asset-groups" element={<AssetGroups />} />
+        <Route path="asset-groups" element={<AssetGroupsLayout />} />
+        <Route path="asset-groups/add" element={<AddAssetGroups />} />
         <Route path="assets/:uid" element={<AssetDetailsLayout />}>
           <Route index element={<AssetDetails />} />
           <Route path="settings" element={<AssetDetailsSettings />} />

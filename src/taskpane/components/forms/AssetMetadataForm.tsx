@@ -2,13 +2,22 @@ import { Controller, Control, FieldErrors } from "react-hook-form";
 import { Input, Textarea, Dropdown, Option, Field } from "@fluentui/react-components";
 import { countriesOptions, sectorOptions } from "../../../utils/constants";
 import { ProjectMetadataFormData } from "../../../validators/schema";
+import { EraserIcon } from "../primitives/icons";
+import { useDestructiveStyles } from "../primitives/styles";
 
 interface AssetMetadataFormProps {
   control: Control<ProjectMetadataFormData>;
   errors: FieldErrors<ProjectMetadataFormData>;
   isLoading: boolean;
+  asset_groups:
+    | {
+        label: string;
+        value: string;
+      }[]
+    | undefined;
 }
-const AssetMetadataForm = ({ control, errors }: AssetMetadataFormProps) => {
+const AssetMetadataForm = ({ control, errors, asset_groups }: AssetMetadataFormProps) => {
+  const destructiveStyles = useDestructiveStyles();
   return (
     <div className="space-y-2">
       <Field label="Asset Name" validationMessage={errors.name?.message} size="small">
@@ -104,6 +113,45 @@ const AssetMetadataForm = ({ control, errors }: AssetMetadataFormProps) => {
           }}
         />
       </Field>
+      {asset_groups && (
+        <Field label="Group" validationMessage={errors.settings?.group?.message} size="small">
+          <Controller
+            name="settings.group"
+            control={control}
+            render={({ field: { onChange, value } }) => {
+              const selectedOption = asset_groups.find((opt) => opt.value === value);
+              console.log(selectedOption);
+              return (
+                <Dropdown
+                  placeholder="Select Group"
+                  value={selectedOption?.label || ""}
+                  selectedOptions={value ? [value] : []}
+                  onOptionSelect={(_, data) => {
+                    if (data.optionValue === "__reset") {
+                      onChange(null);
+                    } else {
+                      onChange(data.optionValue);
+                    }
+                  }}
+                  className="w-full rounded-md"
+                >
+                  {asset_groups.map((s) => (
+                    <Option key={s.value} value={s.value}>
+                      {s.label}
+                    </Option>
+                  ))}
+                  <Option className={destructiveStyles.destructive} key={"__reset"} text="">
+                    <span className="flex flex-row gap-2 items-center">
+                      <EraserIcon className={destructiveStyles.destructiveIcon} />
+                      Reset
+                    </span>
+                  </Option>
+                </Dropdown>
+              );
+            }}
+          />
+        </Field>
+      )}
     </div>
   );
 };

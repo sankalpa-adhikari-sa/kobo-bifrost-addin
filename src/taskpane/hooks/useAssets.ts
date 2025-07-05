@@ -3,7 +3,13 @@ import { useStoredToken } from "./AuthProvider";
 import axios from "axios";
 import { EmptySurveyAssetFormData, ProjectMetadataFormData } from "../../validators/schema";
 
-const fetchAssets = async (baseUrl: string, token: string, filter?: string) => {
+const fetchAssets = async (
+  baseUrl: string,
+  token: string,
+  q: string = "(asset_type:survey)",
+  limit: number = 10,
+  offset: number = 0
+) => {
   const response = await axios.get(`http://localhost:5000/api/v2/assets/`, {
     headers: {
       Authorization: `Token ${token}`,
@@ -12,7 +18,9 @@ const fetchAssets = async (baseUrl: string, token: string, filter?: string) => {
     params: {
       server: baseUrl,
       format: "json",
-      q: filter,
+      q: q,
+      limit: limit,
+      offset: offset,
     },
   });
   return response.data;
@@ -204,12 +212,12 @@ const checkImportStatus = async (baseUrl: string, token: string, importId: strin
   return response.data;
 };
 
-export const useAssets = (filter?: string) => {
+export const useAssets = (q?: string, limit?: number, offset?: number) => {
   const { token, kpiUrl, isLoading: isAuthLoading } = useStoredToken();
 
   return useQuery({
-    queryKey: ["assets", kpiUrl, token],
-    queryFn: () => fetchAssets(kpiUrl!, token!, filter),
+    queryKey: ["assets", kpiUrl, token, q, limit, offset],
+    queryFn: () => fetchAssets(kpiUrl!, token!, q, limit, offset),
     enabled: !!kpiUrl && !!token && !isAuthLoading,
   });
 };

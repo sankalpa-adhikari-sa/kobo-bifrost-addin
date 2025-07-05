@@ -43,12 +43,9 @@ import {
   DataGridBody,
   DataGridCell,
   Spinner,
-  Card,
-  CardPreview,
-  Text,
 } from "@fluentui/react-components";
-import { useAssets, useBulkAssetAction } from "../hooks/useAssets";
-import { useDeleteAsset } from "../hooks/useDanger";
+import { useAssets, useBulkAssetAction } from "../../hooks/useAssets";
+import { useDeleteAsset } from "../../hooks/useDanger";
 import {
   TeachingPopover,
   TeachingPopoverBody,
@@ -58,13 +55,12 @@ import {
   TeachingPopoverTrigger,
 } from "@fluentui/react-components";
 import { useNavigate } from "react-router";
-import { CloneAssetDialog } from "../components/dialogs/CloneAssetDialog";
-import { useDestructiveStyles } from "../components/primitives/styles";
-import { formatDate } from "../../utils/utils";
-import { useStoredToken } from "../hooks/AuthProvider";
-import { SettingsIcon } from "../components/primitives/icons";
-import { TablePagination } from "../components/tables/TablePagination";
+import { CloneAssetDialog } from "../../components/dialogs/CloneAssetDialog";
+import { useDestructiveStyles } from "../../components/primitives/styles";
+import { TablePagination } from "../../components/tables/TablePagination";
 import { useCallback, useMemo, useState } from "react";
+import { formatDate } from "../../../utils/utils";
+import { FolderIcon } from "../primitives/icons";
 
 interface RawAssetSettings {
   sector?: {
@@ -198,13 +194,19 @@ const getStatusBadge = (status: string): React.ReactElement => {
   );
 };
 
-const Assets = () => {
+const AssetsTable = ({
+  group,
+}: {
+  group: {
+    label: string;
+    value: string;
+  };
+}) => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const offset = (page - 1) * limit;
-  const [q, _] = useState("(asset_type:survey)");
+  const [q, _] = useState(`(settings__group:"${group.value}") AND (asset_type:survey)`);
   const destructiveStyles = useDestructiveStyles();
-  const { token, kpiUrl } = useStoredToken();
   const { data, isLoading, error } = useAssets(q, limit, offset) as UseAssetsReturn;
 
   const totalCount = data?.count || 0;
@@ -441,47 +443,11 @@ const Assets = () => {
     (assetUid: string, e: React.MouseEvent): void => {
       e.stopPropagation();
       e.preventDefault();
-      navigate(`${assetUid}`);
+      navigate(`/assets/${assetUid}`);
     },
     [navigate]
   );
-  if (!token || !kpiUrl) {
-    return (
-      <div className="min-h-screen p-4 flex items-center justify-center">
-        <Card
-          style={{
-            backgroundColor: "var(--colorNeutralBackground3)",
-          }}
-          appearance="filled-alternative"
-          className="w-full border-l-4 border-l-orange-400"
-        >
-          <CardPreview className="p-3">
-            <div className="flex flex-col gap-2">
-              <div className="text-orange-700 w-full font-semibold">Setup Required</div>
-              <Text
-                style={{
-                  color: "var(--colorNeutralForeground3Hover)",
-                }}
-                size={100}
-                className=" mb-2"
-              >
-                Configure your account to get started
-              </Text>
-              <Button
-                appearance="primary"
-                size="small"
-                icon={<SettingsIcon />}
-                onClick={() => navigate("/token-manager")}
-                className="float-right"
-              >
-                Setup Account
-              </Button>
-            </div>
-          </CardPreview>
-        </Card>
-      </div>
-    );
-  }
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -496,8 +462,9 @@ const Assets = () => {
 
   if (items.length === 0) {
     return (
-      <div className="p-4 min-h-screen flex flex-col gap-4 items-center justify-center ">
-        No assets available
+      <div className="text-base font-medium flex capitalize items-center gap-2 text-[var(--colorBrandForeground2)]">
+        <FolderIcon />
+        <span>{group.label}</span>
       </div>
     );
   }
@@ -514,8 +481,11 @@ const Assets = () => {
   };
 
   return (
-    <div className="px-4 min-h-screen flex flex-col gap-2 ">
-      <span className="text-base font-medium">My Assets</span>
+    <div className="flex flex-col gap-2 ">
+      <div className="text-base font-medium flex capitalize items-center gap-2 text-[var(--colorBrandForeground2)]">
+        <FolderIcon />
+        <span>{group.label}</span>
+      </div>
       <Toaster toasterId={toasterId} />
       <Toolbar
         style={{
@@ -660,4 +630,4 @@ const Assets = () => {
   );
 };
 
-export default Assets;
+export default AssetsTable;
