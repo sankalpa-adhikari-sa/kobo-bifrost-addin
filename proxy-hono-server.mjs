@@ -27,17 +27,15 @@ const proxyHandler = async (c) => {
       return c.json({ error: "Missing server URL parameter" }, 400);
     }
 
-
     const currentUrl = new URL(c.req.url);
-    currentUrl.searchParams.delete("server"); 
-        const targetUrl = `${serverUrl}${c.req.path}${currentUrl.search}`;
+    currentUrl.searchParams.delete("server");
+    const targetUrl = `${serverUrl}${c.req.path}${currentUrl.search}`;
 
     console.log(`Proxying ${c.req.method} request to: ${targetUrl}`);
 
     const headers = new Headers(c.req.raw.headers);
     headers.delete("host");
     headers.delete("content-length");
-
 
     let body;
     if (c.req.method !== "GET" && c.req.method !== "HEAD") {
@@ -78,13 +76,16 @@ const proxyHandler = async (c) => {
       return c.text(errorText, response.status);
     }
 
-
     const responseHeaders = new Headers();
     response.headers.forEach((value, key) => {
       if (!["content-encoding", "transfer-encoding"].includes(key.toLowerCase())) {
         responseHeaders.set(key, value);
       }
     });
+    if (response.status === 204) {
+      console.log(`${c.req.method} 204 No Content response`);
+      return c.body(null, 204, responseHeaders);
+    }
 
     if (isBinaryFile) {
       console.log(`${c.req.method} binary file response - Content-Type: ${contentType}`);
@@ -98,13 +99,10 @@ const proxyHandler = async (c) => {
       );
       try {
         const data = JSON.parse(text);
-            return c.json(data, response.status, Object.fromEntries(responseHeaders));
+        return c.json(data, response.status, Object.fromEntries(responseHeaders));
       } catch (parseError) {
         console.error("JSON parse error:", parseError);
-        return c.json(
-          { error: "Failed to parse JSON response", raw: text },
-          500
-        );
+        return c.json({ error: "Failed to parse JSON response", raw: text }, 500);
       }
     } else {
       const text = await response.text();

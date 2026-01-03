@@ -24,6 +24,8 @@ import {
   PersonCircle32Regular,
   Settings20Filled,
   Settings20Regular,
+  Person20Filled,
+  Person20Regular,
 } from "@fluentui/react-icons";
 import React from "react";
 import { useNavigate, useLocation } from "react-router";
@@ -33,6 +35,7 @@ const JobPostings = bundleIcon(NotePin20Filled, NotePin20Regular);
 const Dashboard = bundleIcon(Board20Filled, Board20Regular);
 const Settings = bundleIcon(Settings20Filled, Settings20Regular);
 const Workbook = bundleIcon(DocumentBulletList20Filled, DocumentBulletList20Regular);
+const Profile = bundleIcon(Person20Filled, Person20Regular);
 
 interface AddinNavDrawerProps {
   isOpen: boolean;
@@ -95,6 +98,9 @@ const AddinNavDrawer: React.FC<AddinNavDrawerProps> = ({ isOpen, setIsOpen, togg
         </NavItem>
         <NavDivider />
         <NavSectionHeader>Configuration</NavSectionHeader>
+        <NavItem icon={<Profile />} value="5" onClick={() => handleNavigation("/profile")}>
+          Profile
+        </NavItem>
         <NavCategory value="2">
           <NavCategoryItem icon={<JobPostings />}>Asset Management</NavCategoryItem>
           <NavSubItemGroup>
@@ -103,9 +109,6 @@ const AddinNavDrawer: React.FC<AddinNavDrawerProps> = ({ isOpen, setIsOpen, togg
             </NavSubItem>
             <NavSubItem value="4" onClick={() => handleNavigation("/assets")}>
               Assets
-            </NavSubItem>
-            <NavSubItem value="5" onClick={() => handleNavigation("/profile")}>
-              Profile
             </NavSubItem>
             <NavSubItem value="8" onClick={() => handleNavigation("/asset-groups")}>
               Asset Groups
