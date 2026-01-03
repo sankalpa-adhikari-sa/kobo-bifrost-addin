@@ -1,7 +1,14 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 
+function getPartitionKey(): string | null {
+  if (typeof Office !== "undefined" && Office.context) {
+    return Office.context.partitionKey;
+  }
+  return null;
+}
+
 function setInLocalStorage(key: string, value: string) {
-  const myPartitionKey = Office.context.partitionKey;
+  const myPartitionKey = getPartitionKey();
   if (myPartitionKey) {
     localStorage.setItem(myPartitionKey + key, value);
   } else {
@@ -10,7 +17,7 @@ function setInLocalStorage(key: string, value: string) {
 }
 
 function getFromLocalStorage(key: string): string | null {
-  const myPartitionKey = Office.context.partitionKey;
+  const myPartitionKey = getPartitionKey();
   if (myPartitionKey) {
     return localStorage.getItem(myPartitionKey + key);
   } else {
@@ -19,7 +26,7 @@ function getFromLocalStorage(key: string): string | null {
 }
 
 function removeFromLocalStorage(key: string) {
-  const myPartitionKey = Office.context.partitionKey;
+  const myPartitionKey = getPartitionKey();
   if (myPartitionKey) {
     localStorage.removeItem(myPartitionKey + key);
   } else {
@@ -45,22 +52,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    (async () => {
+    const initializeAuth = async () => {
       try {
         setIsLoading(true);
+
+        if (typeof Office !== "undefined") {
+          await Office.onReady();
+        }
+
         let savedToken = getFromLocalStorage("authToken");
         let savedKpiUrl = getFromLocalStorage("kpiUrl");
 
         if (!savedToken || !savedKpiUrl) {
-          try {
-            if (!savedToken) {
-              savedToken = await OfficeRuntime.storage.getItem("authToken");
+          if (typeof OfficeRuntime !== "undefined" && OfficeRuntime.storage) {
+            try {
+              if (!savedToken) {
+                savedToken = await OfficeRuntime.storage.getItem("authToken");
+              }
+              if (!savedKpiUrl) {
+                savedKpiUrl = await OfficeRuntime.storage.getItem("kpiUrl");
+              }
+            } catch (error) {
+              console.warn("OfficeRuntime.storage not available or failed:", error);
             }
-            if (!savedKpiUrl) {
-              savedKpiUrl = await OfficeRuntime.storage.getItem("kpiUrl");
-            }
-          } catch (error) {
-            console.warn("OfficeRuntime.storage not available:", error);
           }
         }
 
@@ -73,16 +87,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } finally {
         setIsLoading(false);
       }
-    })();
+    };
+
+    initializeAuth();
   }, []);
 
   const saveToken = async (newToken: string) => {
     try {
       setInLocalStorage("authToken", newToken);
-      try {
-        await OfficeRuntime.storage.setItem("authToken", newToken);
-      } catch (error) {
-        console.warn("OfficeRuntime.storage save failed:", error);
+      if (typeof OfficeRuntime !== "undefined" && OfficeRuntime.storage) {
+        try {
+          await OfficeRuntime.storage.setItem("authToken", newToken);
+        } catch (error) {
+          console.warn("OfficeRuntime.storage save failed:", error);
+        }
       }
       setToken(newToken);
     } catch (error) {
@@ -94,10 +112,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const clearToken = async () => {
     try {
       removeFromLocalStorage("authToken");
-      try {
-        await OfficeRuntime.storage.removeItem("authToken");
-      } catch (error) {
-        console.warn("OfficeRuntime.storage clear failed:", error);
+      if (typeof OfficeRuntime !== "undefined" && OfficeRuntime.storage) {
+        try {
+          await OfficeRuntime.storage.removeItem("authToken");
+        } catch (error) {
+          console.warn("OfficeRuntime.storage clear failed:", error);
+        }
       }
       setToken(null);
     } catch (error) {
@@ -109,10 +129,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const saveKpiUrl = async (newKpiUrl: string) => {
     try {
       setInLocalStorage("kpiUrl", newKpiUrl);
-      try {
-        await OfficeRuntime.storage.setItem("kpiUrl", newKpiUrl);
-      } catch (error) {
-        console.warn("OfficeRuntime.storage save failed for kpiUrl:", error);
+      if (typeof OfficeRuntime !== "undefined" && OfficeRuntime.storage) {
+        try {
+          await OfficeRuntime.storage.setItem("kpiUrl", newKpiUrl);
+        } catch (error) {
+          console.warn("OfficeRuntime.storage save failed for kpiUrl:", error);
+        }
       }
       setKpiUrl(newKpiUrl);
     } catch (error) {
@@ -124,10 +146,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const clearKpiUrl = async () => {
     try {
       removeFromLocalStorage("kpiUrl");
-      try {
-        await OfficeRuntime.storage.removeItem("kpiUrl");
-      } catch (error) {
-        console.warn("OfficeRuntime.storage clear failed for kpiUrl:", error);
+      if (typeof OfficeRuntime !== "undefined" && OfficeRuntime.storage) {
+        try {
+          await OfficeRuntime.storage.removeItem("kpiUrl");
+        } catch (error) {
+          console.warn("OfficeRuntime.storage clear failed for kpiUrl:", error);
+        }
       }
       setKpiUrl(null);
     } catch (error) {

@@ -13,8 +13,9 @@
   },
   "scripts": {
     "build": "tsc && vite build",
-    "dev": "vite --port 3000",
-    "dev:proxy": "concurrently \"vite --port 3000\" \"node proxy-server.mjs\"",
+    "dev:proxy-express": "concurrently \"vite --port 3000\" \"node proxy-server.mjs\"",
+    "dev:proxy-hono": "concurrently \"vite --port 3000\" \"node proxy-hono-server.mjs\"",
+    "dev-server": "concurrently \"vite --port 3000\" \"node proxy-hono-server.mjs\"",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "prettier": "office-addin-lint prettier",
     "preview": "vite preview",
@@ -23,13 +24,15 @@
     "start:web": "office-addin-debugging start src/manifest.xml web",
     "stop": "office-addin-debugging stop src/manifest.xml",
     "validate": "office-addin-manifest validate src/manifest.xml",
-    "proxy": "node proxy-server.mjs"
+    "proxy-hono": "node proxy-hono-server.mjs",
+    "proxy-express": "node proxy-server.mjs"
   },
   "dependencies": {
     "@azure/msal-node": "^3.6.0",
     "@fluentui/react-charts": "^9.1.5",
     "@fluentui/react-components": "^9.55.1",
     "@fluentui/react-icons": "^2.0.264",
+    "@hono/node-server":"^1.19.7",
     "@hookform/resolvers": "^5.1.1",
     "@tailwindcss/postcss": "^4.1.10",
     "@tanstack/react-form": "^1.12.3",
@@ -41,6 +44,7 @@
     "date-fns": "^4.1.0",
     "express": "^5.1.0",
     "fuse.js": "^7.1.0",
+    "hono":"^4.11.3",
     "node-fetch": "^3.3.2",
     "postcss": "^8.5.5",
     "raw-body": "^3.0.0",
