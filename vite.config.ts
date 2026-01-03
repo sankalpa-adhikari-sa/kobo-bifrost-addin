@@ -16,7 +16,7 @@ export default defineConfig(async ({ mode }) => ({
     react(),
     officeAddin({
       devUrl: "https://localhost:3000",
-      prodUrl: "https://www.contoso.com", // CHANGE THIS TO YOUR PRODUCTION DEPLOYMENT LOCATION
+      // prodUrl: "https://www.example.com",
     }),
     checker({ typescript: true }),
   ],
