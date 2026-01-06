@@ -53,8 +53,10 @@ This repository includes two proxy implementations to handle these requests:
 Clone the repository and install dependencies:
 
 ```bash
-git clone [https://github.com/sankalpa-adhikari-sa/kobo-bifrost-addin.git](https://github.com/sankalpa-adhikari-sa/kobo-bifrost-addin.git)
+git clone https://github.com/sankalpa-adhikari-sa/kobo-bifrost-addin.git
+```
 
+```bash
 cd kobo-bifrost-addin
 npm install
 ```
